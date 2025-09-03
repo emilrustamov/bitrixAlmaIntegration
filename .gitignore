@@ -1,0 +1,27 @@
+# Environment files
+config.env
+config.env.production
+config.env.local
+.env
+.env.local
+.env.production
+.env.*
+
+# Log files
+*.log
+alma_integration.log
+alma_api_debug.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
