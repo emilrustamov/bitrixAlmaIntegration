@@ -149,15 +149,16 @@ class AlmaApi {
     }
 
     public function getRentalObject($bitrixId) {
-        // Сначала ищем по external_id в units (основной поиск)
-        $response = $this->call('GET', 'units/external_id/' . $bitrixId . '/', [], false);
+        // Согласно документации (строки 510-518), rental_object возвращает наиболее подходящую запись по внешнему id
+        // Это основной способ определения внутреннего id апартамента или юнита
+        $response = $this->call('GET', 'rental_object/' . $bitrixId . '/', [], false);
         
         if ($response['code'] === 200) {
+            Logger::info("Found rental object via rental_object API", ['external_id' => $bitrixId, 'response' => $response['response']]);
             return $response;
         }
         
-        // Если не найден, ищем через rental_object (резервный поиск)
-        $response = $this->call('GET', 'rental_object/' . $bitrixId . '/', [], false);
+        Logger::warning("Rental object not found via rental_object API", ['external_id' => $bitrixId]);
         return $response;
     }
 
@@ -225,22 +226,25 @@ class AlmaApi {
 
     public function createOrGetBuilding($buildingName) {
         // Сначала проверяем, существует ли здание в нужном проекте
-        $response = $this->call('GET', 'buildings/', ['name' => $buildingName], false);
+        $response = $this->call('GET', 'buildings/', [], false);
 
         if ($response['code'] === 200 && !empty($response['response'])) {
             // Проверяем, что здание принадлежит нужному проекту
             foreach ($response['response'] as $building) {
-                if (isset($building['project']) && $building['project']['id'] == PROJECT_ID) {
-                    Logger::info("Found building in project " . PROJECT_ID . ": " . $building['id'], [], 'building', $building['id']);
-                    return $building['id'];
+                if ($building['name'] === $buildingName) {
+                    // Получаем детальную информацию о здании для проверки проекта
+                    $buildingDetail = $this->call('GET', 'buildings/' . $building['id'] . '/', [], false);
+                    if ($buildingDetail['code'] === 200 && 
+                        isset($buildingDetail['response']['project']) && 
+                        $buildingDetail['response']['project']['id'] == PROJECT_ID) {
+                        Logger::info("Found building in project " . PROJECT_ID . ": " . $building['id'], [], 'building', $building['id']);
+                        return $building['id'];
+                    }
                 }
             }
-            
-            // Если здание найдено, но в другом проекте, создаем новое
-            Logger::warning("Building '$buildingName' found in different project, creating new in project " . PROJECT_ID);
         }
         
-        // Создаем новое здание в нужном проекте
+        // Если здание не найдено, создаем новое
         $data = [
             'name' => $buildingName,
             'project' => PROJECT_ID
@@ -260,6 +264,71 @@ class AlmaApi {
     
     public function getActionLogger() {
         return $this->actionLogger;
+    }
+
+    /**
+     * Проверяет соответствие названий апартаментов
+     */
+    private function isApartmentNameMatching($actualName, $expectedName) {
+        if (empty($actualName) || empty($expectedName)) {
+            return false;
+        }
+        
+        // Нормализуем названия для сравнения
+        $actualKeywords = $this->extractApartmentKeywords($actualName);
+        $expectedKeywords = $this->extractApartmentKeywords($expectedName);
+        
+        // Проверяем пересечение ключевых слов
+        $commonKeywords = array_intersect($actualKeywords, $expectedKeywords);
+        $matchRatio = count($commonKeywords) / max(count($actualKeywords), count($expectedKeywords));
+        
+        return $matchRatio >= 0.7; // 70% совпадение
+    }
+
+    /**
+     * Извлекает ключевые слова из названия апартамента
+     */
+    private function extractApartmentKeywords($apartmentName) {
+        // Убираем префиксы и нормализуем
+        $normalized = preg_replace('/^(Ap\.|Un\.|Unit\s*)\d*\.?\s*/i', '', $apartmentName);
+        $normalized = preg_replace('/\s*,\s*apt\.\s*\d+/i', '', $normalized);
+        
+        // Разбиваем на слова и фильтруем
+        $words = preg_split('/[\s\-\/]+/', $normalized);
+        $keywords = array_filter($words, function($word) {
+            return strlen(trim($word)) > 2; // Игнорируем короткие слова
+        });
+        
+        return array_map('strtolower', $keywords);
+    }
+
+    /**
+     * Глобальная проверка уникальности external_id
+     */
+    private function validateGlobalExternalIdUniqueness($externalId, $apartmentId) {
+        try {
+            // Проверяем через rental_object API
+            $rentalObject = $this->getRentalObject($externalId);
+            if ($rentalObject['code'] === 200) {
+                $existingName = $rentalObject['response']['name'] ?? '';
+                Logger::warning("Global check: External ID $externalId already exists in rental_object with name: '$existingName'", [], 'apartment', $apartmentId);
+                return false;
+            }
+            
+            // Дополнительная проверка через units API
+            $unitsResponse = $this->call('GET', 'units/', ['external_id' => $externalId], false);
+            if ($unitsResponse['code'] === 200 && !empty($unitsResponse['response'])) {
+                $existingUnit = $unitsResponse['response'][0];
+                $existingName = $existingUnit['name'] ?? '';
+                Logger::warning("Global check: External ID $externalId already exists in units with name: '$existingName'", [], 'apartment', $apartmentId);
+                return false;
+            }
+            
+            return true;
+        } catch (Exception $e) {
+            Logger::error("Error in global external_id validation: " . $e->getMessage(), [], 'apartment', $apartmentId);
+            return false;
+        }
     }
 }
 
@@ -294,7 +363,7 @@ try {
     Logger::debug('Apartment data received', ['data' => $apartmentData], 'apartment', $apartmentId);
 
 
-    $buildingName = $apartmentData['ufCrm6_1682232363193'] ?? 'Default Building';
+    $buildingName = trim($apartmentData['ufCrm6_1682232363193'] ?? 'Default Building');
     if (empty($buildingName)) {
         $buildingName = 'Default Building';
     }
@@ -336,21 +405,50 @@ try {
         throw new Exception('External ID is required');
     }
 
+    // Глобальная проверка уникальности external_id
+    $rentalObject = $alma->getRentalObject($externalId);
+    if ($rentalObject['code'] === 200) {
+        Logger::warning("External ID $externalId already exists in Alma", [], 'apartment', $apartmentId);
+        // Можно продолжить или прервать - в зависимости от логики
+    }
+
+    // Проверяем, существует ли уже апартамент
+    $existingObject = $alma->getRentalObject($externalId);
+    if ($existingObject['code'] === 200) {
+        Logger::info("External ID $externalId already exists in Alma. Skipping creation.", [], 'apartment', $apartmentId);
+        return [
+            'success' => true,
+            'message' => 'Apartment already exists',
+            'method' => 'EXISTING',
+            'data' => $existingObject['response']
+        ];
+    }
+
     $name = $apartmentData['title'] ?? 'Apartment ' . $externalId;
     if (empty($name)) {
         $name = 'Apartment ' . $externalId;
     }
 
-    // Проверяем additional_external_id на уникальность
-    $additionalExternalId = '';
+    // Согласно документации (строки 45-47), additional_external_id - это id юнита из битрикса
+    // is_used_additional_external_id определяет, будет ли возвращена запись через rental_object API по additional_external_id
+    $additionalExternalId = $apartmentData['ufCrm6_1736951470242'] ?? '';
     $useAdditionalExternalId = false;
-    if (!empty($apartmentData['ufCrm6_1736951470242'])) {
-        $checkResponse = $alma->call('GET', 'units/', ['additional_external_id' => $apartmentData['ufCrm6_1736951470242']], false);
+    
+    // Проверяем уникальность additional_external_id
+    if (!empty($additionalExternalId)) {
+        $checkResponse = $alma->call('GET', 'units/', ['additional_external_id' => $additionalExternalId], false);
         if ($checkResponse['code'] === 200 && empty($checkResponse['response'])) {
-            $additionalExternalId = $apartmentData['ufCrm6_1736951470242'];
             $useAdditionalExternalId = true;
+        } else {
+            Logger::warning("additional_external_id $additionalExternalId already exists, skipping", [], 'apartment', $externalId);
+            $additionalExternalId = '';
         }
     }
+    
+    Logger::info("Processing additional_external_id", [
+        'additional_external_id' => $additionalExternalId,
+        'is_used_additional_external_id' => $useAdditionalExternalId
+    ], 'apartment', $externalId);
 
     $data = [
         'external_id' => (string)$externalId,
@@ -376,8 +474,8 @@ try {
         'internet_password' => $apartmentData['ufCrm6_1686728251990'] ?? '',
         'subway_station' => METRO[$apartmentData['ufCrm6_1682233481671']] ?? '',
         'parking_number' => $apartmentData['ufCrm6_1683299159437'] ?? '',
-        'keybox_code' => $apartmentData['ufCrm6_1720794204'] ?? 'N/A',
-        'electronic_lock_password' => $apartmentData['ufCrm6_1715777670'] ?? 'N/A'
+        'keybox_code' => !empty($apartmentData['ufCrm6_1720794204']) ? $apartmentData['ufCrm6_1720794204'] : 'N/A',
+        'electronic_lock_password' => !empty($apartmentData['ufCrm6_1715777670']) ? $apartmentData['ufCrm6_1715777670'] : 'N/A'
     ];
     Logger::debug('Data for Alma', ['data' => $data], 'apartment', $apartmentId);
 

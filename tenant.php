@@ -130,7 +130,7 @@ class AlmaTenantsApi
 
     public function getAllTenants()
     {
-        $url = $this->apiUrl . 'realty/clients/';
+        $url = $this->apiUrl . 'users/clients/';
         return $this->sendRequest('GET', $url);
     }
 
@@ -155,8 +155,13 @@ class AlmaTenantsApi
         } else {
             $data['email'] = 'no-email-' . $bitrixData['id'] . '@colife.local';
         }
+        
+        // Passport/ID fields
+        if (!empty($bitrixData['UF_CRM_20_1696523391'])) {
+            $data['passport'] = $bitrixData['UF_CRM_20_1696523391'];
+        }
 
-        $passportScan = $this->uploadFile($bitrixData['ufCrm10_1694000435068']['urlMachine'] ?? null);
+        $passportScan = $this->uploadFile($bitrixData['UF_CRM_20_1696615939']['urlMachine'] ?? null);
         if ($passportScan) {
             $data['passport_scan'] = $passportScan;
         }
