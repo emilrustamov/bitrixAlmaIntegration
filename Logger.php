@@ -4,11 +4,21 @@ class Logger
 {
     private static $logFile = __DIR__ . '/alma_integration.log';
     private static $instance = null;
+    private static $minLevel = self::LEVEL_INFO;
     
     const LEVEL_DEBUG = 'DEBUG';
     const LEVEL_INFO = 'INFO';
     const LEVEL_WARNING = 'WARNING';
     const LEVEL_ERROR = 'ERROR';
+    
+    const MAX_RESPONSE_LENGTH = 50;
+    
+    private static $levelPriority = [
+        self::LEVEL_DEBUG => 0,
+        self::LEVEL_INFO => 1,
+        self::LEVEL_WARNING => 2,
+        self::LEVEL_ERROR => 3
+    ];
     
     private function __construct() {}
     
@@ -20,8 +30,55 @@ class Logger
         return self::$instance;
     }
     
+    public static function setMinLevel($level)
+    {
+        if (isset(self::$levelPriority[$level])) {
+            self::$minLevel = $level;
+        }
+    }
+    
+    public static function getMinLevel()
+    {
+        return self::$minLevel;
+    }
+    
+    private static function extractKeyFields($response)
+    {
+        if (empty($response)) {
+            return $response;
+        }
+        
+        $decoded = json_decode($response, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return strlen($response) > 50 ? substr($response, 0, 50) . '...' : $response;
+        }
+        $keyFields = [];
+        if (isset($decoded['id'])) $keyFields['id'] = $decoded['id'];
+        if (isset($decoded['external_id'])) $keyFields['external_id'] = $decoded['external_id'];
+        if (isset($decoded['name'])) $keyFields['name'] = $decoded['name'];
+        if (isset($decoded['detail'])) $keyFields['error'] = $decoded['detail'];
+        if (isset($decoded['message'])) $keyFields['message'] = $decoded['message'];
+        if (isset($decoded['non_field_errors'])) $keyFields['errors'] = $decoded['non_field_errors'];
+        foreach (['email', 'last_name', 'first_name', 'phone'] as $field) {
+            if (isset($decoded[$field]) && is_array($decoded[$field])) {
+                $keyFields[$field . '_error'] = $decoded[$field][0];
+            }
+        }
+        
+        return json_encode($keyFields, JSON_UNESCAPED_UNICODE);
+    }
+    
+    private static function shouldLog($level)
+    {
+        return self::$levelPriority[$level] >= self::$levelPriority[self::$minLevel];
+    }
+    
     public static function log($level, $message, $context = [], $entityType = null, $entityId = null)
     {
+        if (!self::shouldLog($level)) {
+            return;
+        }
+        
         $timestamp = date('Y-m-d H:i:s');
         $logEntry = [
             'timestamp' => $timestamp,
@@ -69,21 +126,10 @@ class Logger
     
     public static function logApiRequest($method, $url, $data = null, $response = null, $httpCode = null)
     {
-        $context = [
-            'method' => $method,
-            'url' => $url,
-            'http_code' => $httpCode
-        ];
-        
-        if ($data !== null) {
-            $context['request_data'] = $data;
+        if ($httpCode >= 400) {
+            $shortResponse = self::extractKeyFields($response);
+            self::error("API Error: $method " . basename($url) . " ($httpCode)", ['error' => $shortResponse]);
         }
-        
-        if ($response !== null) {
-            $context['response'] = $response;
-        }
-        
-        self::info("API Request: $method $url", $context);
     }
     
     public static function logEntityAction($action, $entityType, $entityId, $entityName, $details = [], $changes = null)

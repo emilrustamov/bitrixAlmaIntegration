@@ -1,15 +1,7 @@
 <?php
 
-require_once('Bitrix24Rest.php');
-require_once('Logger.php');
-require_once('Config.php');
-
-Config::load();
-
-define('ALMA_API_KEY', Config::get('ALMA_API_KEY'));
-define('ALMA_API_URL', Config::get('ALMA_API_URL'));
-define('WEBHOOK_URL', Config::get('WEBHOOK_URL'));
-define('PROJECT_ID', (int)Config::get('PROJECT_ID'));
+require_once(__DIR__ . '/../Logger.php');
+require_once(__DIR__ . '/../Config.php');
 
 class AlmaTenantsApi
 {
@@ -18,7 +10,7 @@ class AlmaTenantsApi
     private $debug;
     private $actionLogger;
 
-    public function __construct($apiKey = ALMA_API_KEY, $apiUrl = ALMA_API_URL, $debug = false)
+    public function __construct($apiKey, $apiUrl, $debug = false)
     {
         $this->apiKey = $apiKey;
         $this->apiUrl = $apiUrl;
@@ -304,99 +296,4 @@ class AlmaTenantsApi
 
         return $decodedResponse;
     }
-}
-
-
-
-try {
-    $contactId = $_GET['id'] ?? null;
-
-    if (!$contactId) {
-        throw new Exception('Contact ID is required');
-    }
-
-    $bitrix = new Bitrix24Rest(WEBHOOK_URL);
-    $almaApi = new AlmaTenantsApi(ALMA_API_KEY, ALMA_API_URL, true);
-
-    $bitrixContact = $bitrix->call('crm.contact.get', [
-        'id' => $contactId
-    ]);
-
-    if (!isset($bitrixContact['result'])) {
-        throw new Exception('Failed to get contact data from Bitrix24');
-    }
-
-    $contactData = $bitrixContact['result'];
-
-    $phone = '';
-    if (!empty($contactData['PHONE']) && is_array($contactData['PHONE'])) {
-        foreach ($contactData['PHONE'] as $phoneData) {
-            if (!empty($phoneData['VALUE'])) {
-                $phone = $phoneData['VALUE'];
-                break;
-            }
-        }
-    }
-
-    $bitrixTenantData = [
-        'id' => $contactData['ID'],
-        'name' => $contactData['NAME'] ?? '',
-        'last_name' => $contactData['LAST_NAME'] ?? '',
-        'UF_CRM_1727788747' => $contactData['UF_CRM_1727788747'] ?? '',
-        'phone_work' => $contactData['PHONE_WORK_0'] ?? $phone,
-        'birthdate' => $contactData['BIRTHDATE'] ?? null,
-        'ufCrm10_1694000435068' => $contactData['UF_CRM_1694000435068'] ?? []
-    ];
-
-    $result = $almaApi->syncTenant($bitrixTenantData);
-
-    if (isset($result['id'])) {
-        echo json_encode([
-            'success' => true,
-            'message' => 'Tenant successfully synchronized',
-            'alma_id' => $result['id'],
-            'data' => $result
-        ]);
-    } else {
-        throw new Exception('Tenant synchronization failed');
-    }
-} catch (InvalidArgumentException $e) {
-    $almaApi->getActionLogger()->logError(
-        $contactId ?? 'unknown',
-        'Contact Validation Error',
-        $e->getMessage(),
-        ['contact_data' => $bitrixTenantData ?? []]
-    );
-
-    http_response_code(400);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Data validation error: ' . $e->getMessage()
-    ]);
-} catch (RuntimeException $e) {
-    $almaApi->getActionLogger()->logError(
-        $contactId ?? 'unknown',
-        'API Error',
-        $e->getMessage(),
-        ['contact_data' => $bitrixTenantData ?? []]
-    );
-
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'message' => 'API error: ' . $e->getMessage()
-    ]);
-} catch (Exception $e) {
-    $almaApi->getActionLogger()->logError(
-        $contactId ?? 'unknown',
-        'Unexpected Error',
-        $e->getMessage(),
-        ['contact_data' => $bitrixTenantData ?? []]
-    );
-
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Unexpected error: ' . $e->getMessage()
-    ]);
 }
