@@ -3,13 +3,18 @@
 require_once('Bitrix24Rest.php');
 require_once('Logger.php');
 require_once('Config.php');
+require_once('ProjectMapping.php');
 
 Config::load();
 
+// Получаем проект из параметра или определяем автоматически
+$projectName = $_GET['project'] ?? 'Dubai';
+$projectConfig = ProjectMapping::getProjectConfig($projectName);
+
 define('ALMA_API_KEY', Config::get('ALMA_API_KEY'));
 define('ALMA_API_URL', Config::get('ALMA_API_URL'));
-define('WEBHOOK_URL', Config::get('WEBHOOK_URL'));
-define('PROJECT_ID', (int)Config::get('PROJECT_ID'));
+define('PROJECT_ID', $projectConfig['id']);
+define('WEBHOOK_URL', $projectConfig['webhook_url']);
 
 class AlmaTenantsApi
 {
@@ -323,10 +328,40 @@ try {
     ]);
 
     if (!isset($bitrixContact['result'])) {
-        throw new Exception('Failed to get contact data from Bitrix24');
+        echo json_encode([
+            'success' => false,
+            'message' => 'Contact not found in Bitrix24 or access denied',
+            'contact_id' => $contactId
+        ]);
+        exit;
     }
 
     $contactData = $bitrixContact['result'];
+
+    // Проверяем, есть ли у контакта активные Airbnb/Ejari контракты
+    $contracts = $bitrix->call('crm.item.list', [
+        'entityTypeId' => 183, // Контракты
+        'filter' => [
+            'contactId' => $contactId
+        ],
+        'select' => ['id', 'ufCrm20_1693561495'] // ID и тип контракта
+    ]);
+
+    if (isset($contracts['result']['items'])) {
+        foreach ($contracts['result']['items'] as $contract) {
+            $contractType = (string)($contract['ufCrm20_1693561495'] ?? '');
+            if ($contractType === '882' || $contractType === '8672') {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Contact has Airbnb/Ejari contracts - not synchronized',
+                    'contact_id' => $contactId,
+                    'contract_type' => $contractType === '882' ? 'Airbnb' : 'Ejari',
+                    'contract_id' => $contract['id']
+                ]);
+                exit;
+            }
+        }
+    }
 
     $phone = '';
     if (!empty($contactData['PHONE']) && is_array($contactData['PHONE'])) {

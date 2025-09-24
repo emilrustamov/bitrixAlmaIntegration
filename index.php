@@ -2,10 +2,11 @@
 require_once('Bitrix24Rest.php');
 require_once('Logger.php');
 require_once('Config.php');
+require_once('ProjectMapping.php');
 
 Config::load();
 
-define('WEBHOOK_URL', Config::get('WEBHOOK_URL'));
+// WEBHOOK_URL теперь определяется динамически по проекту
 
 $isWebhookRequest = isset($_REQUEST['data']['FIELDS']['ID']) && 
                    isset($_REQUEST['data']['FIELDS']['ENTITY_TYPE_ID']) ||
@@ -15,16 +16,44 @@ if ($isWebhookRequest) {
     $idEl = $_REQUEST['data']['FIELDS']['ID'];
     $idItem = $_REQUEST['data']['FIELDS']['ENTITY_TYPE_ID'];
 
-    $bitrix = new Bitrix24Rest(WEBHOOK_URL);
+    // Определяем проект по домену запроса
+    $requestDomain = $_SERVER['HTTP_HOST'] ?? '';
+    $projectName = 'Dubai'; // По умолчанию
+    
+    // Если запрос приходит на домен Гонконга, используем Гонконг
+    if (strpos($requestDomain, 'colifepacific') !== false) {
+        $projectName = 'HongKong';
+    }
+    
+    $projectConfig = ProjectMapping::getProjectConfig($projectName);
+    $fieldMapping = ProjectMapping::getFieldMapping($projectName);
+    $webhookUrl = $projectConfig['webhook_url'];
+    
+    // Логируем только важные webhook'и (не каждый контакт)
+    if ($idItem != 3) { // Не логируем каждый контакт
+        Logger::info("Detected project: $projectName", [
+            'project_id' => $projectConfig['id'],
+            'entity_type_id' => $idItem,
+            'request_domain' => $requestDomain
+        ], 'webhook', $idEl);
+    }
 
-    if ($idItem == 144) {
+    $bitrix = new Bitrix24Rest($webhookUrl);
+
+    if ($idItem == $fieldMapping['entity_type_id']) {
         $bitrixApartment = $bitrix->call('crm.item.get', [
-            'entityTypeId' => 144,
+            'entityTypeId' => $fieldMapping['entity_type_id'],
             'id' => $idEl
         ]);
 
-        if($bitrixApartment['result']['item']['ufCrm6_1753278068179'] != '8638') {
-               file_get_contents(Config::get('APP_BASE_URL') . 'appart.php?id=' . $idEl);
+        // Проверяем условие для синхронизации (может отличаться для разных проектов)
+        $shouldSync = true;
+        if ($projectName === 'Dubai' && isset($bitrixApartment['result']['item']['ufCrm6_1753278068179'])) {
+            $shouldSync = $bitrixApartment['result']['item']['ufCrm6_1753278068179'] != '8638';
+        }
+        
+        if ($shouldSync) {
+            file_get_contents(Config::get('APP_BASE_URL') . 'appart.php?id=' . $idEl . '&project=' . $projectName);
         }
 
     } elseif ($idItem == 3 || $_REQUEST['event'] == 'ONCRMCONTACTUPDATE') {
@@ -38,7 +67,7 @@ if ($isWebhookRequest) {
             $isTenant = ($contactType === 'TENANT' || $contactType === 'CLIENT');
             
             if ($isTenant) {
-                file_get_contents(Config::get('APP_BASE_URL') . 'tenant.php?id=' . $idEl);
+                file_get_contents(Config::get('APP_BASE_URL') . 'tenant.php?id=' . $idEl . '&project=' . $projectName);
             } 
         }
     } elseif ($idItem == 183) {
@@ -48,7 +77,7 @@ if ($isWebhookRequest) {
         ]);
 
         if (isset($bitrixTenantContract['result'])) {
-            file_get_contents(Config::get('APP_BASE_URL') . 'tenatContract.php?id=' . $idEl);
+            file_get_contents(Config::get('APP_BASE_URL') . 'tenatContract.php?id=' . $idEl . '&project=' . $projectName);
         }
     }
     } else {
