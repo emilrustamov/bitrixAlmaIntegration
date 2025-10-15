@@ -1,0 +1,4162 @@
+[
+    {
+        "apartment_id": "1866",
+        "bitrix_additional_id": 1836,
+        "alma_external_id": "1866",
+        "alma_additional_id": "1836",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 763. Binghatti Azure, apt. 1011"
+    },
+    {
+        "apartment_id": "1864",
+        "error": "Alma API error: HTTP 404",
+        "external_id_match": false,
+        "additional_id_match": false
+    },
+    {
+        "apartment_id": "1856",
+        "bitrix_additional_id": 1826,
+        "alma_external_id": "1856",
+        "alma_additional_id": "1826",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 755. BOUTIQUE XII, apt. 712"
+    },
+    {
+        "apartment_id": "1854",
+        "bitrix_additional_id": 1824,
+        "alma_external_id": "1854",
+        "alma_additional_id": "1824",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 752. Creek Palace, apt. 3007"
+    },
+    {
+        "apartment_id": "1852",
+        "bitrix_additional_id": 1822,
+        "alma_external_id": "1852",
+        "alma_additional_id": "1822",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 754. The Radisson Blu Residence, apt. 1"
+    },
+    {
+        "apartment_id": "1850",
+        "bitrix_additional_id": 1820,
+        "alma_external_id": "1850",
+        "alma_additional_id": "1820",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 732. Act One Act Two Tower 1, apt. 1905"
+    },
+    {
+        "apartment_id": "1846",
+        "bitrix_additional_id": 1816,
+        "alma_external_id": "1846",
+        "alma_additional_id": "1816",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 751. DAMAC HILLS - ARTESIA TOWER C, apt. C-1705"
+    },
+    {
+        "apartment_id": "1838",
+        "bitrix_additional_id": 1808,
+        "alma_external_id": "1838",
+        "alma_additional_id": "1808",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 746. Genesis, apt. 418"
+    },
+    {
+        "apartment_id": "1836",
+        "error": "Alma API error: HTTP 404",
+        "external_id_match": false,
+        "additional_id_match": false
+    },
+    {
+        "apartment_id": "1834",
+        "bitrix_additional_id": 1804,
+        "alma_external_id": "1834",
+        "alma_additional_id": "1804",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 743. AZIZI RIVIERA AZURE, apt. 505"
+    },
+    {
+        "apartment_id": "1832",
+        "bitrix_additional_id": 1802,
+        "alma_external_id": "1832",
+        "alma_additional_id": "1802",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 742. Floarea Residence, apt. 318"
+    },
+    {
+        "apartment_id": "1830",
+        "bitrix_additional_id": 1800,
+        "alma_external_id": "1830",
+        "alma_additional_id": "1800",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 741. The Paragon By IGO, apt. 416"
+    },
+    {
+        "apartment_id": "1826",
+        "bitrix_additional_id": 1796,
+        "alma_external_id": "1826",
+        "alma_additional_id": "1796",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 739. J ONE - 1, apt. 1910A"
+    },
+    {
+        "apartment_id": "1824",
+        "bitrix_additional_id": 1794,
+        "alma_external_id": "1824",
+        "alma_additional_id": "1794",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 738. LIV Marina, apt. 1802"
+    },
+    {
+        "apartment_id": "1818",
+        "bitrix_additional_id": 1788,
+        "alma_external_id": "1818",
+        "alma_additional_id": "1788",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 736. Aykon City - Tower B, apt. 4403"
+    },
+    {
+        "apartment_id": "1816",
+        "bitrix_additional_id": 1786,
+        "alma_external_id": "1816",
+        "alma_additional_id": "1786",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 735. Sobha Hartland - The Crest Tower B, apt. B3704"
+    },
+    {
+        "apartment_id": "1808",
+        "bitrix_additional_id": 1778,
+        "alma_external_id": "1808",
+        "alma_additional_id": "1778",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 530. MeDoRe, apt. 2203"
+    },
+    {
+        "apartment_id": "1806",
+        "bitrix_additional_id": 1776,
+        "alma_external_id": "1806",
+        "alma_additional_id": "1776",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 731. 15 Northside - Tower 2, apt. B-503"
+    },
+    {
+        "apartment_id": "1804",
+        "bitrix_additional_id": "1774",
+        "alma_external_id": "1804",
+        "alma_additional_id": "1774",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 427. Binghatti Corner, apt. 2508"
+    },
+    {
+        "apartment_id": "1802",
+        "bitrix_additional_id": 1772,
+        "alma_external_id": "1802",
+        "alma_additional_id": "1772",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 730. 15 Northside - Tower 1, apt. A-1102"
+    },
+    {
+        "apartment_id": "1798",
+        "bitrix_additional_id": 1768,
+        "alma_external_id": "1798",
+        "alma_additional_id": "1768",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 729. Concept 7, apt. 812"
+    },
+    {
+        "apartment_id": "1794",
+        "bitrix_additional_id": 1764,
+        "alma_external_id": "1794",
+        "alma_additional_id": "1764",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 727. THE GROVE BY IMAN, apt. 809"
+    },
+    {
+        "apartment_id": "1792",
+        "bitrix_additional_id": 1762,
+        "alma_external_id": "1792",
+        "alma_additional_id": "1762",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 689. Peninsula One, apt. 510"
+    },
+    {
+        "apartment_id": "1790",
+        "bitrix_additional_id": 1760,
+        "alma_external_id": "1790",
+        "alma_additional_id": "1760",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 688. Peninsula One, apt. 413"
+    },
+    {
+        "apartment_id": "1786",
+        "bitrix_additional_id": 1756,
+        "alma_external_id": "1786",
+        "alma_additional_id": "1756",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. R3. One Za'abeel Private Homes, apt. 5501"
+    },
+    {
+        "apartment_id": "1782",
+        "bitrix_additional_id": 1752,
+        "alma_external_id": "1782",
+        "alma_additional_id": "1752",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 773. The Address Residences Dubai Opera T2, apt. 4501"
+    },
+    {
+        "apartment_id": "1780",
+        "bitrix_additional_id": 1750,
+        "alma_external_id": "1780",
+        "alma_additional_id": "1750",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 667. Grand Bleu Tower interiors by Elie Saab Tower 2, apt. 2403"
+    },
+    {
+        "apartment_id": "1774",
+        "bitrix_additional_id": 1742,
+        "alma_external_id": "1774",
+        "alma_additional_id": "1742",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 717. Liv Marina, apt. 2004"
+    },
+    {
+        "apartment_id": "1764",
+        "bitrix_additional_id": 1732,
+        "alma_external_id": "1764",
+        "alma_additional_id": "1732",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 640. Maktoum City District One Phase III Residences 2, apt. 303"
+    },
+    {
+        "apartment_id": "1762",
+        "bitrix_additional_id": 1730,
+        "alma_external_id": "1762",
+        "alma_additional_id": "1730",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 714. Serenity Lakes 5, apt. G01"
+    },
+    {
+        "apartment_id": "1760",
+        "bitrix_additional_id": 1728,
+        "alma_external_id": "1760",
+        "alma_additional_id": "1728",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 713. THE POINT TOWER, apt. 203"
+    },
+    {
+        "apartment_id": "1748",
+        "bitrix_additional_id": 1716,
+        "alma_external_id": "1748",
+        "alma_additional_id": "1716",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 703. BLVD CENTRAL 2, apt. 1304"
+    },
+    {
+        "apartment_id": "1744",
+        "bitrix_additional_id": 1712,
+        "alma_external_id": "1744",
+        "alma_additional_id": "1712",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 686. Azizi Riviera 47, apt. 920"
+    },
+    {
+        "apartment_id": "1740",
+        "bitrix_additional_id": 1708,
+        "alma_external_id": "1740",
+        "alma_additional_id": "1708",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 701. Sway Residences, apt. 904"
+    },
+    {
+        "apartment_id": "1736",
+        "bitrix_additional_id": 1704,
+        "alma_external_id": "1736",
+        "alma_additional_id": "1704",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 699.  J ONE - 1, apt. 914А"
+    },
+    {
+        "apartment_id": "1734",
+        "bitrix_additional_id": 1702,
+        "alma_external_id": "1734",
+        "alma_additional_id": "1702",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 691. MED 85, apt. 214"
+    },
+    {
+        "apartment_id": "1732",
+        "bitrix_additional_id": 1700,
+        "alma_external_id": "1732",
+        "alma_additional_id": "1700",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 419. JVT District 9, apt. G8"
+    },
+    {
+        "apartment_id": "1730",
+        "bitrix_additional_id": 1698,
+        "alma_external_id": "1730",
+        "alma_additional_id": "1698",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 690. Azizi Berton, apt. 428"
+    },
+    {
+        "apartment_id": "1728",
+        "bitrix_additional_id": 1696,
+        "alma_external_id": "1728",
+        "alma_additional_id": "1696",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 698. Binghatti Nova, apt. 1005"
+    },
+    {
+        "apartment_id": "1720",
+        "bitrix_additional_id": 1688,
+        "alma_external_id": "1720",
+        "alma_additional_id": "1688",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 696. Ellington Beach House, apt. N-406"
+    },
+    {
+        "apartment_id": "1716",
+        "bitrix_additional_id": 1684,
+        "alma_external_id": "1716",
+        "alma_additional_id": "1684",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 685. Grove at Creek Beach Building 5, Apt. 602"
+    },
+    {
+        "apartment_id": "1710",
+        "bitrix_additional_id": 1678,
+        "alma_external_id": "1710",
+        "alma_additional_id": "1678",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 637. Burj Royale, apt. 5006"
+    },
+    {
+        "apartment_id": "1708",
+        "bitrix_additional_id": 1676,
+        "alma_external_id": "1708",
+        "alma_additional_id": "1676",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 638. Burj Royale, apt. 5005"
+    },
+    {
+        "apartment_id": "1694",
+        "bitrix_additional_id": 1664,
+        "alma_external_id": "1694",
+        "alma_additional_id": "1664",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 680. The Address DownTown, apt. 1911"
+    },
+    {
+        "apartment_id": "1692",
+        "bitrix_additional_id": "1662",
+        "alma_external_id": "1692",
+        "alma_additional_id": "1662",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 684. LIV Marina, apt. 1707"
+    },
+    {
+        "apartment_id": "1690",
+        "bitrix_additional_id": 1660,
+        "alma_external_id": "1690",
+        "alma_additional_id": "1660",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 683. LIV Marina, apt. 902"
+    },
+    {
+        "apartment_id": "1686",
+        "bitrix_additional_id": 1656,
+        "alma_external_id": "1686",
+        "alma_additional_id": "1656",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 611. Discovery Gardens MED 92, apt. 308"
+    },
+    {
+        "apartment_id": "1684",
+        "bitrix_additional_id": 1654,
+        "alma_external_id": "1684",
+        "alma_additional_id": "1654",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 660. Collective Tower 2, apt. 314"
+    },
+    {
+        "apartment_id": "1676",
+        "bitrix_additional_id": 1646,
+        "alma_external_id": "1676",
+        "alma_additional_id": "1646",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 678. Urban Oasis, apt. 415B"
+    },
+    {
+        "apartment_id": "1668",
+        "bitrix_additional_id": 1638,
+        "alma_external_id": "1668",
+        "alma_additional_id": "1638",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 642. 52|42, apt. 2903"
+    },
+    {
+        "apartment_id": "1666",
+        "bitrix_additional_id": 1634,
+        "alma_external_id": "1666",
+        "alma_additional_id": "1634",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 673. Collective 2.0 Tower B, apt. 1208"
+    },
+    {
+        "apartment_id": "1652",
+        "bitrix_additional_id": 1618,
+        "alma_external_id": "1652",
+        "alma_additional_id": "1618",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 648. FIVE AT PALM JUMEIRAH  DUBAI, apt. 41009"
+    },
+    {
+        "apartment_id": "1650",
+        "bitrix_additional_id": 1616,
+        "alma_external_id": "1650",
+        "alma_additional_id": "1616",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 644. Palm View, apt. 2303"
+    },
+    {
+        "apartment_id": "1648",
+        "bitrix_additional_id": 1614,
+        "alma_external_id": "1648",
+        "alma_additional_id": "1614",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 649. THE 8, apt. 20206"
+    },
+    {
+        "apartment_id": "1644",
+        "bitrix_additional_id": 1610,
+        "alma_external_id": "1644",
+        "alma_additional_id": "1610",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 670. Sobha Hartland Waves, apt. 1705"
+    },
+    {
+        "apartment_id": "1640",
+        "bitrix_additional_id": 1606,
+        "alma_external_id": "1640",
+        "alma_additional_id": "1606",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 663. Elite Residence, apt. 1512"
+    },
+    {
+        "apartment_id": "1632",
+        "bitrix_additional_id": 1592,
+        "alma_external_id": "1632",
+        "alma_additional_id": "1592",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 652. The Community, apt. 2303"
+    },
+    {
+        "apartment_id": "1628",
+        "bitrix_additional_id": 1588,
+        "alma_external_id": "1628",
+        "alma_additional_id": "1588",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 653. The Community, apt. 2302"
+    },
+    {
+        "apartment_id": "1626",
+        "bitrix_additional_id": 1586,
+        "alma_external_id": "1626",
+        "alma_additional_id": "1586",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 654. The Community, apt. 2003"
+    },
+    {
+        "apartment_id": "1622",
+        "bitrix_additional_id": 1582,
+        "alma_external_id": "1622",
+        "alma_additional_id": "1582",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 656. The Paragon by IGO, apt. 409"
+    },
+    {
+        "apartment_id": "1618",
+        "bitrix_additional_id": 1578,
+        "alma_external_id": "1618",
+        "alma_additional_id": "1578",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 661. THE RESIDENCE AT MARINA GATE 2, apt. 5208"
+    },
+    {
+        "apartment_id": "1612",
+        "bitrix_additional_id": 1572,
+        "alma_external_id": "1612",
+        "alma_additional_id": "1572",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 658. THE POINT TOWER, apt. 201"
+    },
+    {
+        "apartment_id": "1604",
+        "bitrix_additional_id": 1564,
+        "alma_external_id": "1604",
+        "alma_additional_id": "1564",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 629.  Sobha Creek Vistas Reserve, apt. B1210"
+    },
+    {
+        "apartment_id": "1598",
+        "bitrix_additional_id": 1556,
+        "alma_external_id": "1598",
+        "alma_additional_id": "1556",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 616. One Za’abeel Tower 1, apt. 6003"
+    },
+    {
+        "apartment_id": "1582",
+        "bitrix_additional_id": 1542,
+        "alma_external_id": "1582",
+        "alma_additional_id": "1542",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 621. Bloom Towers C, apt. C-0702"
+    },
+    {
+        "apartment_id": "1572",
+        "bitrix_additional_id": 1532,
+        "alma_external_id": "1572",
+        "alma_additional_id": "1532",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 609. Central Park , apt. 321"
+    },
+    {
+        "apartment_id": "1564",
+        "bitrix_additional_id": 1524,
+        "alma_external_id": "1564",
+        "alma_additional_id": "1524",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 612. Palm View, apt. 1702"
+    },
+    {
+        "apartment_id": "1560",
+        "bitrix_additional_id": 1520,
+        "alma_external_id": "1560",
+        "alma_additional_id": "1520",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 607. Peninsula Five, apt. 1004"
+    },
+    {
+        "apartment_id": "1554",
+        "bitrix_additional_id": 1514,
+        "alma_external_id": "1554",
+        "alma_additional_id": "1514",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 585. GoldCrest Executive, apt. 3017"
+    },
+    {
+        "apartment_id": "1534",
+        "bitrix_additional_id": 1494,
+        "alma_external_id": "1534",
+        "alma_additional_id": "1494",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 589. MJL Jadeel 2, apt. 103"
+    },
+    {
+        "apartment_id": "1522",
+        "bitrix_additional_id": "1478",
+        "alma_external_id": "1522",
+        "alma_additional_id": "1478",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 592. DEC Towers T1, apt. 1808"
+    },
+    {
+        "apartment_id": "1510",
+        "bitrix_additional_id": 1452,
+        "alma_external_id": "1510",
+        "alma_additional_id": "1452",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 581. PALM VIEWS WEST, apt. 302"
+    },
+    {
+        "apartment_id": "1502",
+        "bitrix_additional_id": 1444,
+        "alma_external_id": "1502",
+        "alma_additional_id": "1444",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 571. Me Do Re, apt. 310"
+    },
+    {
+        "apartment_id": "1476",
+        "bitrix_additional_id": 1394,
+        "alma_external_id": "1476",
+        "alma_additional_id": "1394",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 580. Trident Grand Residence, apt. 1201"
+    },
+    {
+        "apartment_id": "1474",
+        "bitrix_additional_id": "1390",
+        "alma_external_id": "1474",
+        "alma_additional_id": "1390",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 577. J One, apt. 1314A"
+    },
+    {
+        "apartment_id": "1472",
+        "bitrix_additional_id": "1392",
+        "alma_external_id": "1472",
+        "alma_additional_id": "1392",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 579. Palace Beach Residence Tower 1, apt. 603"
+    },
+    {
+        "apartment_id": "1468",
+        "bitrix_additional_id": 1386,
+        "alma_external_id": "1468",
+        "alma_additional_id": "1386",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 576. La Sirene Building 5, apt. 404"
+    },
+    {
+        "apartment_id": "1452",
+        "bitrix_additional_id": 1370,
+        "alma_external_id": "1452",
+        "alma_additional_id": "1370",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 570. Lotus at Creek Beach Building 3, apt. 906"
+    },
+    {
+        "apartment_id": "1434",
+        "bitrix_additional_id": 1352,
+        "alma_external_id": "1434",
+        "alma_additional_id": "1352",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 498. Elysee 3, apt. 220"
+    },
+    {
+        "apartment_id": "1414",
+        "bitrix_additional_id": 1324,
+        "alma_external_id": "1414",
+        "alma_additional_id": "",
+        "external_id_match": true,
+        "additional_id_match": false,
+        "has_additional_id": false,
+        "alma_name": "Ap. 543.  ZADA TOWER, apt. 520"
+    },
+    {
+        "apartment_id": "1408",
+        "bitrix_additional_id": 1320,
+        "alma_external_id": "1408",
+        "alma_additional_id": "1320",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 435. Sunrise Bay Tower 2, apt. 404"
+    },
+    {
+        "apartment_id": "1374",
+        "bitrix_additional_id": "1274",
+        "alma_external_id": "1374",
+        "alma_additional_id": "1274",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 538. Marina Star, apt. S1101"
+    },
+    {
+        "apartment_id": "1344",
+        "bitrix_additional_id": "1228",
+        "alma_external_id": "1344",
+        "alma_additional_id": "1228",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "AP. 526. Ahad Residences, apt. 1409"
+    },
+    {
+        "apartment_id": "1340",
+        "bitrix_additional_id": "1224",
+        "alma_external_id": "1340",
+        "alma_additional_id": "1224",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 508. Concept 7, apt. 704"
+    },
+    {
+        "apartment_id": "1332",
+        "bitrix_additional_id": "1216",
+        "alma_external_id": "1332",
+        "alma_additional_id": "1216",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 519. Ocean Heights, apt. 3108"
+    },
+    {
+        "apartment_id": "1318",
+        "bitrix_additional_id": "1202",
+        "alma_external_id": "1318",
+        "alma_additional_id": "1202",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 520. MBL Royal, apt. 1903"
+    },
+    {
+        "apartment_id": "1312",
+        "bitrix_additional_id": "1194",
+        "alma_external_id": "1312",
+        "alma_additional_id": "1194",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 516. The Address Residences Dubai Opera T1, apt. 1109"
+    },
+    {
+        "apartment_id": "1264",
+        "bitrix_additional_id": "1142",
+        "alma_external_id": "1264",
+        "alma_additional_id": "1142",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 500. Urban Oasis, apt. 1812 B"
+    },
+    {
+        "apartment_id": "1246",
+        "bitrix_additional_id": "1120",
+        "alma_external_id": "1246",
+        "alma_additional_id": "1120",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 483. Luma 22, apt. 152"
+    },
+    {
+        "apartment_id": "1240",
+        "bitrix_additional_id": "1112",
+        "alma_external_id": "1240",
+        "alma_additional_id": "1112",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 482. Time Place, apt. 2609"
+    },
+    {
+        "apartment_id": "1238",
+        "bitrix_additional_id": "1110",
+        "alma_external_id": "1238",
+        "alma_additional_id": "1110",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 468. Mag 545, apt. 314"
+    },
+    {
+        "apartment_id": "1228",
+        "bitrix_additional_id": "1100",
+        "alma_external_id": "1228",
+        "alma_additional_id": "1100",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 488. The Pinnacle, apt. 603"
+    },
+    {
+        "apartment_id": "1206",
+        "bitrix_additional_id": "1078",
+        "alma_external_id": "1206",
+        "alma_additional_id": "1078",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 474. Marina Star, apt. S501"
+    },
+    {
+        "apartment_id": "1204",
+        "bitrix_additional_id": "1076",
+        "alma_external_id": "1204",
+        "alma_additional_id": "1076",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 478. Sky Gardens, apt. 709"
+    },
+    {
+        "apartment_id": "1192",
+        "bitrix_additional_id": "1064",
+        "alma_external_id": "1192",
+        "alma_additional_id": "1064",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 371. Aycon City Tower B, apt. 4001"
+    },
+    {
+        "apartment_id": "1190",
+        "bitrix_additional_id": "1062",
+        "alma_external_id": "1190",
+        "alma_additional_id": "1062",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 456. Time Place, apt. 3107"
+    },
+    {
+        "apartment_id": "1112",
+        "bitrix_additional_id": "998",
+        "alma_external_id": "1112",
+        "alma_additional_id": "998",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 463. Jumairah Bay Tower X1,  ap. 2307"
+    },
+    {
+        "apartment_id": "1104",
+        "bitrix_additional_id": "990",
+        "alma_external_id": "1104",
+        "alma_additional_id": "990",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 425. Elite Downtown Residence, apt. 412"
+    },
+    {
+        "apartment_id": "1102",
+        "bitrix_additional_id": "988",
+        "alma_external_id": "1102",
+        "alma_additional_id": "988",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 423. Cayan Tower, apt. 4106"
+    },
+    {
+        "apartment_id": "1098",
+        "bitrix_additional_id": "984",
+        "alma_external_id": "1098",
+        "alma_additional_id": "984",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 422. Silverene Tower B, apt. 1411"
+    },
+    {
+        "apartment_id": "1040",
+        "bitrix_additional_id": "962",
+        "alma_external_id": "1040",
+        "alma_additional_id": "962",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 406. Socio Tower 1, apt. 1102"
+    },
+    {
+        "apartment_id": "1034",
+        "bitrix_additional_id": "956",
+        "alma_external_id": "1034",
+        "alma_additional_id": "956",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 402. Park Ridge Tower C, apt. 1716"
+    },
+    {
+        "apartment_id": "986",
+        "bitrix_additional_id": "926",
+        "alma_external_id": "986",
+        "alma_additional_id": "926",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 341. Marina Quay East, apt. 710"
+    },
+    {
+        "apartment_id": "972",
+        "bitrix_additional_id": "912",
+        "alma_external_id": "972",
+        "alma_additional_id": "912",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 394. Botanica Tower 1, apt. 1405"
+    },
+    {
+        "apartment_id": "964",
+        "bitrix_additional_id": "904",
+        "alma_external_id": "964",
+        "alma_additional_id": "904",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 311. La Vie, apt. 2203"
+    },
+    {
+        "apartment_id": "958",
+        "bitrix_additional_id": "900",
+        "alma_external_id": "958",
+        "alma_additional_id": "900",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 393. The Pinnacle, apt. 503"
+    },
+    {
+        "apartment_id": "952",
+        "bitrix_additional_id": "894",
+        "alma_external_id": "952",
+        "alma_additional_id": "894",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 387. Azizi Shaista, apt. 1103"
+    },
+    {
+        "apartment_id": "928",
+        "bitrix_additional_id": "878",
+        "alma_external_id": "928",
+        "alma_additional_id": "878",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 353. Azizi Shaista Residence, apt. 1010"
+    },
+    {
+        "apartment_id": "924",
+        "bitrix_additional_id": "874",
+        "alma_external_id": "924",
+        "alma_additional_id": "874",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 357. Armada 1, apt. 711"
+    },
+    {
+        "apartment_id": "914",
+        "bitrix_additional_id": "864",
+        "alma_external_id": "914",
+        "alma_additional_id": "864",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 339. Sulafa Tower, apt. 2014"
+    },
+    {
+        "apartment_id": "898",
+        "bitrix_additional_id": "854",
+        "alma_external_id": "898",
+        "alma_additional_id": "854",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 344. Ocean Heights, apt. 11A09"
+    },
+    {
+        "apartment_id": "868",
+        "bitrix_additional_id": "830",
+        "alma_external_id": "868",
+        "alma_additional_id": "830",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 323. Princess tower, apt. 1010"
+    },
+    {
+        "apartment_id": "864",
+        "bitrix_additional_id": "826",
+        "alma_external_id": "864",
+        "alma_additional_id": "826",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 326. Jumeirah Living Marina Gate, apt. 2504"
+    },
+    {
+        "apartment_id": "826",
+        "bitrix_additional_id": "794",
+        "alma_external_id": "826",
+        "alma_additional_id": "794",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 286. Sobha Creek Vistas Reserve, apt. 3110"
+    },
+    {
+        "apartment_id": "742",
+        "bitrix_additional_id": "720",
+        "alma_external_id": "742",
+        "alma_additional_id": "720",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 270. Al Wasl One Residence 1, apt. 3105"
+    },
+    {
+        "apartment_id": "736",
+        "bitrix_additional_id": "714",
+        "alma_external_id": "736",
+        "alma_additional_id": "714",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 269. Azizi Riviera 41, apt. 407"
+    },
+    {
+        "apartment_id": "734",
+        "bitrix_additional_id": "712",
+        "alma_external_id": "734",
+        "alma_additional_id": "712",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 257. Damac Heights, apt. 903"
+    },
+    {
+        "apartment_id": "630",
+        "bitrix_additional_id": "678",
+        "alma_external_id": "630",
+        "alma_additional_id": "678",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 258. Elite Residence, apt. 2009"
+    },
+    {
+        "apartment_id": "620",
+        "bitrix_additional_id": "672",
+        "alma_external_id": "620",
+        "alma_additional_id": "672",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 271. Bay Central 2, apt. 707"
+    },
+    {
+        "apartment_id": "592",
+        "bitrix_additional_id": "670",
+        "alma_external_id": "592",
+        "alma_additional_id": "670",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 256. Aykon City 2 Tower C, apt. 1809"
+    },
+    {
+        "apartment_id": "590",
+        "bitrix_additional_id": "668",
+        "alma_external_id": "590",
+        "alma_additional_id": "668",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 251. Binghatti Nova, apt. 406"
+    },
+    {
+        "apartment_id": "570",
+        "bitrix_additional_id": "656",
+        "alma_external_id": "570",
+        "alma_additional_id": "656",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 253. Prive Residence, apt. 1102"
+    },
+    {
+        "apartment_id": "568",
+        "bitrix_additional_id": "654",
+        "alma_external_id": "568",
+        "alma_additional_id": "654",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 239. Binghatti Nova, apt. 610"
+    },
+    {
+        "apartment_id": "550",
+        "bitrix_additional_id": "636",
+        "alma_external_id": "550",
+        "alma_additional_id": "636",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 241. Concorde tower 1, apt. 4102"
+    },
+    {
+        "apartment_id": "526",
+        "bitrix_additional_id": "612",
+        "alma_external_id": "526",
+        "alma_additional_id": "612",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 229. Prive Residence, apt. 1203"
+    },
+    {
+        "apartment_id": "480",
+        "bitrix_additional_id": "564",
+        "alma_external_id": "480",
+        "alma_additional_id": "564",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 220. Westwood by Imtiaz, apt. 610"
+    },
+    {
+        "apartment_id": "436",
+        "bitrix_additional_id": "530",
+        "alma_external_id": "436",
+        "alma_additional_id": "530",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 213. Beach Vista Tower 2, apt. 702"
+    },
+    {
+        "apartment_id": "434",
+        "bitrix_additional_id": "528",
+        "alma_external_id": "434",
+        "alma_additional_id": "528",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 212. Binghatti Crescent, apt. 516"
+    },
+    {
+        "apartment_id": "426",
+        "bitrix_additional_id": "518",
+        "alma_external_id": "426",
+        "alma_additional_id": "518",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 207. Park Ridge Tower C, apt. 312"
+    },
+    {
+        "apartment_id": "402",
+        "bitrix_additional_id": "486",
+        "alma_external_id": "402",
+        "alma_additional_id": "486",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 195. Elite Residence, apt. 1909"
+    },
+    {
+        "apartment_id": "398",
+        "bitrix_additional_id": 490,
+        "alma_external_id": "398",
+        "alma_additional_id": "490",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 193. Marina Crown, apt. 901"
+    },
+    {
+        "apartment_id": "392",
+        "bitrix_additional_id": "496",
+        "alma_external_id": "392",
+        "alma_additional_id": "496",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 190. Bay Central 1, apt. 1909"
+    },
+    {
+        "apartment_id": "390",
+        "bitrix_additional_id": "498",
+        "alma_external_id": "390",
+        "alma_additional_id": "498",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 189. Creek Edge Tower 1, apt. 305"
+    },
+    {
+        "apartment_id": "366",
+        "bitrix_additional_id": "458",
+        "alma_external_id": "366",
+        "alma_additional_id": "458",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 179. Al Waleed Paradise, apt. 1103"
+    },
+    {
+        "apartment_id": "364",
+        "bitrix_additional_id": "456",
+        "alma_external_id": "364",
+        "alma_additional_id": "456",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 178. Indigo Tower, apt. 1215"
+    },
+    {
+        "apartment_id": "358",
+        "bitrix_additional_id": "450",
+        "alma_external_id": "358",
+        "alma_additional_id": "450",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 175. J One 1, apt. 1601"
+    },
+    {
+        "apartment_id": "356",
+        "bitrix_additional_id": "448",
+        "alma_external_id": "356",
+        "alma_additional_id": "448",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 174. Indigo tower, apt. 1504"
+    },
+    {
+        "apartment_id": "354",
+        "bitrix_additional_id": "446",
+        "alma_external_id": "354",
+        "alma_additional_id": "446",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 173. Azizi Berton, apt. 124"
+    },
+    {
+        "apartment_id": "330",
+        "bitrix_additional_id": 420,
+        "alma_external_id": "330",
+        "alma_additional_id": "420",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 161. Sky View Tower, apt. 1309"
+    },
+    {
+        "apartment_id": "328",
+        "bitrix_additional_id": "418",
+        "alma_external_id": "328",
+        "alma_additional_id": "418",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 160. Goldcrest Executive, apt. 3304"
+    },
+    {
+        "apartment_id": "316",
+        "bitrix_additional_id": "406",
+        "alma_external_id": "316",
+        "alma_additional_id": "406",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 154. Zada Tower, apt. 1214"
+    },
+    {
+        "apartment_id": "314",
+        "bitrix_additional_id": "404",
+        "alma_external_id": "314",
+        "alma_additional_id": "404",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 153. Jumairah Bay X1-1, apt. 2312"
+    },
+    {
+        "apartment_id": "280",
+        "bitrix_additional_id": "388",
+        "alma_external_id": "280",
+        "alma_additional_id": "388",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 136. Ontario tower, apt. 2105"
+    },
+    {
+        "apartment_id": "276",
+        "bitrix_additional_id": "364",
+        "alma_external_id": "276",
+        "alma_additional_id": "364",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 135. Equiti Residence, apt. 904"
+    },
+    {
+        "apartment_id": "270",
+        "bitrix_additional_id": "358",
+        "alma_external_id": "270",
+        "alma_additional_id": "358",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 132. Candace Aster, apt. 614"
+    },
+    {
+        "apartment_id": "264",
+        "bitrix_additional_id": "350",
+        "alma_external_id": "264",
+        "alma_additional_id": "350",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 129. Merano Tower, apt. 2804"
+    },
+    {
+        "apartment_id": "244",
+        "bitrix_additional_id": "330",
+        "alma_external_id": "244",
+        "alma_additional_id": "330",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 119. Collective Tower 2, apt. 703"
+    },
+    {
+        "apartment_id": "238",
+        "bitrix_additional_id": "324",
+        "alma_external_id": "238",
+        "alma_additional_id": "324",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 116. Marina Vista Tower 2, apt. 2409"
+    },
+    {
+        "apartment_id": "220",
+        "bitrix_additional_id": "308",
+        "alma_external_id": "220",
+        "alma_additional_id": "308",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 107. Noor 1, apt. 510"
+    },
+    {
+        "apartment_id": "210",
+        "bitrix_additional_id": "298",
+        "alma_external_id": "210",
+        "alma_additional_id": "298",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 102. Armada 3, apt. 1908"
+    },
+    {
+        "apartment_id": "204",
+        "bitrix_additional_id": "294",
+        "alma_external_id": "204",
+        "alma_additional_id": "294",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 96. Park Island Bonaire, apt. 2304"
+    },
+    {
+        "apartment_id": "176",
+        "bitrix_additional_id": "262",
+        "alma_external_id": "176",
+        "alma_additional_id": "262",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 85. Zada tower, apt. 214"
+    },
+    {
+        "apartment_id": "164",
+        "bitrix_additional_id": "46",
+        "alma_external_id": "164",
+        "alma_additional_id": "46",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 83. Creek Gate Tower 1, apt. 2308"
+    },
+    {
+        "apartment_id": "160",
+        "bitrix_additional_id": "42",
+        "alma_external_id": "160",
+        "alma_additional_id": "42",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 81. Marina Gate 2, apt. 1708"
+    },
+    {
+        "apartment_id": "156",
+        "bitrix_additional_id": "38",
+        "alma_external_id": "156",
+        "alma_additional_id": "38",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 79. Bay Central West, apt. 201"
+    },
+    {
+        "apartment_id": "136",
+        "bitrix_additional_id": "18",
+        "alma_external_id": "136",
+        "alma_additional_id": "18",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 69. Park Central, apt. 1405"
+    },
+    {
+        "apartment_id": "108",
+        "bitrix_additional_id": "180",
+        "alma_external_id": "108",
+        "alma_additional_id": "180",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 55. Princess, apt. 1707"
+    },
+    {
+        "apartment_id": "106",
+        "bitrix_additional_id": "178",
+        "alma_external_id": "106",
+        "alma_additional_id": "178",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 54. Bellevue Towers-1, apt. 1806"
+    },
+    {
+        "apartment_id": "82",
+        "bitrix_additional_id": "154",
+        "alma_external_id": "82",
+        "alma_additional_id": "154",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 42. Iris Blue, apt. 2003"
+    },
+    {
+        "apartment_id": "80",
+        "bitrix_additional_id": "152",
+        "alma_external_id": "80",
+        "alma_additional_id": "152",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 41. Candace Acacia, apt. 122"
+    },
+    {
+        "apartment_id": "56",
+        "bitrix_additional_id": "120",
+        "alma_external_id": "56",
+        "alma_additional_id": "120",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 29. DEC Towers, apt. 2008"
+    },
+    {
+        "apartment_id": "52",
+        "bitrix_additional_id": "116",
+        "alma_external_id": "52",
+        "alma_additional_id": "116",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 27. Discovery gardens 38, apt. 401"
+    },
+    {
+        "apartment_id": "46",
+        "bitrix_additional_id": "102",
+        "alma_external_id": "46",
+        "alma_additional_id": "102",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 24. Marina Crown, apt. 1512"
+    },
+    {
+        "apartment_id": "42",
+        "bitrix_additional_id": "98",
+        "alma_external_id": "42",
+        "alma_additional_id": "98",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 22. Reef Residence, apt. 3305"
+    },
+    {
+        "apartment_id": "28",
+        "bitrix_additional_id": "84",
+        "alma_external_id": "28",
+        "alma_additional_id": "84",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 15. Lakeside Residence, apt. 1104"
+    },
+    {
+        "apartment_id": "26",
+        "bitrix_additional_id": "82",
+        "alma_external_id": "26",
+        "alma_additional_id": "82",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 14. Goldcrest views 1, apt. 1313"
+    },
+    {
+        "apartment_id": "22",
+        "bitrix_additional_id": "78",
+        "alma_external_id": "22",
+        "alma_additional_id": "78",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 12. Escan Marina Tower, apt. 2306"
+    },
+    {
+        "apartment_id": "12",
+        "bitrix_additional_id": "246",
+        "alma_external_id": "12",
+        "alma_additional_id": "246",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 07. Lake Terrace. apt. 3604"
+    },
+    {
+        "apartment_id": "1810",
+        "bitrix_additional_id": 1780,
+        "alma_external_id": "1810",
+        "alma_additional_id": "1780",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 726. ROYAL OCEANIC-1, apt. 202"
+    },
+    {
+        "apartment_id": "1800",
+        "bitrix_additional_id": 1770,
+        "alma_external_id": "1800",
+        "alma_additional_id": "1770",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 728. HAMILTON RESIDENCY, apt. 204"
+    },
+    {
+        "apartment_id": "1788",
+        "bitrix_additional_id": 1758,
+        "alma_external_id": "1788",
+        "alma_additional_id": "1758",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 721. BOTANICA TOWER, apt. 1605"
+    },
+    {
+        "apartment_id": "1778",
+        "bitrix_additional_id": 1748,
+        "alma_external_id": "1778",
+        "alma_additional_id": "1748",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 718. Peninsula Five - 3, apt. 1304"
+    },
+    {
+        "apartment_id": "1776",
+        "bitrix_additional_id": "1744",
+        "alma_external_id": "1776",
+        "alma_additional_id": "1744",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 987. TEST TEST, apt. 00"
+    },
+    {
+        "apartment_id": "1770",
+        "bitrix_additional_id": 1738,
+        "alma_external_id": "1770",
+        "alma_additional_id": "1738",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 712. Indigo Tower, apt. 2211"
+    },
+    {
+        "apartment_id": "1768",
+        "bitrix_additional_id": 1736,
+        "alma_external_id": "1768",
+        "alma_additional_id": "1736",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 715. Sobha Creek Vistas - Tower B, apt. B906"
+    },
+    {
+        "apartment_id": "1766",
+        "bitrix_additional_id": 1734,
+        "alma_external_id": "1766",
+        "alma_additional_id": "1734",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 639. Burj Royal, apt. 5004"
+    },
+    {
+        "apartment_id": "1758",
+        "bitrix_additional_id": 1726,
+        "alma_external_id": "1758",
+        "alma_additional_id": "1726",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 708. Luma22 - East Tower, apt. 106"
+    },
+    {
+        "apartment_id": "1754",
+        "bitrix_additional_id": 1722,
+        "alma_external_id": "1754",
+        "alma_additional_id": "1722",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 711. Azizi Riviera 41, apt. 310"
+    },
+    {
+        "apartment_id": "1746",
+        "bitrix_additional_id": "1714",
+        "alma_external_id": "1746",
+        "alma_additional_id": "1714",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 704. Marina Star, apt. S902"
+    },
+    {
+        "apartment_id": "1742",
+        "bitrix_additional_id": 1710,
+        "alma_external_id": "1742",
+        "alma_additional_id": "1710",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 702. REVA RESIDENCES , apt. 2108"
+    },
+    {
+        "apartment_id": "1726",
+        "bitrix_additional_id": 1694,
+        "alma_external_id": "1726",
+        "alma_additional_id": "1694",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 697. Silverene Tower, apt. 2106"
+    },
+    {
+        "apartment_id": "1724",
+        "bitrix_additional_id": 1692,
+        "alma_external_id": "1724",
+        "alma_additional_id": "1692",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 668. CLAREN TOWER 2, apt. 1902"
+    },
+    {
+        "apartment_id": "1698",
+        "bitrix_additional_id": 1668,
+        "alma_external_id": "1698",
+        "alma_additional_id": "1668",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 641. La Cote Building 1, apt. 410"
+    },
+    {
+        "apartment_id": "1682",
+        "bitrix_additional_id": 1652,
+        "alma_external_id": "1682",
+        "alma_additional_id": "1652",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 531.  The Paragon by IGO, apt. 605"
+    },
+    {
+        "apartment_id": "1680",
+        "bitrix_additional_id": 1650,
+        "alma_external_id": "1680",
+        "alma_additional_id": "1650",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 664. The Paragon  by  IGO, apt. 2106"
+    },
+    {
+        "apartment_id": "1678",
+        "bitrix_additional_id": 1648,
+        "alma_external_id": "1678",
+        "alma_additional_id": "1648",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 682. Prive Residence, apt. 906"
+    },
+    {
+        "apartment_id": "1672",
+        "bitrix_additional_id": 1642,
+        "alma_external_id": "1672",
+        "alma_additional_id": "1642",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 657. Socio Tower 2, apt. 104"
+    },
+    {
+        "apartment_id": "1664",
+        "bitrix_additional_id": 1632,
+        "alma_external_id": "1664",
+        "alma_additional_id": "1632",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 672. Park View Tower, apt. 109"
+    },
+    {
+        "apartment_id": "1662",
+        "bitrix_additional_id": 1630,
+        "alma_external_id": "1662",
+        "alma_additional_id": "1630",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 647. THE COVE Building 1 , apt. 1407"
+    },
+    {
+        "apartment_id": "1660",
+        "bitrix_additional_id": 1626,
+        "alma_external_id": "1660",
+        "alma_additional_id": "1626",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 636. La Voile - Building 1, apt. 312"
+    },
+    {
+        "apartment_id": "1658",
+        "bitrix_additional_id": 1624,
+        "alma_external_id": "1658",
+        "alma_additional_id": "1624",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 643. La Cote Building 5, apt. 404"
+    },
+    {
+        "apartment_id": "1656",
+        "bitrix_additional_id": 1622,
+        "alma_external_id": "1656",
+        "alma_additional_id": "1622",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 646. Bluewaters Residences 2, apt. 405"
+    },
+    {
+        "apartment_id": "1654",
+        "bitrix_additional_id": 1620,
+        "alma_external_id": "1654",
+        "alma_additional_id": "1620",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 645. One Za'abeel The Residences, apt. 20-03"
+    },
+    {
+        "apartment_id": "1638",
+        "bitrix_additional_id": 1600,
+        "alma_external_id": "1638",
+        "alma_additional_id": "1600",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 626. MED 67, apt. 507"
+    },
+    {
+        "apartment_id": "1620",
+        "bitrix_additional_id": "1580",
+        "alma_external_id": "1620",
+        "alma_additional_id": "1580",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 650. Golf Vista Tower A, apt. G+P 04"
+    },
+    {
+        "apartment_id": "1614",
+        "error": "Alma API error: HTTP 404",
+        "external_id_match": false,
+        "additional_id_match": false
+    },
+    {
+        "apartment_id": "1610",
+        "bitrix_additional_id": 1570,
+        "alma_external_id": "1610",
+        "alma_additional_id": "1570",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 584. ZUMURUD, apt. 1304"
+    },
+    {
+        "apartment_id": "1596",
+        "bitrix_additional_id": 1554,
+        "alma_external_id": "1596",
+        "alma_additional_id": "1554",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 630. ICON 2, apt. 710"
+    },
+    {
+        "apartment_id": "1586",
+        "bitrix_additional_id": 1546,
+        "alma_external_id": "1586",
+        "alma_additional_id": "1546",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 502.  Prive by Damac A, apt. 402"
+    },
+    {
+        "apartment_id": "1584",
+        "bitrix_additional_id": "1544",
+        "alma_external_id": "1584",
+        "alma_additional_id": "1544",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 618. The Sterling East House, apt. 212"
+    },
+    {
+        "apartment_id": "1580",
+        "bitrix_additional_id": 1540,
+        "alma_external_id": "1580",
+        "alma_additional_id": "1540",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 620. Oxford 212, apt. 313"
+    },
+    {
+        "apartment_id": "1578",
+        "bitrix_additional_id": 1538,
+        "alma_external_id": "1578",
+        "alma_additional_id": "1538",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 619. Executive Residences, apt. 106"
+    },
+    {
+        "apartment_id": "1574",
+        "bitrix_additional_id": 1534,
+        "alma_external_id": "1574",
+        "alma_additional_id": "1534",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 610. Central Park , apt. 101"
+    },
+    {
+        "apartment_id": "1568",
+        "bitrix_additional_id": 1528,
+        "alma_external_id": "1568",
+        "alma_additional_id": "1528",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 600. Time Place Tower, apt. 1608"
+    },
+    {
+        "apartment_id": "1558",
+        "bitrix_additional_id": 1518,
+        "alma_external_id": "1558",
+        "alma_additional_id": "1518",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 603. Urban Oasis, apt. 2601"
+    },
+    {
+        "apartment_id": "1556",
+        "bitrix_additional_id": 1516,
+        "alma_external_id": "1556",
+        "alma_additional_id": "1516",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 601. Princess Tower, apt.  3509"
+    },
+    {
+        "apartment_id": "1552",
+        "bitrix_additional_id": 1512,
+        "alma_external_id": "1552",
+        "alma_additional_id": "1512",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 563. Goldcrest Views 2, apt. 1110"
+    },
+    {
+        "apartment_id": "1544",
+        "bitrix_additional_id": 1504,
+        "alma_external_id": "1544",
+        "alma_additional_id": "1504",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 560.  Socio Tower 1, apt.  419"
+    },
+    {
+        "apartment_id": "1532",
+        "bitrix_additional_id": 1492,
+        "alma_external_id": "1532",
+        "alma_additional_id": "1492",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 588. CREEK EDGE Tower 1, apt.  907"
+    },
+    {
+        "apartment_id": "1518",
+        "bitrix_additional_id": "1468",
+        "alma_external_id": "1518",
+        "alma_additional_id": "1468",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 590. Binghatti Heights, apt. 1404"
+    },
+    {
+        "apartment_id": "1516",
+        "bitrix_additional_id": 1464,
+        "alma_external_id": "1516",
+        "alma_additional_id": "1464",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 586. Lotus at Creek Beach Building 2, apt. 304"
+    },
+    {
+        "apartment_id": "1506",
+        "bitrix_additional_id": 1448,
+        "alma_external_id": "1506",
+        "alma_additional_id": "1448",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 554. Orchid Creek Beach, apt. 401"
+    },
+    {
+        "apartment_id": "1500",
+        "bitrix_additional_id": 1442,
+        "alma_external_id": "1500",
+        "alma_additional_id": "1442",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 575. Blue Bell Residence, apt. P2-03"
+    },
+    {
+        "apartment_id": "1470",
+        "bitrix_additional_id": 1388,
+        "alma_external_id": "1470",
+        "alma_additional_id": "1388",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 578. Stella Maris, apt. 1501"
+    },
+    {
+        "apartment_id": "1464",
+        "bitrix_additional_id": 1384,
+        "alma_external_id": "1464",
+        "alma_additional_id": "1384",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 426. Nobles, apt. 205"
+    },
+    {
+        "apartment_id": "1456",
+        "bitrix_additional_id": "1374",
+        "alma_external_id": "1456",
+        "alma_additional_id": "1374",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 559. Zada tower, apt. 1020"
+    },
+    {
+        "apartment_id": "1450",
+        "bitrix_additional_id": 1366,
+        "alma_external_id": "1450",
+        "alma_additional_id": "1366",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 514. CONCEPT 7 RESIDENCES, apt. 204"
+    },
+    {
+        "apartment_id": "1432",
+        "bitrix_additional_id": 1348,
+        "alma_external_id": "1432",
+        "alma_additional_id": "1348",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 557. Beach Isle, apt. 507"
+    },
+    {
+        "apartment_id": "1430",
+        "bitrix_additional_id": 1346,
+        "alma_external_id": "1430",
+        "alma_additional_id": "1346",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 561. Murjan 2, apt. 211"
+    },
+    {
+        "apartment_id": "1412",
+        "bitrix_additional_id": 1322,
+        "alma_external_id": "1412",
+        "alma_additional_id": "1322",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 544.  ZADA TOWER, apt. 203"
+    },
+    {
+        "apartment_id": "1410",
+        "bitrix_additional_id": "1330",
+        "alma_external_id": "1410",
+        "alma_additional_id": "1330",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "AP. 550. Vera tower, apt. 518"
+    },
+    {
+        "apartment_id": "1390",
+        "bitrix_additional_id": "1290",
+        "alma_external_id": "1390",
+        "alma_additional_id": "1290",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 549. Sparkle Tower 2, apt. 1107"
+    },
+    {
+        "apartment_id": "1388",
+        "bitrix_additional_id": "1288",
+        "alma_external_id": "1388",
+        "alma_additional_id": "1288",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 548. BD Standpoint B, apt. 1208"
+    },
+    {
+        "apartment_id": "1382",
+        "bitrix_additional_id": "1278",
+        "alma_external_id": "1382",
+        "alma_additional_id": "1278",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 545. BLVD Central 2, apt. 1704"
+    },
+    {
+        "apartment_id": "1376",
+        "bitrix_additional_id": "1276",
+        "alma_external_id": "1376",
+        "alma_additional_id": "1276",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 542. Park Heights, apt. 302"
+    },
+    {
+        "apartment_id": "1372",
+        "bitrix_additional_id": "1272",
+        "alma_external_id": "1372",
+        "alma_additional_id": "1272",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 537. Al Waleed Paradise, apt. 503"
+    },
+    {
+        "apartment_id": "1356",
+        "bitrix_additional_id": "1254",
+        "alma_external_id": "1356",
+        "alma_additional_id": "1254",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 533. Azizi Berton, apt. 329"
+    },
+    {
+        "apartment_id": "1352",
+        "bitrix_additional_id": "1250",
+        "alma_external_id": "1352",
+        "alma_additional_id": "1250",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 534. Lake View, apt. 1716"
+    },
+    {
+        "apartment_id": "1350",
+        "bitrix_additional_id": "1248",
+        "alma_external_id": "1350",
+        "alma_additional_id": "1248",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 532. Binghatti Corner, apt. 506"
+    },
+    {
+        "apartment_id": "1346",
+        "bitrix_additional_id": "1230",
+        "alma_external_id": "1346",
+        "alma_additional_id": "1230",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 527. Damac Hills Carson B,  apt. 2012"
+    },
+    {
+        "apartment_id": "1328",
+        "bitrix_additional_id": "1212",
+        "alma_external_id": "1328",
+        "alma_additional_id": "1212",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 517. Concorde tower, apt. 1002"
+    },
+    {
+        "apartment_id": "1326",
+        "bitrix_additional_id": "1210",
+        "alma_external_id": "1326",
+        "alma_additional_id": "1210",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 515. Beach Vista Tower 1, apt. 701"
+    },
+    {
+        "apartment_id": "1294",
+        "bitrix_additional_id": "1170",
+        "alma_external_id": "1294",
+        "alma_additional_id": "1170",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 464. MBL Royal, apt. 204"
+    },
+    {
+        "apartment_id": "1292",
+        "bitrix_additional_id": "1168",
+        "alma_external_id": "1292",
+        "alma_additional_id": "1168",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 441. MBL Royal, apt. 1902"
+    },
+    {
+        "apartment_id": "1286",
+        "bitrix_additional_id": "1162",
+        "alma_external_id": "1286",
+        "alma_additional_id": "1162",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 491. MAG 214, apt. 1703"
+    },
+    {
+        "apartment_id": "1280",
+        "bitrix_additional_id": "1158",
+        "alma_external_id": "1280",
+        "alma_additional_id": "1158",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 495. The Residences at Marina Gate 1, apt. 4204"
+    },
+    {
+        "apartment_id": "1276",
+        "bitrix_additional_id": "1154",
+        "alma_external_id": "1276",
+        "alma_additional_id": "1154",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 494. Socio Tower 2, apt. 109"
+    },
+    {
+        "apartment_id": "1258",
+        "bitrix_additional_id": "1134",
+        "alma_external_id": "1258",
+        "alma_additional_id": "1134",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 489. ZADA tower, apt. 2520"
+    },
+    {
+        "apartment_id": "1256",
+        "bitrix_additional_id": "1130",
+        "alma_external_id": "1256",
+        "alma_additional_id": "1130",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 492. Collective 2.0 Tower A, apt. 711"
+    },
+    {
+        "apartment_id": "1252",
+        "bitrix_additional_id": "1124",
+        "alma_external_id": "1252",
+        "alma_additional_id": "1124",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 274. Azizi Riviera 48, apt. 425"
+    },
+    {
+        "apartment_id": "1248",
+        "bitrix_additional_id": "1126",
+        "alma_external_id": "1248",
+        "alma_additional_id": "1126",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 487. MAG218, apt.  1407"
+    },
+    {
+        "apartment_id": "1230",
+        "bitrix_additional_id": "1102",
+        "alma_external_id": "1230",
+        "alma_additional_id": "1102",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 469. Binghatti Corner, apt. 2404"
+    },
+    {
+        "apartment_id": "1212",
+        "bitrix_additional_id": "1084",
+        "alma_external_id": "1212",
+        "alma_additional_id": "1084",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 437. Azizi Riviera 48, apt. 804"
+    },
+    {
+        "apartment_id": "1186",
+        "bitrix_additional_id": "1058",
+        "alma_external_id": "1186",
+        "alma_additional_id": "1058",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 467. MeDoRe, apt. 1611"
+    },
+    {
+        "apartment_id": "1168",
+        "bitrix_additional_id": "1044",
+        "alma_external_id": "1168",
+        "alma_additional_id": "1044",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 475. Binghatti House, apt. 2403"
+    },
+    {
+        "apartment_id": "1160",
+        "bitrix_additional_id": "1038",
+        "alma_external_id": "1160",
+        "alma_additional_id": "1038",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 383. Binghatti Corner, apt. 2512"
+    },
+    {
+        "apartment_id": "1150",
+        "bitrix_additional_id": "1030",
+        "alma_external_id": "1150",
+        "alma_additional_id": "1030",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 442. Binghatti Corner, apt. 1808"
+    },
+    {
+        "apartment_id": "1142",
+        "bitrix_additional_id": "1026",
+        "alma_external_id": "1142",
+        "alma_additional_id": "1026",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 420. Boutique XII, apt. 502"
+    },
+    {
+        "apartment_id": "1140",
+        "bitrix_additional_id": 1024,
+        "alma_external_id": "1140",
+        "alma_additional_id": "1024",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 450. Luma22 - East Tower, apt. 205"
+    },
+    {
+        "apartment_id": "1108",
+        "bitrix_additional_id": "994",
+        "alma_external_id": "1108",
+        "alma_additional_id": "994",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 368. MJL Asayel 2, apt. 305"
+    },
+    {
+        "apartment_id": "1100",
+        "bitrix_additional_id": "986",
+        "alma_external_id": "1100",
+        "alma_additional_id": "986",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 408. Zumurud, apt. 213"
+    },
+    {
+        "apartment_id": "1086",
+        "bitrix_additional_id": "980",
+        "alma_external_id": "1086",
+        "alma_additional_id": "980",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 421. Park Island Bonaire, apt. 604"
+    },
+    {
+        "apartment_id": "1060",
+        "bitrix_additional_id": "976",
+        "alma_external_id": "1060",
+        "alma_additional_id": "976",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 418. Azizi Riviera 42, apt. 203"
+    },
+    {
+        "apartment_id": "1058",
+        "bitrix_additional_id": "974",
+        "alma_external_id": "1058",
+        "alma_additional_id": "974",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 401. MeDoRe, apt. 1508"
+    },
+    {
+        "apartment_id": "1050",
+        "bitrix_additional_id": "970",
+        "alma_external_id": "1050",
+        "alma_additional_id": "970",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 318. Oakley Square Residences B, apt. 019"
+    },
+    {
+        "apartment_id": "1046",
+        "bitrix_additional_id": "966",
+        "alma_external_id": "1046",
+        "alma_additional_id": "966",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 409. Binghatti Corner, apt. 421"
+    },
+    {
+        "apartment_id": "1036",
+        "bitrix_additional_id": "958",
+        "alma_external_id": "1036",
+        "alma_additional_id": "958",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 429. Al Waleed Paradise, apt. 203"
+    },
+    {
+        "apartment_id": "1024",
+        "bitrix_additional_id": "950",
+        "alma_external_id": "1024",
+        "alma_additional_id": "950",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 248. Binghatti Corner, apt. 1806"
+    },
+    {
+        "apartment_id": "988",
+        "bitrix_additional_id": "928",
+        "alma_external_id": "988",
+        "alma_additional_id": "928",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 391. Summer at Creek Beach Building 4, apt. 406"
+    },
+    {
+        "apartment_id": "974",
+        "bitrix_additional_id": "914",
+        "alma_external_id": "974",
+        "alma_additional_id": "914",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 396. Al Wasl One Residence 2, apt. 2503"
+    },
+    {
+        "apartment_id": "970",
+        "bitrix_additional_id": "910",
+        "alma_external_id": "970",
+        "alma_additional_id": "910",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 247. Binghatti Emerald, apt. 817"
+    },
+    {
+        "apartment_id": "968",
+        "bitrix_additional_id": "908",
+        "alma_external_id": "968",
+        "alma_additional_id": "908",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 310. Azizi Riviera 26, apt. 335"
+    },
+    {
+        "apartment_id": "966",
+        "bitrix_additional_id": "906",
+        "alma_external_id": "966",
+        "alma_additional_id": "906",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 312. La Vie, apt. 2204"
+    },
+    {
+        "apartment_id": "962",
+        "bitrix_additional_id": "902",
+        "alma_external_id": "962",
+        "alma_additional_id": "902",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 367. Aycon City Tower C, apt. 3026"
+    },
+    {
+        "apartment_id": "948",
+        "bitrix_additional_id": "890",
+        "alma_external_id": "948",
+        "alma_additional_id": "890",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 346. Binghatti Crest, apt. 1506"
+    },
+    {
+        "apartment_id": "946",
+        "bitrix_additional_id": "888",
+        "alma_external_id": "946",
+        "alma_additional_id": "888",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 332. Reva Residence, apt. 2008"
+    },
+    {
+        "apartment_id": "942",
+        "bitrix_additional_id": "886",
+        "alma_external_id": "942",
+        "alma_additional_id": "886",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 370. Azizi Berton, apt. 528"
+    },
+    {
+        "apartment_id": "930",
+        "bitrix_additional_id": "880",
+        "alma_external_id": "930",
+        "alma_additional_id": "880",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 349. Roy Mediterranean, apt. 528"
+    },
+    {
+        "apartment_id": "926",
+        "bitrix_additional_id": "876",
+        "alma_external_id": "926",
+        "alma_additional_id": "876",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 315. Me do re, apt. 1308"
+    },
+    {
+        "apartment_id": "918",
+        "bitrix_additional_id": "868",
+        "alma_external_id": "918",
+        "alma_additional_id": "868",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 358. Socio Tower 2, apt. 303"
+    },
+    {
+        "apartment_id": "916",
+        "bitrix_additional_id": "866",
+        "alma_external_id": "916",
+        "alma_additional_id": "866",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 369. The Residence at Marina Gate 2, apt. 3707"
+    },
+    {
+        "apartment_id": "904",
+        "bitrix_additional_id": "860",
+        "alma_external_id": "904",
+        "alma_additional_id": "860",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 340. Al Waleed Paradise , apt. 614"
+    },
+    {
+        "apartment_id": "900",
+        "bitrix_additional_id": "856",
+        "alma_external_id": "900",
+        "alma_additional_id": "856",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 350. Hamilton Residency, apt. 1106"
+    },
+    {
+        "apartment_id": "892",
+        "bitrix_additional_id": "848",
+        "alma_external_id": "892",
+        "alma_additional_id": "848",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 354. Asayel 3, apt. 306"
+    },
+    {
+        "apartment_id": "890",
+        "bitrix_additional_id": "846",
+        "alma_external_id": "890",
+        "alma_additional_id": "846",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 352. Liv Residence, apt. 1102"
+    },
+    {
+        "apartment_id": "888",
+        "bitrix_additional_id": "844",
+        "alma_external_id": "888",
+        "alma_additional_id": "844",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 327. Me Do Re, apt. 1202"
+    },
+    {
+        "apartment_id": "882",
+        "bitrix_additional_id": "840",
+        "alma_external_id": "882",
+        "alma_additional_id": "840",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 328. Palm View, apt. 2301"
+    },
+    {
+        "apartment_id": "874",
+        "bitrix_additional_id": "836",
+        "alma_external_id": "874",
+        "alma_additional_id": "836",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 324. Azizi Mina, apt. 420"
+    },
+    {
+        "apartment_id": "872",
+        "bitrix_additional_id": "834",
+        "alma_external_id": "872",
+        "alma_additional_id": "834",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 209. Azizi Riviera 45, apt. 209"
+    },
+    {
+        "apartment_id": "870",
+        "bitrix_additional_id": "832",
+        "alma_external_id": "870",
+        "alma_additional_id": "832",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 330. Lake Terrace, apt. 2013"
+    },
+    {
+        "apartment_id": "862",
+        "bitrix_additional_id": "824",
+        "alma_external_id": "862",
+        "alma_additional_id": "824",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 250. Goldcrest Views 2, apt. 411"
+    },
+    {
+        "apartment_id": "860",
+        "bitrix_additional_id": "822",
+        "alma_external_id": "860",
+        "alma_additional_id": "822",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 309. G R Travo B, apt. 207"
+    },
+    {
+        "apartment_id": "856",
+        "bitrix_additional_id": "818",
+        "alma_external_id": "856",
+        "alma_additional_id": "818",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 291. Elite Downtown residence, apt. 507"
+    },
+    {
+        "apartment_id": "854",
+        "bitrix_additional_id": "816",
+        "alma_external_id": "854",
+        "alma_additional_id": "816",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 305. Starz Tower 1, apt. 203"
+    },
+    {
+        "apartment_id": "852",
+        "bitrix_additional_id": "814",
+        "alma_external_id": "852",
+        "alma_additional_id": "814",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 316. Concorde Tower 1, apt. 3711"
+    },
+    {
+        "apartment_id": "850",
+        "bitrix_additional_id": "812",
+        "alma_external_id": "850",
+        "alma_additional_id": "812",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 314. Silverene Towers A, apt. 1202"
+    },
+    {
+        "apartment_id": "840",
+        "bitrix_additional_id": "808",
+        "alma_external_id": "840",
+        "alma_additional_id": "808",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 302. May Residence Tower 4, apt. 309"
+    },
+    {
+        "apartment_id": "838",
+        "bitrix_additional_id": "806",
+        "alma_external_id": "838",
+        "alma_additional_id": "806",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 317. Meera Tower, apt. 1009"
+    },
+    {
+        "apartment_id": "836",
+        "bitrix_additional_id": "804",
+        "alma_external_id": "836",
+        "alma_additional_id": "804",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 283. MeDoRe, apt. 408"
+    },
+    {
+        "apartment_id": "834",
+        "bitrix_additional_id": "802",
+        "alma_external_id": "834",
+        "alma_additional_id": "802",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 288. Park Point Building B, apt. 313"
+    },
+    {
+        "apartment_id": "832",
+        "bitrix_additional_id": "800",
+        "alma_external_id": "832",
+        "alma_additional_id": "800",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 289. Park Ridge Tower C, apt. 1601"
+    },
+    {
+        "apartment_id": "830",
+        "bitrix_additional_id": "798",
+        "alma_external_id": "830",
+        "alma_additional_id": "798",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 290. Park Ridge Tower C, apt. 10"
+    },
+    {
+        "apartment_id": "828",
+        "bitrix_additional_id": "796",
+        "alma_external_id": "828",
+        "alma_additional_id": "796",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 295. Park Ridge Tower C, apt. 403"
+    },
+    {
+        "apartment_id": "822",
+        "bitrix_additional_id": "790",
+        "alma_external_id": "822",
+        "alma_additional_id": "790",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 308. Azizi Berton, apt. 116"
+    },
+    {
+        "apartment_id": "820",
+        "bitrix_additional_id": "788",
+        "alma_external_id": "820",
+        "alma_additional_id": "788",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 294. Reva Residences, apt. 2618"
+    },
+    {
+        "apartment_id": "818",
+        "bitrix_additional_id": "786",
+        "alma_external_id": "818",
+        "alma_additional_id": "786",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 115. MeDoRe, apt. 1010"
+    },
+    {
+        "apartment_id": "814",
+        "bitrix_additional_id": "782",
+        "alma_external_id": "814",
+        "alma_additional_id": "782",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 293. The Sterling East House, apt. 217"
+    },
+    {
+        "apartment_id": "812",
+        "bitrix_additional_id": "780",
+        "alma_external_id": "812",
+        "alma_additional_id": "780",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 262. Azizi Riviera 36, apt. 105"
+    },
+    {
+        "apartment_id": "808",
+        "bitrix_additional_id": "776",
+        "alma_external_id": "808",
+        "alma_additional_id": "776",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 255. The V Tower, apt. 819"
+    },
+    {
+        "apartment_id": "798",
+        "bitrix_additional_id": "764",
+        "alma_external_id": "798",
+        "alma_additional_id": "764",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 243. Azizi Riviera 44, apt. 602"
+    },
+    {
+        "apartment_id": "796",
+        "bitrix_additional_id": "762",
+        "alma_external_id": "796",
+        "alma_additional_id": "762",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 297. Ahad Residences, apt. 1006"
+    },
+    {
+        "apartment_id": "794",
+        "bitrix_additional_id": "760",
+        "alma_external_id": "794",
+        "alma_additional_id": "760",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 298. Ahad Residences, apt. 1306"
+    },
+    {
+        "apartment_id": "778",
+        "bitrix_additional_id": "744",
+        "alma_external_id": "778",
+        "alma_additional_id": "744",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 292. Mayfair Residence, apt. 1005"
+    },
+    {
+        "apartment_id": "764",
+        "bitrix_additional_id": "738",
+        "alma_external_id": "764",
+        "alma_additional_id": "738",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 234. Zada Tower, apt. 2603"
+    },
+    {
+        "apartment_id": "762",
+        "bitrix_additional_id": "734",
+        "alma_external_id": "762",
+        "alma_additional_id": "734",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 285. Bayshore at Creek Beach Building 4, apt. 404"
+    },
+    {
+        "apartment_id": "740",
+        "bitrix_additional_id": "718",
+        "alma_external_id": "740",
+        "alma_additional_id": "718",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 284. MeDoRe, apt. 510"
+    },
+    {
+        "apartment_id": "732",
+        "bitrix_additional_id": "710",
+        "alma_external_id": "732",
+        "alma_additional_id": "710",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 281. Jumairah Bay Tower X1, apt. 209"
+    },
+    {
+        "apartment_id": "730",
+        "bitrix_additional_id": "708",
+        "alma_external_id": "730",
+        "alma_additional_id": "708",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 278. Lakeshore tower 1, apt. 807"
+    },
+    {
+        "apartment_id": "728",
+        "bitrix_additional_id": "706",
+        "alma_external_id": "728",
+        "alma_additional_id": "706",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 272. Sobha Hartland Waves, apt. 1706"
+    },
+    {
+        "apartment_id": "726",
+        "bitrix_additional_id": "704",
+        "alma_external_id": "726",
+        "alma_additional_id": "704",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 277. Concorde tower, apt. 401"
+    },
+    {
+        "apartment_id": "680",
+        "bitrix_additional_id": "692",
+        "alma_external_id": "680",
+        "alma_additional_id": "692",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 275. Azizi Riviera 42, apt. 501"
+    },
+    {
+        "apartment_id": "644",
+        "bitrix_additional_id": "684",
+        "alma_external_id": "644",
+        "alma_additional_id": "684",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 266. No.9, apt. 205"
+    },
+    {
+        "apartment_id": "642",
+        "bitrix_additional_id": "682",
+        "alma_external_id": "642",
+        "alma_additional_id": "682",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 252. Bay Central 2, apt. 701"
+    },
+    {
+        "apartment_id": "640",
+        "bitrix_additional_id": "680",
+        "alma_external_id": "640",
+        "alma_additional_id": "680",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 254. Lake view, apt. 1510"
+    },
+    {
+        "apartment_id": "628",
+        "bitrix_additional_id": "676",
+        "alma_external_id": "628",
+        "alma_additional_id": "676",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 267. Elite Residence, apt. 2010"
+    },
+    {
+        "apartment_id": "626",
+        "bitrix_additional_id": "674",
+        "alma_external_id": "626",
+        "alma_additional_id": "674",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 259. Park Ridge Tower C, apt. 221"
+    },
+    {
+        "apartment_id": "572",
+        "bitrix_additional_id": "658",
+        "alma_external_id": "572",
+        "alma_additional_id": "658",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 261. Azizi Riviera 42, apt. 308"
+    },
+    {
+        "apartment_id": "562",
+        "bitrix_additional_id": "648",
+        "alma_external_id": "562",
+        "alma_additional_id": "648",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 245. Executive residences 2, apt. 129"
+    },
+    {
+        "apartment_id": "558",
+        "bitrix_additional_id": "644",
+        "alma_external_id": "558",
+        "alma_additional_id": "644",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 242. saba3, apt. 1604"
+    },
+    {
+        "apartment_id": "540",
+        "bitrix_additional_id": "626",
+        "alma_external_id": "540",
+        "alma_additional_id": "626",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 236. Binghatti Nova, apt. 613"
+    },
+    {
+        "apartment_id": "538",
+        "bitrix_additional_id": "624",
+        "alma_external_id": "538",
+        "alma_additional_id": "624",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 233. Concorde Tower, apt. 1111"
+    },
+    {
+        "apartment_id": "534",
+        "bitrix_additional_id": "620",
+        "alma_external_id": "534",
+        "alma_additional_id": "620",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 235. Prive Residence, apt. 105"
+    },
+    {
+        "apartment_id": "532",
+        "bitrix_additional_id": "618",
+        "alma_external_id": "532",
+        "alma_additional_id": "618",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 231. Jumairah Bay tower X1-1, apt. 605"
+    },
+    {
+        "apartment_id": "530",
+        "bitrix_additional_id": "616",
+        "alma_external_id": "530",
+        "alma_additional_id": "616",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 230. Yacht bay, apt. 504"
+    },
+    {
+        "apartment_id": "494",
+        "bitrix_additional_id": "578",
+        "alma_external_id": "494",
+        "alma_additional_id": "578",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 226. Forte T1, apt. 211"
+    },
+    {
+        "apartment_id": "478",
+        "bitrix_additional_id": "562",
+        "alma_external_id": "478",
+        "alma_additional_id": "562",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 219. Binghatti Nova, apt. 1010"
+    },
+    {
+        "apartment_id": "468",
+        "bitrix_additional_id": "554",
+        "alma_external_id": "468",
+        "alma_additional_id": "554",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 217. Summer at Creek Beach Building 3, apt. 201"
+    },
+    {
+        "apartment_id": "440",
+        "bitrix_additional_id": "534",
+        "alma_external_id": "440",
+        "alma_additional_id": "534",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 215. Binghatti Canal, apt. 1705"
+    },
+    {
+        "apartment_id": "428",
+        "bitrix_additional_id": "520",
+        "alma_external_id": "428",
+        "alma_additional_id": "520",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 208. Park Ridge Tower C, apt. 306"
+    },
+    {
+        "apartment_id": "424",
+        "bitrix_additional_id": "516",
+        "alma_external_id": "424",
+        "alma_additional_id": "516",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 206. Studio One Tower, apt. 2107"
+    },
+    {
+        "apartment_id": "422",
+        "bitrix_additional_id": "514",
+        "alma_external_id": "422",
+        "alma_additional_id": "514",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 205. Sky Garden, apt. 409"
+    },
+    {
+        "apartment_id": "418",
+        "bitrix_additional_id": "510",
+        "alma_external_id": "418",
+        "alma_additional_id": "510",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 203. MJL - Lamtara 2, apt. 707"
+    },
+    {
+        "apartment_id": "414",
+        "bitrix_additional_id": "474",
+        "alma_external_id": "414",
+        "alma_additional_id": "474",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 201. Lake City Tower, apt. 1303"
+    },
+    {
+        "apartment_id": "412",
+        "bitrix_additional_id": "476",
+        "alma_external_id": "412",
+        "alma_additional_id": "476",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 200. AG Tower, apt. 1109B"
+    },
+    {
+        "apartment_id": "408",
+        "bitrix_additional_id": "650",
+        "alma_external_id": "408",
+        "alma_additional_id": "650",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 198. Azizi Berton, apt. 706"
+    },
+    {
+        "apartment_id": "406",
+        "bitrix_additional_id": "482",
+        "alma_external_id": "406",
+        "alma_additional_id": "482",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 197. Prive Residence , apt. 1004"
+    },
+    {
+        "apartment_id": "396",
+        "bitrix_additional_id": "492",
+        "alma_external_id": "396",
+        "alma_additional_id": "492",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 192. Marina Wharf 2, apt. 1103"
+    },
+    {
+        "apartment_id": "394",
+        "bitrix_additional_id": "494",
+        "alma_external_id": "394",
+        "alma_additional_id": "494",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 191. Marina Quays West , apt. 701"
+    },
+    {
+        "apartment_id": "384",
+        "bitrix_additional_id": "504",
+        "alma_external_id": "384",
+        "alma_additional_id": "504",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 186. Mag218, apt. 4104"
+    },
+    {
+        "apartment_id": "380",
+        "bitrix_additional_id": "508",
+        "alma_external_id": "380",
+        "alma_additional_id": "508",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 184. Westwood, apt. 402"
+    },
+    {
+        "apartment_id": "360",
+        "bitrix_additional_id": "452",
+        "alma_external_id": "360",
+        "alma_additional_id": "452",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 176. Dubai Gate 1, apt. 709"
+    },
+    {
+        "apartment_id": "352",
+        "bitrix_additional_id": "442",
+        "alma_external_id": "352",
+        "alma_additional_id": "442",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 172. Bay Central 1, apt. 3102"
+    },
+    {
+        "apartment_id": "346",
+        "bitrix_additional_id": "436",
+        "alma_external_id": "346",
+        "alma_additional_id": "436",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 169. Yacht Bay, apt. 202"
+    },
+    {
+        "apartment_id": "344",
+        "bitrix_additional_id": 434,
+        "alma_external_id": "344",
+        "alma_additional_id": "434",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 168. Panoramic, apt. 6007"
+    },
+    {
+        "apartment_id": "336",
+        "bitrix_additional_id": "426",
+        "alma_external_id": "336",
+        "alma_additional_id": "426",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 164. Azizi Samia , apt. 621"
+    },
+    {
+        "apartment_id": "334",
+        "bitrix_additional_id": "424",
+        "alma_external_id": "334",
+        "alma_additional_id": "424",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 163. Ocean Heights, apt. 1202"
+    },
+    {
+        "apartment_id": "332",
+        "bitrix_additional_id": "422",
+        "alma_external_id": "332",
+        "alma_additional_id": "422",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 162. Princess tower, apt. 1202"
+    },
+    {
+        "apartment_id": "324",
+        "bitrix_additional_id": "414",
+        "alma_external_id": "324",
+        "alma_additional_id": "414",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 158. Royal Oceanic, apt. 705"
+    },
+    {
+        "apartment_id": "312",
+        "bitrix_additional_id": "402",
+        "alma_external_id": "312",
+        "alma_additional_id": "402",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 152. Princess tower, apt. 3102"
+    },
+    {
+        "apartment_id": "310",
+        "bitrix_additional_id": "400",
+        "alma_external_id": "310",
+        "alma_additional_id": "400",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 151. Discovery Gardens MED 64, apt. 405"
+    },
+    {
+        "apartment_id": "300",
+        "bitrix_additional_id": "390",
+        "alma_external_id": "300",
+        "alma_additional_id": "390",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 146. Saba 2, apt. 2904"
+    },
+    {
+        "apartment_id": "298",
+        "bitrix_additional_id": "386",
+        "alma_external_id": "298",
+        "alma_additional_id": "386",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 145. Elite Residence, apt. 1410"
+    },
+    {
+        "apartment_id": "296",
+        "bitrix_additional_id": "384",
+        "alma_external_id": "296",
+        "alma_additional_id": "384",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 144. Zada Tower, apt. 2009"
+    },
+    {
+        "apartment_id": "290",
+        "bitrix_additional_id": "378",
+        "alma_external_id": "290",
+        "alma_additional_id": "378",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 141. Lake view, apt. 703"
+    },
+    {
+        "apartment_id": "286",
+        "bitrix_additional_id": "374",
+        "alma_external_id": "286",
+        "alma_additional_id": "374",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 139. Continental tower, apt. 2405"
+    },
+    {
+        "apartment_id": "282",
+        "bitrix_additional_id": "370",
+        "alma_external_id": "282",
+        "alma_additional_id": "370",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 137. Jumeirah Bay Tower X1 - JLT, apt. 705"
+    },
+    {
+        "apartment_id": "272",
+        "bitrix_additional_id": "360",
+        "alma_external_id": "272",
+        "alma_additional_id": "360",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 133. Al Waleed Paradise, apt. 1204"
+    },
+    {
+        "apartment_id": "268",
+        "bitrix_additional_id": "356",
+        "alma_external_id": "268",
+        "alma_additional_id": "356",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 131. O2 Residences , apt. 201"
+    },
+    {
+        "apartment_id": "266",
+        "bitrix_additional_id": "352",
+        "alma_external_id": "266",
+        "alma_additional_id": "352",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 130. Discovery Gardens 91, apt. 511"
+    },
+    {
+        "apartment_id": "262",
+        "bitrix_additional_id": "348",
+        "alma_external_id": "262",
+        "alma_additional_id": "348",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 128. Dubai Gate 1, apt. 1006"
+    },
+    {
+        "apartment_id": "260",
+        "bitrix_additional_id": "346",
+        "alma_external_id": "260",
+        "alma_additional_id": "346",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 127. Lake View, apt. 2801"
+    },
+    {
+        "apartment_id": "254",
+        "bitrix_additional_id": "340",
+        "alma_external_id": "254",
+        "alma_additional_id": "340",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 124. Saba 3 Tower, apt. 1112"
+    },
+    {
+        "apartment_id": "248",
+        "bitrix_additional_id": 334,
+        "alma_external_id": "248",
+        "alma_additional_id": "334",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 121. Sparkle Tower 2, apt. 605"
+    },
+    {
+        "apartment_id": "246",
+        "bitrix_additional_id": "332",
+        "alma_external_id": "246",
+        "alma_additional_id": "332",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 120. Lakeside, apt. 610"
+    },
+    {
+        "apartment_id": "240",
+        "bitrix_additional_id": "326",
+        "alma_external_id": "240",
+        "alma_additional_id": "326",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 117. Burj Royale, apt. 1805"
+    },
+    {
+        "apartment_id": "234",
+        "bitrix_additional_id": "320",
+        "alma_external_id": "234",
+        "alma_additional_id": "320",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 114. Prime Views , apt. 339"
+    },
+    {
+        "apartment_id": "232",
+        "bitrix_additional_id": "318",
+        "alma_external_id": "232",
+        "alma_additional_id": "318",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 113. Bay Central 1, apt. 1610"
+    },
+    {
+        "apartment_id": "228",
+        "bitrix_additional_id": "314",
+        "alma_external_id": "228",
+        "alma_additional_id": "314",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 111. Lake View , apt. 605"
+    },
+    {
+        "apartment_id": "224",
+        "bitrix_additional_id": "312",
+        "alma_external_id": "224",
+        "alma_additional_id": "312",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 109. Candace Aster, apt. 308"
+    },
+    {
+        "apartment_id": "218",
+        "bitrix_additional_id": "306",
+        "alma_external_id": "218",
+        "alma_additional_id": "306",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 106. Damac Heights, apt. 2810"
+    },
+    {
+        "apartment_id": "216",
+        "bitrix_additional_id": "304",
+        "alma_external_id": "216",
+        "alma_additional_id": "304",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 105. Candace Aster, apt. 514"
+    },
+    {
+        "apartment_id": "212",
+        "bitrix_additional_id": "300",
+        "alma_external_id": "212",
+        "alma_additional_id": "300",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 103. Goldcrest Executive, apt. 2616"
+    },
+    {
+        "apartment_id": "208",
+        "bitrix_additional_id": "296",
+        "alma_external_id": "208",
+        "alma_additional_id": "296",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 101. Fairview, apt. 1605"
+    },
+    {
+        "apartment_id": "202",
+        "bitrix_additional_id": "292",
+        "alma_external_id": "202",
+        "alma_additional_id": "292",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 95. Mag 218, apt. 5108"
+    },
+    {
+        "apartment_id": "198",
+        "bitrix_additional_id": "286",
+        "alma_external_id": "198",
+        "alma_additional_id": "286",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 100. Saba 2, apt. 2305"
+    },
+    {
+        "apartment_id": "192",
+        "bitrix_additional_id": "280",
+        "alma_external_id": "192",
+        "alma_additional_id": "280",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 97. Princess, apt. 2002"
+    },
+    {
+        "apartment_id": "188",
+        "bitrix_additional_id": "274",
+        "alma_external_id": "188",
+        "alma_additional_id": "274",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 91.  Bay Central 1, apt. 2508"
+    },
+    {
+        "apartment_id": "186",
+        "bitrix_additional_id": "272",
+        "alma_external_id": "186",
+        "alma_additional_id": "272",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 90. Creek Vistas A, apt. 1809"
+    },
+    {
+        "apartment_id": "184",
+        "bitrix_additional_id": "270",
+        "alma_external_id": "184",
+        "alma_additional_id": "270",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 89. No.9, apt. 1708"
+    },
+    {
+        "apartment_id": "182",
+        "bitrix_additional_id": "268",
+        "alma_external_id": "182",
+        "alma_additional_id": "268",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 88. Time Place, apt. 2001"
+    },
+    {
+        "apartment_id": "180",
+        "bitrix_additional_id": "266",
+        "alma_external_id": "180",
+        "alma_additional_id": "266",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 87. Marina Tower, apt. 3102"
+    },
+    {
+        "apartment_id": "178",
+        "bitrix_additional_id": "264",
+        "alma_external_id": "178",
+        "alma_additional_id": "264",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 86. The Bay, apt.  1408"
+    },
+    {
+        "apartment_id": "174",
+        "bitrix_additional_id": "260",
+        "alma_external_id": "174",
+        "alma_additional_id": "260",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 93. Sparkle tower 2, apt. 1309"
+    },
+    {
+        "apartment_id": "162",
+        "bitrix_additional_id": 10,
+        "alma_external_id": "162",
+        "alma_additional_id": "10",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 82.  Goldcrest Executive, apt. 2117"
+    },
+    {
+        "apartment_id": "158",
+        "bitrix_additional_id": "40",
+        "alma_external_id": "158",
+        "alma_additional_id": "40",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 80. Beach vista 2, apt. 2301"
+    },
+    {
+        "apartment_id": "154",
+        "bitrix_additional_id": "36",
+        "alma_external_id": "154",
+        "alma_additional_id": "36",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 78. Zada tower, apt. 218"
+    },
+    {
+        "apartment_id": "152",
+        "bitrix_additional_id": "34",
+        "alma_external_id": "152",
+        "alma_additional_id": "34",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 77. DEC Towers, apt. 10"
+    },
+    {
+        "apartment_id": "150",
+        "bitrix_additional_id": "32",
+        "alma_external_id": "150",
+        "alma_additional_id": "32",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 76. The Residence at Marina Gate 2, apt. 3310"
+    },
+    {
+        "apartment_id": "148",
+        "bitrix_additional_id": 30,
+        "alma_external_id": "148",
+        "alma_additional_id": "30",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 75. Saba 3, apt. 3110"
+    },
+    {
+        "apartment_id": "146",
+        "error": "Alma API error: HTTP 404",
+        "external_id_match": false,
+        "additional_id_match": false
+    },
+    {
+        "apartment_id": "144",
+        "bitrix_additional_id": "26",
+        "alma_external_id": "144",
+        "alma_additional_id": "26",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 73. Sobha Creek Vistas Reserve A (left side), apt. 1411"
+    },
+    {
+        "apartment_id": "138",
+        "error": "Alma API error: HTTP 404",
+        "external_id_match": false,
+        "additional_id_match": false
+    },
+    {
+        "apartment_id": "134",
+        "bitrix_additional_id": "16",
+        "alma_external_id": "134",
+        "alma_additional_id": "16",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 68. Princess tower, apt. 4410"
+    },
+    {
+        "apartment_id": "132",
+        "bitrix_additional_id": "14",
+        "alma_external_id": "132",
+        "alma_additional_id": "14",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 67. GoldCrest Executive, apt. 2310"
+    },
+    {
+        "apartment_id": "128",
+        "bitrix_additional_id": "210",
+        "alma_external_id": "128",
+        "alma_additional_id": "",
+        "external_id_match": true,
+        "additional_id_match": false,
+        "has_additional_id": false,
+        "alma_name": "Ap. 65. Yacht Bay, apt. 1504"
+    },
+    {
+        "apartment_id": "124",
+        "bitrix_additional_id": "206",
+        "alma_external_id": "124",
+        "alma_additional_id": "206",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 63. Bonaire, apt. 2404"
+    },
+    {
+        "apartment_id": "122",
+        "bitrix_additional_id": "204",
+        "alma_external_id": "122",
+        "alma_additional_id": "204",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 62. Princess, apt. 2704"
+    },
+    {
+        "apartment_id": "120",
+        "bitrix_additional_id": "202",
+        "alma_external_id": "120",
+        "alma_additional_id": "202",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 61. Park Point. Block B. apt. 513"
+    },
+    {
+        "apartment_id": "114",
+        "bitrix_additional_id": "186",
+        "alma_external_id": "114",
+        "alma_additional_id": "186",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 58. Burj Al Noujoum, apt. 2304"
+    },
+    {
+        "apartment_id": "110",
+        "bitrix_additional_id": "182",
+        "alma_external_id": "110",
+        "alma_additional_id": "182",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 56. Concorde Tower, apt. 2106"
+    },
+    {
+        "apartment_id": "104",
+        "bitrix_additional_id": "176",
+        "alma_external_id": "104",
+        "alma_additional_id": "176",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 53. Reva Residences, apt. 617"
+    },
+    {
+        "apartment_id": "100",
+        "bitrix_additional_id": "172",
+        "alma_external_id": "100",
+        "alma_additional_id": "172",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 51. Jumeirah Bay X1, apt. 1008"
+    },
+    {
+        "apartment_id": "96",
+        "bitrix_additional_id": "168",
+        "alma_external_id": "96",
+        "alma_additional_id": "168",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 49. Concorde Tower, apt. 1706"
+    },
+    {
+        "apartment_id": "94",
+        "bitrix_additional_id": "166",
+        "alma_external_id": "94",
+        "alma_additional_id": "166",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 48. LIV Residence, apt. 203"
+    },
+    {
+        "apartment_id": "90",
+        "bitrix_additional_id": "162",
+        "alma_external_id": "90",
+        "alma_additional_id": "162",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 46. Botanica, apt. 808"
+    },
+    {
+        "apartment_id": "88",
+        "bitrix_additional_id": "160",
+        "alma_external_id": "88",
+        "alma_additional_id": "160",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 45. Iris Blue, apt. 2106"
+    },
+    {
+        "apartment_id": "86",
+        "bitrix_additional_id": "158",
+        "alma_external_id": "86",
+        "alma_additional_id": "158",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 44. Studio One, apt. 2701"
+    },
+    {
+        "apartment_id": "78",
+        "bitrix_additional_id": "150",
+        "alma_external_id": "78",
+        "alma_additional_id": "150",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 40. Marina View A, apt. 604"
+    },
+    {
+        "apartment_id": "76",
+        "bitrix_additional_id": "148",
+        "alma_external_id": "76",
+        "alma_additional_id": "148",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 39. Dubai Gate 1, apt. 210"
+    },
+    {
+        "apartment_id": "74",
+        "bitrix_additional_id": "146",
+        "alma_external_id": "74",
+        "alma_additional_id": "146",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 38. Al Arta 1, apt. 216"
+    },
+    {
+        "apartment_id": "70",
+        "bitrix_additional_id": "142",
+        "alma_external_id": "70",
+        "alma_additional_id": "142",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 36. Princess Tower, apt. 807"
+    },
+    {
+        "apartment_id": "68",
+        "bitrix_additional_id": "140",
+        "alma_external_id": "68",
+        "alma_additional_id": "140",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 35. Concorde Tower, apt. 1309"
+    },
+    {
+        "apartment_id": "62",
+        "bitrix_additional_id": "134",
+        "alma_external_id": "62",
+        "alma_additional_id": "134",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 32. Princess tower, apt. 6001"
+    },
+    {
+        "apartment_id": "50",
+        "bitrix_additional_id": "114",
+        "alma_external_id": "50",
+        "alma_additional_id": "114",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 26. Sulafa Tower, apt. 2204"
+    },
+    {
+        "apartment_id": "38",
+        "bitrix_additional_id": "94",
+        "alma_external_id": "38",
+        "alma_additional_id": "94",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 20. Dubai Gate 1, apt. 1309"
+    },
+    {
+        "apartment_id": "36",
+        "bitrix_additional_id": "92",
+        "alma_external_id": "36",
+        "alma_additional_id": "92",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 19. MJL Rahaal 2, apt. 506"
+    },
+    {
+        "apartment_id": "30",
+        "bitrix_additional_id": "86",
+        "alma_external_id": "30",
+        "alma_additional_id": "86",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 16. Bahar 6, apt. 105"
+    },
+    {
+        "apartment_id": "24",
+        "bitrix_additional_id": "80",
+        "alma_external_id": "24",
+        "alma_additional_id": "80",
+        "external_id_match": true,
+        "additional_id_match": true,
+        "has_additional_id": true,
+        "alma_name": "Ap. 13. Al Waleed Paradise, apt. 1005"
+    }
+]

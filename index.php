@@ -40,20 +40,33 @@ if ($isWebhookRequest) {
 
     $bitrix = new Bitrix24Rest($webhookUrl);
 
-    if ($idItem == $fieldMapping['entity_type_id']) {
+    if ($idItem == $fieldMapping['entity_type_id'] || $idItem == 1048) {
+        $entityTypeId = ($idItem == 1048) ? 1048 : $fieldMapping['entity_type_id'];
+        
         $bitrixApartment = $bitrix->call('crm.item.get', [
-            'entityTypeId' => $fieldMapping['entity_type_id'],
+            'entityTypeId' => $entityTypeId,
             'id' => $idEl
         ]);
 
         // Проверяем условие для синхронизации (может отличаться для разных проектов)
         $shouldSync = true;
-        if ($projectName === 'Dubai' && isset($bitrixApartment['result']['item']['ufCrm6_1753278068179'])) {
-            $shouldSync = $bitrixApartment['result']['item']['ufCrm6_1753278068179'] != '8638';
-        }
+        // Временно отключаем условие блокировки для отладки
+        // if ($projectName === 'Dubai' && isset($bitrixApartment['result']['item']['ufCrm6_1753278068179'])) {
+        //     $shouldSync = $bitrixApartment['result']['item']['ufCrm6_1753278068179'] != '8638';
+        // }
+        
+        Logger::info("Apartment sync check", [
+            'should_sync' => $shouldSync,
+            'field_value' => $bitrixApartment['result']['item']['ufCrm6_1753278068179'] ?? 'not_set'
+        ], 'webhook', $idEl);
         
         if ($shouldSync) {
-            file_get_contents(Config::get('APP_BASE_URL') . 'appart.php?id=' . $idEl . '&project=' . $projectName);
+            $url = Config::get('APP_BASE_URL') . 'appart.php?id=' . $idEl . '&project=' . $projectName;
+            Logger::info("Calling apartment sync", ['url' => $url], 'webhook', $idEl);
+            $result = file_get_contents($url);
+            if ($result === false) {
+                Logger::error("Failed to call apartment sync", ['url' => $url], 'webhook', $idEl);
+            }
         }
 
     } elseif ($idItem == 3 || $_REQUEST['event'] == 'ONCRMCONTACTUPDATE') {

@@ -1,0 +1,420 @@
+Apartment ID	Bitrix Additional ID	Alma External ID	Alma Additional ID	Ext ID Match	Add ID Match	Has Add ID	Alma Name	Error
+------------------------------------------------------------------------------------------------------------------------
+1866	1836	1866	1836	YES	YES	YES	Ap. 763. Binghatti Azure, apt. 1011	
+1864	N/A	N/A	N/A	NO	NO	N/A	N/A	Alma API error: HTTP 404
+1856	1826	1856	1826	YES	YES	YES	Ap. 755. BOUTIQUE XII, apt. 712	
+1854	1824	1854	1824	YES	YES	YES	Ap. 752. Creek Palace, apt. 3007	
+1852	1822	1852	1822	YES	YES	YES	Ap. 754. The Radisson Blu Residence, apt. 1	
+1850	1820	1850	1820	YES	YES	YES	Ap. 732. Act One Act Two Tower 1, apt. 1905	
+1846	1816	1846	1816	YES	YES	YES	Ap. 751. DAMAC HILLS - ARTESIA TOWER C, apt. C-1705	
+1838	1808	1838	1808	YES	YES	YES	Ap. 746. Genesis, apt. 418	
+1836	N/A	N/A	N/A	NO	NO	N/A	N/A	Alma API error: HTTP 404
+1834	1804	1834	1804	YES	YES	YES	Ap. 743. AZIZI RIVIERA AZURE, apt. 505	
+1832	1802	1832	1802	YES	YES	YES	Ap. 742. Floarea Residence, apt. 318	
+1830	1800	1830	1800	YES	YES	YES	Ap. 741. The Paragon By IGO, apt. 416	
+1826	1796	1826	1796	YES	YES	YES	Ap. 739. J ONE - 1, apt. 1910A	
+1824	1794	1824	1794	YES	YES	YES	Ap. 738. LIV Marina, apt. 1802	
+1818	1788	1818	1788	YES	YES	YES	Ap. 736. Aykon City - Tower B, apt. 4403	
+1816	1786	1816	1786	YES	YES	YES	Ap. 735. Sobha Hartland - The Crest Tower B, apt. B3704	
+1808	1778	1808	1778	YES	YES	YES	Ap. 530. MeDoRe, apt. 2203	
+1806	1776	1806	1776	YES	YES	YES	Ap. 731. 15 Northside - Tower 2, apt. B-503	
+1804	1774	1804	1774	YES	YES	YES	Ap. 427. Binghatti Corner, apt. 2508	
+1802	1772	1802	1772	YES	YES	YES	Ap. 730. 15 Northside - Tower 1, apt. A-1102	
+1798	1768	1798	1768	YES	YES	YES	Ap. 729. Concept 7, apt. 812	
+1794	1764	1794	1764	YES	YES	YES	Ap. 727. THE GROVE BY IMAN, apt. 809	
+1792	1762	1792	1762	YES	YES	YES	Ap. 689. Peninsula One, apt. 510	
+1790	1760	1790	1760	YES	YES	YES	Ap. 688. Peninsula One, apt. 413	
+1786	1756	1786	1756	YES	YES	YES	Ap. R3. One Za'abeel Private Homes, apt. 5501	
+1782	1752	1782	1752	YES	YES	YES	Ap. 773. The Address Residences Dubai Opera T2, apt. 4501	
+1780	1750	1780	1750	YES	YES	YES	Ap. 667. Grand Bleu Tower interiors by Elie Saab Tower 2, apt. 2403	
+1774	1742	1774	1742	YES	YES	YES	Ap. 717. Liv Marina, apt. 2004	
+1764	1732	1764	1732	YES	YES	YES	Ap. 640. Maktoum City District One Phase III Residences 2, apt. 303	
+1762	1730	1762	1730	YES	YES	YES	Ap. 714. Serenity Lakes 5, apt. G01	
+1760	1728	1760	1728	YES	YES	YES	Ap. 713. THE POINT TOWER, apt. 203	
+1748	1716	1748	1716	YES	YES	YES	Ap. 703. BLVD CENTRAL 2, apt. 1304	
+1744	1712	1744	1712	YES	YES	YES	Ap. 686. Azizi Riviera 47, apt. 920	
+1740	1708	1740	1708	YES	YES	YES	Ap. 701. Sway Residences, apt. 904	
+1736	1704	1736	1704	YES	YES	YES	Ap. 699.  J ONE - 1, apt. 914А	
+1734	1702	1734	1702	YES	YES	YES	Ap. 691. MED 85, apt. 214	
+1732	1700	1732	1700	YES	YES	YES	Ap. 419. JVT District 9, apt. G8	
+1730	1698	1730	1698	YES	YES	YES	Ap. 690. Azizi Berton, apt. 428	
+1728	1696	1728	1696	YES	YES	YES	Ap. 698. Binghatti Nova, apt. 1005	
+1720	1688	1720	1688	YES	YES	YES	Ap. 696. Ellington Beach House, apt. N-406	
+1716	1684	1716	1684	YES	YES	YES	Ap. 685. Grove at Creek Beach Building 5, Apt. 602	
+1710	1678	1710	1678	YES	YES	YES	Ap. 637. Burj Royale, apt. 5006	
+1708	1676	1708	1676	YES	YES	YES	Ap. 638. Burj Royale, apt. 5005	
+1694	1664	1694	1664	YES	YES	YES	Ap. 680. The Address DownTown, apt. 1911	
+1692	1662	1692	1662	YES	YES	YES	Ap. 684. LIV Marina, apt. 1707	
+1690	1660	1690	1660	YES	YES	YES	Ap. 683. LIV Marina, apt. 902	
+1686	1656	1686	1656	YES	YES	YES	Ap. 611. Discovery Gardens MED 92, apt. 308	
+1684	1654	1684	1654	YES	YES	YES	Ap. 660. Collective Tower 2, apt. 314	
+1676	1646	1676	1646	YES	YES	YES	Ap. 678. Urban Oasis, apt. 415B	
+1668	1638	1668	1638	YES	YES	YES	Ap. 642. 52|42, apt. 2903	
+1666	1634	1666	1634	YES	YES	YES	Ap. 673. Collective 2.0 Tower B, apt. 1208	
+1652	1618	1652	1618	YES	YES	YES	Ap. 648. FIVE AT PALM JUMEIRAH  DUBAI, apt. 41009	
+1650	1616	1650	1616	YES	YES	YES	Ap. 644. Palm View, apt. 2303	
+1648	1614	1648	1614	YES	YES	YES	Ap. 649. THE 8, apt. 20206	
+1644	1610	1644	1610	YES	YES	YES	Ap. 670. Sobha Hartland Waves, apt. 1705	
+1640	1606	1640	1606	YES	YES	YES	Ap. 663. Elite Residence, apt. 1512	
+1632	1592	1632	1592	YES	YES	YES	Ap. 652. The Community, apt. 2303	
+1628	1588	1628	1588	YES	YES	YES	Ap. 653. The Community, apt. 2302	
+1626	1586	1626	1586	YES	YES	YES	Ap. 654. The Community, apt. 2003	
+1622	1582	1622	1582	YES	YES	YES	Ap. 656. The Paragon by IGO, apt. 409	
+1618	1578	1618	1578	YES	YES	YES	Ap. 661. THE RESIDENCE AT MARINA GATE 2, apt. 5208	
+1612	1572	1612	1572	YES	YES	YES	Ap. 658. THE POINT TOWER, apt. 201	
+1604	1564	1604	1564	YES	YES	YES	Ap. 629.  Sobha Creek Vistas Reserve, apt. B1210	
+1598	1556	1598	1556	YES	YES	YES	Ap. 616. One Za’abeel Tower 1, apt. 6003	
+1582	1542	1582	1542	YES	YES	YES	Ap. 621. Bloom Towers C, apt. C-0702	
+1572	1532	1572	1532	YES	YES	YES	Ap. 609. Central Park , apt. 321	
+1564	1524	1564	1524	YES	YES	YES	Ap. 612. Palm View, apt. 1702	
+1560	1520	1560	1520	YES	YES	YES	Ap. 607. Peninsula Five, apt. 1004	
+1554	1514	1554	1514	YES	YES	YES	Ap. 585. GoldCrest Executive, apt. 3017	
+1534	1494	1534	1494	YES	YES	YES	Ap. 589. MJL Jadeel 2, apt. 103	
+1522	1478	1522	1478	YES	YES	YES	Ap. 592. DEC Towers T1, apt. 1808	
+1510	1452	1510	1452	YES	YES	YES	Ap. 581. PALM VIEWS WEST, apt. 302	
+1502	1444	1502	1444	YES	YES	YES	Ap. 571. Me Do Re, apt. 310	
+1476	1394	1476	1394	YES	YES	YES	Ap. 580. Trident Grand Residence, apt. 1201	
+1474	1390	1474	1390	YES	YES	YES	Ap. 577. J One, apt. 1314A	
+1472	1392	1472	1392	YES	YES	YES	Ap. 579. Palace Beach Residence Tower 1, apt. 603	
+1468	1386	1468	1386	YES	YES	YES	Ap. 576. La Sirene Building 5, apt. 404	
+1452	1370	1452	1370	YES	YES	YES	Ap. 570. Lotus at Creek Beach Building 3, apt. 906	
+1434	1352	1434	1352	YES	YES	YES	Ap. 498. Elysee 3, apt. 220	
+1414	1324	1414		YES	NO	NO	Ap. 543.  ZADA TOWER, apt. 520	
+1408	1320	1408	1320	YES	YES	YES	Ap. 435. Sunrise Bay Tower 2, apt. 404	
+1374	1274	1374	1274	YES	YES	YES	Ap. 538. Marina Star, apt. S1101	
+1344	1228	1344	1228	YES	YES	YES	AP. 526. Ahad Residences, apt. 1409	
+1340	1224	1340	1224	YES	YES	YES	Ap. 508. Concept 7, apt. 704	
+1332	1216	1332	1216	YES	YES	YES	Ap. 519. Ocean Heights, apt. 3108	
+1318	1202	1318	1202	YES	YES	YES	Ap. 520. MBL Royal, apt. 1903	
+1312	1194	1312	1194	YES	YES	YES	Ap. 516. The Address Residences Dubai Opera T1, apt. 1109	
+1264	1142	1264	1142	YES	YES	YES	Ap. 500. Urban Oasis, apt. 1812 B	
+1246	1120	1246	1120	YES	YES	YES	Ap. 483. Luma 22, apt. 152	
+1240	1112	1240	1112	YES	YES	YES	Ap. 482. Time Place, apt. 2609	
+1238	1110	1238	1110	YES	YES	YES	Ap. 468. Mag 545, apt. 314	
+1228	1100	1228	1100	YES	YES	YES	Ap. 488. The Pinnacle, apt. 603	
+1206	1078	1206	1078	YES	YES	YES	Ap. 474. Marina Star, apt. S501	
+1204	1076	1204	1076	YES	YES	YES	Ap. 478. Sky Gardens, apt. 709	
+1192	1064	1192	1064	YES	YES	YES	Ap. 371. Aycon City Tower B, apt. 4001	
+1190	1062	1190	1062	YES	YES	YES	Ap. 456. Time Place, apt. 3107	
+1112	998	1112	998	YES	YES	YES	Ap. 463. Jumairah Bay Tower X1,  ap. 2307	
+1104	990	1104	990	YES	YES	YES	Ap. 425. Elite Downtown Residence, apt. 412	
+1102	988	1102	988	YES	YES	YES	Ap. 423. Cayan Tower, apt. 4106	
+1098	984	1098	984	YES	YES	YES	Ap. 422. Silverene Tower B, apt. 1411	
+1040	962	1040	962	YES	YES	YES	Ap. 406. Socio Tower 1, apt. 1102	
+1034	956	1034	956	YES	YES	YES	Ap. 402. Park Ridge Tower C, apt. 1716	
+986	926	986	926	YES	YES	YES	Ap. 341. Marina Quay East, apt. 710	
+972	912	972	912	YES	YES	YES	Ap. 394. Botanica Tower 1, apt. 1405	
+964	904	964	904	YES	YES	YES	Ap. 311. La Vie, apt. 2203	
+958	900	958	900	YES	YES	YES	Ap. 393. The Pinnacle, apt. 503	
+952	894	952	894	YES	YES	YES	Ap. 387. Azizi Shaista, apt. 1103	
+928	878	928	878	YES	YES	YES	Ap. 353. Azizi Shaista Residence, apt. 1010	
+924	874	924	874	YES	YES	YES	Ap. 357. Armada 1, apt. 711	
+914	864	914	864	YES	YES	YES	Ap. 339. Sulafa Tower, apt. 2014	
+898	854	898	854	YES	YES	YES	Ap. 344. Ocean Heights, apt. 11A09	
+868	830	868	830	YES	YES	YES	Ap. 323. Princess tower, apt. 1010	
+864	826	864	826	YES	YES	YES	Ap. 326. Jumeirah Living Marina Gate, apt. 2504	
+826	794	826	794	YES	YES	YES	Ap. 286. Sobha Creek Vistas Reserve, apt. 3110	
+742	720	742	720	YES	YES	YES	Ap. 270. Al Wasl One Residence 1, apt. 3105	
+736	714	736	714	YES	YES	YES	Ap. 269. Azizi Riviera 41, apt. 407	
+734	712	734	712	YES	YES	YES	Ap. 257. Damac Heights, apt. 903	
+630	678	630	678	YES	YES	YES	Ap. 258. Elite Residence, apt. 2009	
+620	672	620	672	YES	YES	YES	Ap. 271. Bay Central 2, apt. 707	
+592	670	592	670	YES	YES	YES	Ap. 256. Aykon City 2 Tower C, apt. 1809	
+590	668	590	668	YES	YES	YES	Ap. 251. Binghatti Nova, apt. 406	
+570	656	570	656	YES	YES	YES	Ap. 253. Prive Residence, apt. 1102	
+568	654	568	654	YES	YES	YES	Ap. 239. Binghatti Nova, apt. 610	
+550	636	550	636	YES	YES	YES	Ap. 241. Concorde tower 1, apt. 4102	
+526	612	526	612	YES	YES	YES	Ap. 229. Prive Residence, apt. 1203	
+480	564	480	564	YES	YES	YES	Ap. 220. Westwood by Imtiaz, apt. 610	
+436	530	436	530	YES	YES	YES	Ap. 213. Beach Vista Tower 2, apt. 702	
+434	528	434	528	YES	YES	YES	Ap. 212. Binghatti Crescent, apt. 516	
+426	518	426	518	YES	YES	YES	Ap. 207. Park Ridge Tower C, apt. 312	
+402	486	402	486	YES	YES	YES	Ap. 195. Elite Residence, apt. 1909	
+398	490	398	490	YES	YES	YES	Ap. 193. Marina Crown, apt. 901	
+392	496	392	496	YES	YES	YES	Ap. 190. Bay Central 1, apt. 1909	
+390	498	390	498	YES	YES	YES	Ap. 189. Creek Edge Tower 1, apt. 305	
+366	458	366	458	YES	YES	YES	Ap. 179. Al Waleed Paradise, apt. 1103	
+364	456	364	456	YES	YES	YES	Ap. 178. Indigo Tower, apt. 1215	
+358	450	358	450	YES	YES	YES	Ap. 175. J One 1, apt. 1601	
+356	448	356	448	YES	YES	YES	Ap. 174. Indigo tower, apt. 1504	
+354	446	354	446	YES	YES	YES	Ap. 173. Azizi Berton, apt. 124	
+330	420	330	420	YES	YES	YES	Ap. 161. Sky View Tower, apt. 1309	
+328	418	328	418	YES	YES	YES	Ap. 160. Goldcrest Executive, apt. 3304	
+316	406	316	406	YES	YES	YES	Ap. 154. Zada Tower, apt. 1214	
+314	404	314	404	YES	YES	YES	Ap. 153. Jumairah Bay X1-1, apt. 2312	
+280	388	280	388	YES	YES	YES	Ap. 136. Ontario tower, apt. 2105	
+276	364	276	364	YES	YES	YES	Ap. 135. Equiti Residence, apt. 904	
+270	358	270	358	YES	YES	YES	Ap. 132. Candace Aster, apt. 614	
+264	350	264	350	YES	YES	YES	Ap. 129. Merano Tower, apt. 2804	
+244	330	244	330	YES	YES	YES	Ap. 119. Collective Tower 2, apt. 703	
+238	324	238	324	YES	YES	YES	Ap. 116. Marina Vista Tower 2, apt. 2409	
+220	308	220	308	YES	YES	YES	Ap. 107. Noor 1, apt. 510	
+210	298	210	298	YES	YES	YES	Ap. 102. Armada 3, apt. 1908	
+204	294	204	294	YES	YES	YES	Ap. 96. Park Island Bonaire, apt. 2304	
+176	262	176	262	YES	YES	YES	Ap. 85. Zada tower, apt. 214	
+164	46	164	46	YES	YES	YES	Ap. 83. Creek Gate Tower 1, apt. 2308	
+160	42	160	42	YES	YES	YES	Ap. 81. Marina Gate 2, apt. 1708	
+156	38	156	38	YES	YES	YES	Ap. 79. Bay Central West, apt. 201	
+136	18	136	18	YES	YES	YES	Ap. 69. Park Central, apt. 1405	
+108	180	108	180	YES	YES	YES	Ap. 55. Princess, apt. 1707	
+106	178	106	178	YES	YES	YES	Ap. 54. Bellevue Towers-1, apt. 1806	
+82	154	82	154	YES	YES	YES	Ap. 42. Iris Blue, apt. 2003	
+80	152	80	152	YES	YES	YES	Ap. 41. Candace Acacia, apt. 122	
+56	120	56	120	YES	YES	YES	Ap. 29. DEC Towers, apt. 2008	
+52	116	52	116	YES	YES	YES	Ap. 27. Discovery gardens 38, apt. 401	
+46	102	46	102	YES	YES	YES	Ap. 24. Marina Crown, apt. 1512	
+42	98	42	98	YES	YES	YES	Ap. 22. Reef Residence, apt. 3305	
+28	84	28	84	YES	YES	YES	Ap. 15. Lakeside Residence, apt. 1104	
+26	82	26	82	YES	YES	YES	Ap. 14. Goldcrest views 1, apt. 1313	
+22	78	22	78	YES	YES	YES	Ap. 12. Escan Marina Tower, apt. 2306	
+12	246	12	246	YES	YES	YES	Ap. 07. Lake Terrace. apt. 3604	
+1810	1780	1810	1780	YES	YES	YES	Ap. 726. ROYAL OCEANIC-1, apt. 202	
+1800	1770	1800	1770	YES	YES	YES	Ap. 728. HAMILTON RESIDENCY, apt. 204	
+1788	1758	1788	1758	YES	YES	YES	Ap. 721. BOTANICA TOWER, apt. 1605	
+1778	1748	1778	1748	YES	YES	YES	Ap. 718. Peninsula Five - 3, apt. 1304	
+1776	1744	1776	1744	YES	YES	YES	Ap. 987. TEST TEST, apt. 00	
+1770	1738	1770	1738	YES	YES	YES	Ap. 712. Indigo Tower, apt. 2211	
+1768	1736	1768	1736	YES	YES	YES	Ap. 715. Sobha Creek Vistas - Tower B, apt. B906	
+1766	1734	1766	1734	YES	YES	YES	Ap. 639. Burj Royal, apt. 5004	
+1758	1726	1758	1726	YES	YES	YES	Ap. 708. Luma22 - East Tower, apt. 106	
+1754	1722	1754	1722	YES	YES	YES	Ap. 711. Azizi Riviera 41, apt. 310	
+1746	1714	1746	1714	YES	YES	YES	Ap. 704. Marina Star, apt. S902	
+1742	1710	1742	1710	YES	YES	YES	Ap. 702. REVA RESIDENCES , apt. 2108	
+1726	1694	1726	1694	YES	YES	YES	Ap. 697. Silverene Tower, apt. 2106	
+1724	1692	1724	1692	YES	YES	YES	Ap. 668. CLAREN TOWER 2, apt. 1902	
+1698	1668	1698	1668	YES	YES	YES	Ap. 641. La Cote Building 1, apt. 410	
+1682	1652	1682	1652	YES	YES	YES	Ap. 531.  The Paragon by IGO, apt. 605	
+1680	1650	1680	1650	YES	YES	YES	Ap. 664. The Paragon  by  IGO, apt. 2106	
+1678	1648	1678	1648	YES	YES	YES	Ap. 682. Prive Residence, apt. 906	
+1672	1642	1672	1642	YES	YES	YES	Ap. 657. Socio Tower 2, apt. 104	
+1664	1632	1664	1632	YES	YES	YES	Ap. 672. Park View Tower, apt. 109	
+1662	1630	1662	1630	YES	YES	YES	Ap. 647. THE COVE Building 1 , apt. 1407	
+1660	1626	1660	1626	YES	YES	YES	Ap. 636. La Voile - Building 1, apt. 312	
+1658	1624	1658	1624	YES	YES	YES	Ap. 643. La Cote Building 5, apt. 404	
+1656	1622	1656	1622	YES	YES	YES	Ap. 646. Bluewaters Residences 2, apt. 405	
+1654	1620	1654	1620	YES	YES	YES	Ap. 645. One Za'abeel The Residences, apt. 20-03	
+1638	1600	1638	1600	YES	YES	YES	Ap. 626. MED 67, apt. 507	
+1620	1580	1620	1580	YES	YES	YES	Ap. 650. Golf Vista Tower A, apt. G+P 04	
+1614	N/A	N/A	N/A	NO	NO	N/A	N/A	Alma API error: HTTP 404
+1610	1570	1610	1570	YES	YES	YES	Ap. 584. ZUMURUD, apt. 1304	
+1596	1554	1596	1554	YES	YES	YES	Ap. 630. ICON 2, apt. 710	
+1586	1546	1586	1546	YES	YES	YES	Ap. 502.  Prive by Damac A, apt. 402	
+1584	1544	1584	1544	YES	YES	YES	Ap. 618. The Sterling East House, apt. 212	
+1580	1540	1580	1540	YES	YES	YES	Ap. 620. Oxford 212, apt. 313	
+1578	1538	1578	1538	YES	YES	YES	Ap. 619. Executive Residences, apt. 106	
+1574	1534	1574	1534	YES	YES	YES	Ap. 610. Central Park , apt. 101	
+1568	1528	1568	1528	YES	YES	YES	Ap. 600. Time Place Tower, apt. 1608	
+1558	1518	1558	1518	YES	YES	YES	Ap. 603. Urban Oasis, apt. 2601	
+1556	1516	1556	1516	YES	YES	YES	Ap. 601. Princess Tower, apt.  3509	
+1552	1512	1552	1512	YES	YES	YES	Ap. 563. Goldcrest Views 2, apt. 1110	
+1544	1504	1544	1504	YES	YES	YES	Ap. 560.  Socio Tower 1, apt.  419	
+1532	1492	1532	1492	YES	YES	YES	Ap. 588. CREEK EDGE Tower 1, apt.  907	
+1518	1468	1518	1468	YES	YES	YES	Ap. 590. Binghatti Heights, apt. 1404	
+1516	1464	1516	1464	YES	YES	YES	Ap. 586. Lotus at Creek Beach Building 2, apt. 304	
+1506	1448	1506	1448	YES	YES	YES	Ap. 554. Orchid Creek Beach, apt. 401	
+1500	1442	1500	1442	YES	YES	YES	Ap. 575. Blue Bell Residence, apt. P2-03	
+1470	1388	1470	1388	YES	YES	YES	Ap. 578. Stella Maris, apt. 1501	
+1464	1384	1464	1384	YES	YES	YES	Ap. 426. Nobles, apt. 205	
+1456	1374	1456	1374	YES	YES	YES	Ap. 559. Zada tower, apt. 1020	
+1450	1366	1450	1366	YES	YES	YES	Ap. 514. CONCEPT 7 RESIDENCES, apt. 204	
+1432	1348	1432	1348	YES	YES	YES	Ap. 557. Beach Isle, apt. 507	
+1430	1346	1430	1346	YES	YES	YES	Ap. 561. Murjan 2, apt. 211	
+1412	1322	1412	1322	YES	YES	YES	Ap. 544.  ZADA TOWER, apt. 203	
+1410	1330	1410	1330	YES	YES	YES	AP. 550. Vera tower, apt. 518	
+1390	1290	1390	1290	YES	YES	YES	Ap. 549. Sparkle Tower 2, apt. 1107	
+1388	1288	1388	1288	YES	YES	YES	Ap. 548. BD Standpoint B, apt. 1208	
+1382	1278	1382	1278	YES	YES	YES	Ap. 545. BLVD Central 2, apt. 1704	
+1376	1276	1376	1276	YES	YES	YES	Ap. 542. Park Heights, apt. 302	
+1372	1272	1372	1272	YES	YES	YES	Ap. 537. Al Waleed Paradise, apt. 503	
+1356	1254	1356	1254	YES	YES	YES	Ap. 533. Azizi Berton, apt. 329	
+1352	1250	1352	1250	YES	YES	YES	Ap. 534. Lake View, apt. 1716	
+1350	1248	1350	1248	YES	YES	YES	Ap. 532. Binghatti Corner, apt. 506	
+1346	1230	1346	1230	YES	YES	YES	Ap. 527. Damac Hills Carson B,  apt. 2012	
+1328	1212	1328	1212	YES	YES	YES	Ap. 517. Concorde tower, apt. 1002	
+1326	1210	1326	1210	YES	YES	YES	Ap. 515. Beach Vista Tower 1, apt. 701	
+1294	1170	1294	1170	YES	YES	YES	Ap. 464. MBL Royal, apt. 204	
+1292	1168	1292	1168	YES	YES	YES	Ap. 441. MBL Royal, apt. 1902	
+1286	1162	1286	1162	YES	YES	YES	Ap. 491. MAG 214, apt. 1703	
+1280	1158	1280	1158	YES	YES	YES	Ap. 495. The Residences at Marina Gate 1, apt. 4204	
+1276	1154	1276	1154	YES	YES	YES	Ap. 494. Socio Tower 2, apt. 109	
+1258	1134	1258	1134	YES	YES	YES	Ap. 489. ZADA tower, apt. 2520	
+1256	1130	1256	1130	YES	YES	YES	Ap. 492. Collective 2.0 Tower A, apt. 711	
+1252	1124	1252	1124	YES	YES	YES	Ap. 274. Azizi Riviera 48, apt. 425	
+1248	1126	1248	1126	YES	YES	YES	Ap. 487. MAG218, apt.  1407	
+1230	1102	1230	1102	YES	YES	YES	Ap. 469. Binghatti Corner, apt. 2404	
+1212	1084	1212	1084	YES	YES	YES	Ap. 437. Azizi Riviera 48, apt. 804	
+1186	1058	1186	1058	YES	YES	YES	Ap. 467. MeDoRe, apt. 1611	
+1168	1044	1168	1044	YES	YES	YES	Ap. 475. Binghatti House, apt. 2403	
+1160	1038	1160	1038	YES	YES	YES	Ap. 383. Binghatti Corner, apt. 2512	
+1150	1030	1150	1030	YES	YES	YES	Ap. 442. Binghatti Corner, apt. 1808	
+1142	1026	1142	1026	YES	YES	YES	Ap. 420. Boutique XII, apt. 502	
+1140	1024	1140	1024	YES	YES	YES	Ap. 450. Luma22 - East Tower, apt. 205	
+1108	994	1108	994	YES	YES	YES	Ap. 368. MJL Asayel 2, apt. 305	
+1100	986	1100	986	YES	YES	YES	Ap. 408. Zumurud, apt. 213	
+1086	980	1086	980	YES	YES	YES	Ap. 421. Park Island Bonaire, apt. 604	
+1060	976	1060	976	YES	YES	YES	Ap. 418. Azizi Riviera 42, apt. 203	
+1058	974	1058	974	YES	YES	YES	Ap. 401. MeDoRe, apt. 1508	
+1050	970	1050	970	YES	YES	YES	Ap. 318. Oakley Square Residences B, apt. 019	
+1046	966	1046	966	YES	YES	YES	Ap. 409. Binghatti Corner, apt. 421	
+1036	958	1036	958	YES	YES	YES	Ap. 429. Al Waleed Paradise, apt. 203	
+1024	950	1024	950	YES	YES	YES	Ap. 248. Binghatti Corner, apt. 1806	
+988	928	988	928	YES	YES	YES	Ap. 391. Summer at Creek Beach Building 4, apt. 406	
+974	914	974	914	YES	YES	YES	Ap. 396. Al Wasl One Residence 2, apt. 2503	
+970	910	970	910	YES	YES	YES	Ap. 247. Binghatti Emerald, apt. 817	
+968	908	968	908	YES	YES	YES	Ap. 310. Azizi Riviera 26, apt. 335	
+966	906	966	906	YES	YES	YES	Ap. 312. La Vie, apt. 2204	
+962	902	962	902	YES	YES	YES	Ap. 367. Aycon City Tower C, apt. 3026	
+948	890	948	890	YES	YES	YES	Ap. 346. Binghatti Crest, apt. 1506	
+946	888	946	888	YES	YES	YES	Ap. 332. Reva Residence, apt. 2008	
+942	886	942	886	YES	YES	YES	Ap. 370. Azizi Berton, apt. 528	
+930	880	930	880	YES	YES	YES	Ap. 349. Roy Mediterranean, apt. 528	
+926	876	926	876	YES	YES	YES	Ap. 315. Me do re, apt. 1308	
+918	868	918	868	YES	YES	YES	Ap. 358. Socio Tower 2, apt. 303	
+916	866	916	866	YES	YES	YES	Ap. 369. The Residence at Marina Gate 2, apt. 3707	
+904	860	904	860	YES	YES	YES	Ap. 340. Al Waleed Paradise , apt. 614	
+900	856	900	856	YES	YES	YES	Ap. 350. Hamilton Residency, apt. 1106	
+892	848	892	848	YES	YES	YES	Ap. 354. Asayel 3, apt. 306	
+890	846	890	846	YES	YES	YES	Ap. 352. Liv Residence, apt. 1102	
+888	844	888	844	YES	YES	YES	Ap. 327. Me Do Re, apt. 1202	
+882	840	882	840	YES	YES	YES	Ap. 328. Palm View, apt. 2301	
+874	836	874	836	YES	YES	YES	Ap. 324. Azizi Mina, apt. 420	
+872	834	872	834	YES	YES	YES	Ap. 209. Azizi Riviera 45, apt. 209	
+870	832	870	832	YES	YES	YES	Ap. 330. Lake Terrace, apt. 2013	
+862	824	862	824	YES	YES	YES	Ap. 250. Goldcrest Views 2, apt. 411	
+860	822	860	822	YES	YES	YES	Ap. 309. G R Travo B, apt. 207	
+856	818	856	818	YES	YES	YES	Ap. 291. Elite Downtown residence, apt. 507	
+854	816	854	816	YES	YES	YES	Ap. 305. Starz Tower 1, apt. 203	
+852	814	852	814	YES	YES	YES	Ap. 316. Concorde Tower 1, apt. 3711	
+850	812	850	812	YES	YES	YES	Ap. 314. Silverene Towers A, apt. 1202	
+840	808	840	808	YES	YES	YES	Ap. 302. May Residence Tower 4, apt. 309	
+838	806	838	806	YES	YES	YES	Ap. 317. Meera Tower, apt. 1009	
+836	804	836	804	YES	YES	YES	Ap. 283. MeDoRe, apt. 408	
+834	802	834	802	YES	YES	YES	Ap. 288. Park Point Building B, apt. 313	
+832	800	832	800	YES	YES	YES	Ap. 289. Park Ridge Tower C, apt. 1601	
+830	798	830	798	YES	YES	YES	Ap. 290. Park Ridge Tower C, apt. 10	
+828	796	828	796	YES	YES	YES	Ap. 295. Park Ridge Tower C, apt. 403	
+822	790	822	790	YES	YES	YES	Ap. 308. Azizi Berton, apt. 116	
+820	788	820	788	YES	YES	YES	Ap. 294. Reva Residences, apt. 2618	
+818	786	818	786	YES	YES	YES	Ap. 115. MeDoRe, apt. 1010	
+814	782	814	782	YES	YES	YES	Ap. 293. The Sterling East House, apt. 217	
+812	780	812	780	YES	YES	YES	Ap. 262. Azizi Riviera 36, apt. 105	
+808	776	808	776	YES	YES	YES	Ap. 255. The V Tower, apt. 819	
+798	764	798	764	YES	YES	YES	Ap. 243. Azizi Riviera 44, apt. 602	
+796	762	796	762	YES	YES	YES	Ap. 297. Ahad Residences, apt. 1006	
+794	760	794	760	YES	YES	YES	Ap. 298. Ahad Residences, apt. 1306	
+778	744	778	744	YES	YES	YES	Ap. 292. Mayfair Residence, apt. 1005	
+764	738	764	738	YES	YES	YES	Ap. 234. Zada Tower, apt. 2603	
+762	734	762	734	YES	YES	YES	Ap. 285. Bayshore at Creek Beach Building 4, apt. 404	
+740	718	740	718	YES	YES	YES	Ap. 284. MeDoRe, apt. 510	
+732	710	732	710	YES	YES	YES	Ap. 281. Jumairah Bay Tower X1, apt. 209	
+730	708	730	708	YES	YES	YES	Ap. 278. Lakeshore tower 1, apt. 807	
+728	706	728	706	YES	YES	YES	Ap. 272. Sobha Hartland Waves, apt. 1706	
+726	704	726	704	YES	YES	YES	Ap. 277. Concorde tower, apt. 401	
+680	692	680	692	YES	YES	YES	Ap. 275. Azizi Riviera 42, apt. 501	
+644	684	644	684	YES	YES	YES	Ap. 266. No.9, apt. 205	
+642	682	642	682	YES	YES	YES	Ap. 252. Bay Central 2, apt. 701	
+640	680	640	680	YES	YES	YES	Ap. 254. Lake view, apt. 1510	
+628	676	628	676	YES	YES	YES	Ap. 267. Elite Residence, apt. 2010	
+626	674	626	674	YES	YES	YES	Ap. 259. Park Ridge Tower C, apt. 221	
+572	658	572	658	YES	YES	YES	Ap. 261. Azizi Riviera 42, apt. 308	
+562	648	562	648	YES	YES	YES	Ap. 245. Executive residences 2, apt. 129	
+558	644	558	644	YES	YES	YES	Ap. 242. saba3, apt. 1604	
+540	626	540	626	YES	YES	YES	Ap. 236. Binghatti Nova, apt. 613	
+538	624	538	624	YES	YES	YES	Ap. 233. Concorde Tower, apt. 1111	
+534	620	534	620	YES	YES	YES	Ap. 235. Prive Residence, apt. 105	
+532	618	532	618	YES	YES	YES	Ap. 231. Jumairah Bay tower X1-1, apt. 605	
+530	616	530	616	YES	YES	YES	Ap. 230. Yacht bay, apt. 504	
+494	578	494	578	YES	YES	YES	Ap. 226. Forte T1, apt. 211	
+478	562	478	562	YES	YES	YES	Ap. 219. Binghatti Nova, apt. 1010	
+468	554	468	554	YES	YES	YES	Ap. 217. Summer at Creek Beach Building 3, apt. 201	
+440	534	440	534	YES	YES	YES	Ap. 215. Binghatti Canal, apt. 1705	
+428	520	428	520	YES	YES	YES	Ap. 208. Park Ridge Tower C, apt. 306	
+424	516	424	516	YES	YES	YES	Ap. 206. Studio One Tower, apt. 2107	
+422	514	422	514	YES	YES	YES	Ap. 205. Sky Garden, apt. 409	
+418	510	418	510	YES	YES	YES	Ap. 203. MJL - Lamtara 2, apt. 707	
+414	474	414	474	YES	YES	YES	Ap. 201. Lake City Tower, apt. 1303	
+412	476	412	476	YES	YES	YES	Ap. 200. AG Tower, apt. 1109B	
+408	650	408	650	YES	YES	YES	Ap. 198. Azizi Berton, apt. 706	
+406	482	406	482	YES	YES	YES	Ap. 197. Prive Residence , apt. 1004	
+396	492	396	492	YES	YES	YES	Ap. 192. Marina Wharf 2, apt. 1103	
+394	494	394	494	YES	YES	YES	Ap. 191. Marina Quays West , apt. 701	
+384	504	384	504	YES	YES	YES	Ap. 186. Mag218, apt. 4104	
+380	508	380	508	YES	YES	YES	Ap. 184. Westwood, apt. 402	
+360	452	360	452	YES	YES	YES	Ap. 176. Dubai Gate 1, apt. 709	
+352	442	352	442	YES	YES	YES	Ap. 172. Bay Central 1, apt. 3102	
+346	436	346	436	YES	YES	YES	Ap. 169. Yacht Bay, apt. 202	
+344	434	344	434	YES	YES	YES	Ap. 168. Panoramic, apt. 6007	
+336	426	336	426	YES	YES	YES	Ap. 164. Azizi Samia , apt. 621	
+334	424	334	424	YES	YES	YES	Ap. 163. Ocean Heights, apt. 1202	
+332	422	332	422	YES	YES	YES	Ap. 162. Princess tower, apt. 1202	
+324	414	324	414	YES	YES	YES	Ap. 158. Royal Oceanic, apt. 705	
+312	402	312	402	YES	YES	YES	Ap. 152. Princess tower, apt. 3102	
+310	400	310	400	YES	YES	YES	Ap. 151. Discovery Gardens MED 64, apt. 405	
+300	390	300	390	YES	YES	YES	Ap. 146. Saba 2, apt. 2904	
+298	386	298	386	YES	YES	YES	Ap. 145. Elite Residence, apt. 1410	
+296	384	296	384	YES	YES	YES	Ap. 144. Zada Tower, apt. 2009	
+290	378	290	378	YES	YES	YES	Ap. 141. Lake view, apt. 703	
+286	374	286	374	YES	YES	YES	Ap. 139. Continental tower, apt. 2405	
+282	370	282	370	YES	YES	YES	Ap. 137. Jumeirah Bay Tower X1 - JLT, apt. 705	
+272	360	272	360	YES	YES	YES	Ap. 133. Al Waleed Paradise, apt. 1204	
+268	356	268	356	YES	YES	YES	Ap. 131. O2 Residences , apt. 201	
+266	352	266	352	YES	YES	YES	Ap. 130. Discovery Gardens 91, apt. 511	
+262	348	262	348	YES	YES	YES	Ap. 128. Dubai Gate 1, apt. 1006	
+260	346	260	346	YES	YES	YES	Ap. 127. Lake View, apt. 2801	
+254	340	254	340	YES	YES	YES	Ap. 124. Saba 3 Tower, apt. 1112	
+248	334	248	334	YES	YES	YES	Ap. 121. Sparkle Tower 2, apt. 605	
+246	332	246	332	YES	YES	YES	Ap. 120. Lakeside, apt. 610	
+240	326	240	326	YES	YES	YES	Ap. 117. Burj Royale, apt. 1805	
+234	320	234	320	YES	YES	YES	Ap. 114. Prime Views , apt. 339	
+232	318	232	318	YES	YES	YES	Ap. 113. Bay Central 1, apt. 1610	
+228	314	228	314	YES	YES	YES	Ap. 111. Lake View , apt. 605	
+224	312	224	312	YES	YES	YES	Ap. 109. Candace Aster, apt. 308	
+218	306	218	306	YES	YES	YES	Ap. 106. Damac Heights, apt. 2810	
+216	304	216	304	YES	YES	YES	Ap. 105. Candace Aster, apt. 514	
+212	300	212	300	YES	YES	YES	Ap. 103. Goldcrest Executive, apt. 2616	
+208	296	208	296	YES	YES	YES	Ap. 101. Fairview, apt. 1605	
+202	292	202	292	YES	YES	YES	Ap. 95. Mag 218, apt. 5108	
+198	286	198	286	YES	YES	YES	Ap. 100. Saba 2, apt. 2305	
+192	280	192	280	YES	YES	YES	Ap. 97. Princess, apt. 2002	
+188	274	188	274	YES	YES	YES	Ap. 91.  Bay Central 1, apt. 2508	
+186	272	186	272	YES	YES	YES	Ap. 90. Creek Vistas A, apt. 1809	
+184	270	184	270	YES	YES	YES	Ap. 89. No.9, apt. 1708	
+182	268	182	268	YES	YES	YES	Ap. 88. Time Place, apt. 2001	
+180	266	180	266	YES	YES	YES	Ap. 87. Marina Tower, apt. 3102	
+178	264	178	264	YES	YES	YES	Ap. 86. The Bay, apt.  1408	
+174	260	174	260	YES	YES	YES	Ap. 93. Sparkle tower 2, apt. 1309	
+162	10	162	10	YES	YES	YES	Ap. 82.  Goldcrest Executive, apt. 2117	
+158	40	158	40	YES	YES	YES	Ap. 80. Beach vista 2, apt. 2301	
+154	36	154	36	YES	YES	YES	Ap. 78. Zada tower, apt. 218	
+152	34	152	34	YES	YES	YES	Ap. 77. DEC Towers, apt. 10	
+150	32	150	32	YES	YES	YES	Ap. 76. The Residence at Marina Gate 2, apt. 3310	
+148	30	148	30	YES	YES	YES	Ap. 75. Saba 3, apt. 3110	
+146	N/A	N/A	N/A	NO	NO	N/A	N/A	Alma API error: HTTP 404
+144	26	144	26	YES	YES	YES	Ap. 73. Sobha Creek Vistas Reserve A (left side), apt. 1411	
+138	N/A	N/A	N/A	NO	NO	N/A	N/A	Alma API error: HTTP 404
+134	16	134	16	YES	YES	YES	Ap. 68. Princess tower, apt. 4410	
+132	14	132	14	YES	YES	YES	Ap. 67. GoldCrest Executive, apt. 2310	
+128	210	128		YES	NO	NO	Ap. 65. Yacht Bay, apt. 1504	
+124	206	124	206	YES	YES	YES	Ap. 63. Bonaire, apt. 2404	
+122	204	122	204	YES	YES	YES	Ap. 62. Princess, apt. 2704	
+120	202	120	202	YES	YES	YES	Ap. 61. Park Point. Block B. apt. 513	
+114	186	114	186	YES	YES	YES	Ap. 58. Burj Al Noujoum, apt. 2304	
+110	182	110	182	YES	YES	YES	Ap. 56. Concorde Tower, apt. 2106	
+104	176	104	176	YES	YES	YES	Ap. 53. Reva Residences, apt. 617	
+100	172	100	172	YES	YES	YES	Ap. 51. Jumeirah Bay X1, apt. 1008	
+96	168	96	168	YES	YES	YES	Ap. 49. Concorde Tower, apt. 1706	
+94	166	94	166	YES	YES	YES	Ap. 48. LIV Residence, apt. 203	
+90	162	90	162	YES	YES	YES	Ap. 46. Botanica, apt. 808	
+88	160	88	160	YES	YES	YES	Ap. 45. Iris Blue, apt. 2106	
+86	158	86	158	YES	YES	YES	Ap. 44. Studio One, apt. 2701	
+78	150	78	150	YES	YES	YES	Ap. 40. Marina View A, apt. 604	
+76	148	76	148	YES	YES	YES	Ap. 39. Dubai Gate 1, apt. 210	
+74	146	74	146	YES	YES	YES	Ap. 38. Al Arta 1, apt. 216	
+70	142	70	142	YES	YES	YES	Ap. 36. Princess Tower, apt. 807	
+68	140	68	140	YES	YES	YES	Ap. 35. Concorde Tower, apt. 1309	
+62	134	62	134	YES	YES	YES	Ap. 32. Princess tower, apt. 6001	
+50	114	50	114	YES	YES	YES	Ap. 26. Sulafa Tower, apt. 2204	
+38	94	38	94	YES	YES	YES	Ap. 20. Dubai Gate 1, apt. 1309	
+36	92	36	92	YES	YES	YES	Ap. 19. MJL Rahaal 2, apt. 506	
+30	86	30	86	YES	YES	YES	Ap. 16. Bahar 6, apt. 105	
+24	80	24	80	YES	YES	YES	Ap. 13. Al Waleed Paradise, apt. 1005	

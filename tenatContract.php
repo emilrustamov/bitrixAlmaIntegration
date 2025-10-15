@@ -9,7 +9,6 @@ require_once('ProjectMapping.php');
 
 Config::load();
 
-// Получаем проект из параметра или определяем автоматически
 $projectName = $_GET['project'] ?? 'Dubai';
 $projectConfig = ProjectMapping::getProjectConfig($projectName);
 
@@ -34,83 +33,142 @@ class AlmaTenantContractApi {
     public function syncContract(array $bitrixData) {
         $this->validateBitrixData($bitrixData);
 
+        Logger::info("syncContract called", [
+            'contract_id' => $bitrixData['id'],
+            'unit_external_id' => $bitrixData['unit_external_id'] ?? 'not_set',
+            'client_id' => $bitrixData['client_data']['id'] ?? 'not_set'
+        ], 'contract', $bitrixData['id']);
+
         try {
             $clientId = $this->ensureClientExists($bitrixData['client_data']);
-            $unitId = $this->getCorrectAlmaUnitId($bitrixData['unit_external_id']);
+            $unitId = $this->findCorrectAlmaObject($bitrixData);
             $this->validateRentalObject($unitId, $bitrixData);
             
             $contractData = $this->prepareContractData($bitrixData, $clientId, $unitId);
-            $externalId = $contractData['external_id'];
             
-            $existingContract = $this->getContractByExternalId($externalId);
-
-            if ($existingContract) {
-                // Проверяем, изменился ли клиент
-                if ($existingContract['unit_usage']['client_id'] != $clientId) {
-                    Logger::info("Client changed in contract, creating new contract", [
-                        'old_client_id' => $existingContract['unit_usage']['client_id'],
-                        'new_client_id' => $clientId,
-                        'contract_external_id' => $externalId
-                    ]);
-                    return $this->createContract($contractData);
-                } else {
-                    return $this->updateContract($existingContract['id'], $contractData);
-                }
-            } else {
-                // Проверяем, есть ли другие контракты на этом объекте
-                $this->checkExistingContractsOnUnit($unitId, $externalId);
-                return $this->createContract($contractData);
-            }
+            return $this->createOrUpdateContract($contractData, $bitrixData['id']);
         } catch (Exception $e) {
             Logger::error("Contract synchronization failed: " . $e->getMessage(), [], 'contract', $bitrixData['id'] ?? 'unknown');
             throw new Exception("Contract synchronization failed: " . $e->getMessage());
         }
     }
 
+    public function createOrUpdateContract($contractData, $bitrixId) {
+        $externalId = $contractData['external_id'];
+        
+        // Пытаемся найти существующий контракт
+        $existingContract = $this->getContractByExternalId($externalId);
+        
+        if ($existingContract) {
+            // Контракт найден - проверяем архивность использования
+            $existingFull = $this->getContract($existingContract['id']);
+            $isArchivedUsage = isset($existingFull['unit_usage']['is_archived']) ? (bool)$existingFull['unit_usage']['is_archived'] : false;
+
+            if ($isArchivedUsage) {
+                // Нельзя редактировать архивное использование — создаём НОВЫЙ контракт
+                // Используем тот же external_id; если бэкенд Alma допускает дубликаты по external_id для новых usage, контракт создастся
+                Logger::info("Existing contract has archived usage; creating a new contract with the same external_id instead of updating", [
+                    'old_contract_id' => $existingContract['id'],
+                    'external_id' => $externalId
+                ], 'contract', $bitrixId);
+
+                return $this->createContract($contractData);
+            } else {
+                // Можно обновлять
+                Logger::info("Updating existing contract", [
+                    'contract_id' => $existingContract['id'],
+                    'external_id' => $externalId
+                ], 'contract', $bitrixId);
+                
+                return $this->updateContract($existingContract['id'], $contractData);
+            }
+        } else {
+            // Контракт не найден - создаем новый
+            Logger::info("Creating new contract", [
+                'external_id' => $externalId
+            ], 'contract', $bitrixId);
+            
+            return $this->createContract($contractData);
+        }
+    }
+
     public function createContract(array $contractData) {
         $url = $this->apiUrl . 'realty/contracts/tenant_contracts/';
         
-        // Логируем данные контракта перед созданием
-        Logger::info("Creating contract", [
-            'contract_data' => $contractData,
-            'url' => $url
+        Logger::info("Creating contract with data", [
+            'url' => $url,
+            'contract_data' => $contractData
         ], 'contract', $contractData['external_id'] ?? 'unknown');
         
-        $response = $this->sendRequest('POST', $url, $contractData);
-        
-        $this->actionLogger->logContractCreation(
-            $response['id'],
-            $contractData['name'] ?? '',
-            $contractData['client_id'] ?? '',
-            $contractData['unit_id'] ?? '',
-            [
-                'external_id' => $contractData['external_id'] ?? '',
-                'start_date' => $contractData['start_date'] ?? '',
-                'end_date' => $contractData['end_date'] ?? '',
-                'price' => $contractData['price'] ?? ''
-            ]
-        );
-        
-        return $response;
+        try {
+            $response = $this->sendRequest('POST', $url, $contractData);
+            
+            Logger::info("Contract created successfully", [
+                'contract_id' => $response['id'] ?? 'unknown',
+                'external_id' => $contractData['external_id'] ?? 'unknown'
+            ], 'contract', $contractData['external_id'] ?? 'unknown');
+            
+            $this->actionLogger->logContractCreation(
+                $response['id'],
+                $contractData['name'] ?? '',
+                $contractData['client_id'] ?? '',
+                $contractData['unit_id'] ?? '',
+                [
+                    'external_id' => $contractData['external_id'] ?? '',
+                    'start_date' => $contractData['start_date'] ?? '',
+                    'end_date' => $contractData['end_date'] ?? '',
+                    'price' => $contractData['price'] ?? ''
+                ]
+            );
+            
+            return ['code' => 201, 'response' => $response, 'method' => 'POST'];
+        } catch (Exception $e) {
+            Logger::error("Failed to create contract: " . $e->getMessage(), [
+                'contract_data' => $contractData,
+                'url' => $url
+            ], 'contract', $contractData['external_id'] ?? 'unknown');
+            
+            return ['code' => 400, 'response' => ['error' => $e->getMessage()], 'method' => 'POST'];
+        }
     }
-
-
 
 
     public function updateContract($contractId, array $contractData) {
         $oldContractData = $this->getContract($contractId);
+
+        // Формируем данные для PATCH отдельно, чтобы сохранить исходные для возможного POST-фолбэка
+        $patchData = $contractData;
+        unset($patchData['client_id']); // Alma не позволяет менять клиента при PATCH
         
-        $url = $this->apiUrl . 'realty/contracts/tenant_contracts/' . $contractId . '/';
-        $response = $this->sendRequest('PATCH', $url, $contractData);
-        
-        $this->actionLogger->logUpdate(
-            $contractId,
-            $contractData['name'] ?? '',
-            $oldContractData,
-            $contractData
-        );
-        
-        return $response;
+        try {
+            $url = $this->apiUrl . 'realty/contracts/tenant_contracts/' . $contractId . '/';
+            $response = $this->sendRequest('PATCH', $url, $patchData);
+            
+            $this->actionLogger->logUpdate(
+                $contractId,
+                $contractData['name'] ?? '',
+                $oldContractData,
+                $patchData
+            );
+
+            return ['code' => 200, 'response' => $response, 'method' => 'PATCH'];
+        } catch (Exception $e) {
+            $message = $e->getMessage();
+            // Если Alma запрещает редактировать архивное использование — пробуем создать новый контракт с теми же данными
+            if (stripos($message, 'forbidden to edit the archive usage') !== false) {
+                Logger::warning("PATCH forbidden on archived usage; falling back to POST create", [
+                    'contract_id' => $contractId,
+                    'error' => $message
+                ], 'contract', $contractId);
+                try {
+                    $createResult = $this->createContract($contractData);
+                    return $createResult;
+                } catch (Exception $postEx) {
+                    return ['code' => 400, 'response' => ['error' => $postEx->getMessage()], 'method' => 'POST'];
+                }
+            }
+            return ['code' => 400, 'response' => ['error' => $message], 'method' => 'PATCH'];
+        }
     }
 
     public function getContract($contractId) {
@@ -119,92 +177,40 @@ class AlmaTenantContractApi {
     }
 
     public function getContractByExternalId($externalId) {
-        $url = $this->apiUrl . 'realty/contracts/tenant_contracts/external_id/' . $externalId . '/';
-
+        // Согласно документации, API external_id/ для GET не существует
+        // Ищем в общем списке контрактов
         try {
-            $result = $this->sendRequest('GET', $url);
-            return $result;
-        } catch (Exception $e) {
-            if ($e->getCode() === 404) {
-                return null;
+            $url = $this->apiUrl . 'realty/contracts/tenant_contracts/';
+            $contracts = $this->sendRequest('GET', $url);
+            
+            if (is_array($contracts)) {
+                foreach ($contracts as $contract) {
+                    if (isset($contract['external_id']) && $contract['external_id'] == $externalId) {
+                        return $contract;
+                    }
+                }
             }
-            Logger::error("Error getting contract by external_id: $externalId - " . $e->getMessage());
-            throw $e;
+            return null;
+        } catch (Exception $e) {
+            Logger::error("Error searching contracts by external_id: $externalId - " . $e->getMessage());
+            return null;
         }
     }
 
-
-
-    public function getRentalObjectId($externalId) {
-        $url = $this->apiUrl . 'realty/rental_object/' . $externalId . '/';
-        
-        // Логируем запрос к rental_object API
-        Logger::info("Getting rental object", [
-            'external_id' => $externalId,
-            'url' => $url
-        ], 'contract', $externalId);
-        
-        $response = $this->sendRequest('GET', $url);
-
-        if (!isset($response['id'])) {
-            Logger::warning("Rental object not found via rental_object API", ['external_id' => $externalId]);
-            throw new Exception("Rental object not found for external_id: $externalId");
-        }
-
-        // Сохраняем информацию о типе объекта для дальнейшего использования
-        $this->isRoom = isset($response['parent_unit']) && $response['parent_unit'] !== null;
-
-        // Логируем найденный объект
-        Logger::info("Rental object found", [
-            'external_id' => $externalId,
-            'alma_id' => $response['id'],
-            'is_room' => $this->isRoom,
-            'parent_unit' => $response['parent_unit'] ?? null,
-            'additional_external_id' => $response['additional_external_id'] ?? null
-        ], 'contract', $externalId);
-
-        return $response['id'];
-    }
 
     private function validateRentalObject($unitId, array $bitrixData) {
         try {
-            // Сначала пробуем как юнит (room)
-            $unitUrl = $this->apiUrl . 'realty/rooms/' . $unitId . '/';
-            try {
-                $unitDetails = $this->sendRequest('GET', $unitUrl);
-                $this->isRoom = true;
-            } catch (Exception $e) {
-                // Если не найден как юнит, пробуем как апартамент (unit)
-                $unitUrl = $this->apiUrl . 'realty/units/' . $unitId . '/';
-                $unitDetails = $this->sendRequest('GET', $unitUrl);
-                $this->isRoom = false;
-            }
+            // Получаем детали объекта для проверки архивации
+            $endpoint = $this->isRoom ? 'realty/rooms/' : 'realty/units/';
+            $url = $this->apiUrl . $endpoint . $unitId . '/';
+            $unitDetails = $this->sendRequest('GET', $url);
             
             $unitName = $unitDetails['name'] ?? 'Unknown';
-            $contractId = $bitrixData['id'] ?? 'unknown';
             $objectType = $this->isRoom ? 'room' : 'unit';
-            $unitStatus = $unitDetails['status'] ?? 'unknown';
             
-            // Логируем статус объекта для отладки
-            Logger::info("Unit status check", [
-                'unit_id' => $unitId,
-                'unit_name' => $unitName,
-                'status' => $unitStatus,
-                'contract_id' => $contractId
-            ], 'contract', $contractId);
-            
-            // Закомментировано для тестирования - разрешаем создание контрактов на заблокированных объектах
-            // if (isset($unitDetails['status']) && $unitDetails['status'] === 'blocked') {
-            //     throw new Exception("Cannot create contract on blocked $objectType: $unitName");
-            // }
-            
-            // Если объект заархивирован - разархивируем его
+            // Проверяем, что объект не заархивирован
             if (isset($unitDetails['is_archived']) && $unitDetails['is_archived']) {
-                Logger::warning("$objectType $unitName is archived, unarchiving for new contract", [], 'contract', $contractId);
-                $this->unarchiveUnit($unitId);
-                
-                // Получаем обновленные данные после разархивирования
-                $unitDetails = $this->sendRequest('GET', $unitUrl);
+                throw new Exception("Cannot create contract on archived $objectType: $unitName");
             }
             
         } catch (Exception $e) {
@@ -213,38 +219,29 @@ class AlmaTenantContractApi {
         }
     }
 
-    private function unarchiveUnit($unitId) {
-        $endpoint = $this->isRoom ? 'realty/rooms/' : 'realty/units/';
-        $url = $this->apiUrl . $endpoint . $unitId . '/archive/';
-        $data = ['is_archived' => false];
-        return $this->sendRequest('PATCH', $url, $data);
-    }
 
     public function ensureClientExists(array $clientData) {
+        Logger::info("ensureClientExists called with clientData", [
+            'client_id' => $clientData['id'],
+            'email' => $clientData['email'],
+            'first_name' => $clientData['first_name'],
+            'last_name' => $clientData['last_name']
+        ], 'contract', $clientData['id']);
+        
         try {
-            // Сначала пытаемся найти по external_id
             $url = $this->apiUrl . 'users/clients/external_id/' . $clientData['id'] . '/';
             $client = $this->sendRequest('GET', $url);
             
-            // Проверяем, не заархивирован ли клиент
-            if (isset($client['status']) && $client['status'] === 'archived') {
-                Logger::warning("Client is archived, unarchiving for new contract", ['client_id' => $client['id']]);
-                $this->unarchiveClient($client['id']);
-                
-                // Получаем обновленные данные клиента после разархивирования
-                $client = $this->sendRequest('GET', $url);
-            }
             
             return $client['id'];
         } catch (Exception $e) {
-            // Если не нашли по external_id, пытаемся найти по email
             if (!empty($clientData['email'])) {
                 try {
-                    $searchUrl = $this->apiUrl . 'users/clients/?email=' . urlencode($clientData['email']);
+                    // Согласно документации, используем правильный API для получения списка клиентов
+                    $searchUrl = $this->apiUrl . 'users/clients/';
                     $searchResponse = $this->sendRequest('GET', $searchUrl);
                     
                     if (is_array($searchResponse) && !empty($searchResponse)) {
-                        // Ищем клиента с нужным email
                         $existingClient = null;
                         foreach ($searchResponse as $client) {
                             if (isset($client['email']) && $client['email'] === $clientData['email']) {
@@ -253,31 +250,27 @@ class AlmaTenantContractApi {
                             }
                         }
                         
-                        if (!$existingClient) {
-                            Logger::warning("Client with email not found in search results", ['email' => $clientData['email']]);
-                            throw new Exception("Client with email not found: " . $clientData['email']);
+                        if ($existingClient) {
+                            Logger::info("Found existing client by email, updating external_id", [
+                                'existing_client_id' => $existingClient['id'],
+                                'new_external_id' => $clientData['id'],
+                                'email' => $clientData['email']
+                            ]);
+                            
+                            $updateUrl = $this->apiUrl . 'users/clients/' . $existingClient['id'] . '/';
+                            $this->sendRequest('PATCH', $updateUrl, ['external_id' => $clientData['id']]);
+                            
+                            return $existingClient['id'];
                         }
-                        Logger::warning("Found existing client by email, updating external_id", [
-                            'existing_client_id' => $existingClient['id'],
-                            'new_external_id' => $clientData['id'],
-                            'email' => $clientData['email']
-                        ]);
-                        
-                        // Обновляем external_id существующего клиента
-                        $updateUrl = $this->apiUrl . 'users/clients/' . $existingClient['id'] . '/';
-                        $this->sendRequest('PATCH', $updateUrl, ['external_id' => $clientData['id']]);
-                        
-                        return $existingClient['id'];
                     }
                 } catch (Exception $searchException) {
                     Logger::warning("Failed to search client by email: " . $searchException->getMessage());
                 }
             }
             
-            // Если не нашли ни по external_id, ни по email, создаем нового
             try {
                 $url = $this->apiUrl . 'users/clients/';
-                $birthday = !empty($clientData['birthday']) ? $this->formatBirthday($clientData['birthday']) : null;
+                $birthday = '1999-06-03T00:00:00Z';
                 $newClient = $this->sendRequest('POST', $url, [
                     'external_id' => $clientData['id'],
                     'first_name' => $clientData['first_name'],
@@ -295,119 +288,24 @@ class AlmaTenantContractApi {
         }
     }
 
-    private function unarchiveClient($clientId) {
-        try {
-            $url = $this->apiUrl . 'users/clients/' . $clientId . '/';
-            $data = ['status' => 'active'];
-            return $this->sendRequest('PATCH', $url, $data);
-        } catch (Exception $e) {
-            Logger::warning("Could not unarchive client directly: " . $e->getMessage(), ['client_id' => $clientId]);
-            return true;
-        }
-    }
-
-    private function checkExistingContractsOnUnit($unitId, $externalId) {
-        try {
-            $url = $this->apiUrl . 'realty/contracts/tenant_contracts/?unit_id=' . $unitId;
-            $contracts = $this->sendRequest('GET', $url);
-            
-            Logger::info("Existing contracts on unit", [
-                'unit_id' => $unitId,
-                'contracts_count' => is_array($contracts) ? count($contracts) : 0,
-                'contracts' => $contracts,
-                'external_id' => $externalId
-            ], 'contract', $externalId);
-            
-            // Если есть заархивированные контракты, попробуем их разархивировать
-            if (is_array($contracts)) {
-                foreach ($contracts as $contract) {
-                    if (isset($contract['unit_usage']['is_archived']) && $contract['unit_usage']['is_archived']) {
-                        Logger::warning("Found archived contract, attempting to unarchive", [
-                            'contract_id' => $contract['id'],
-                            'unit_id' => $unitId
-                        ], 'contract', $externalId);
-                        
-                        try {
-                            $this->unarchiveContract($contract['id']);
-                        } catch (Exception $e) {
-                            Logger::warning("Could not unarchive contract: " . $e->getMessage(), [
-                                'contract_id' => $contract['id']
-                            ], 'contract', $externalId);
-                        }
-                    }
-                }
-            }
-        } catch (Exception $e) {
-            Logger::warning("Could not check existing contracts: " . $e->getMessage(), [
-                'unit_id' => $unitId
-            ], 'contract', $externalId);
-        }
-    }
-
-    private function unarchiveContract($contractId) {
-        try {
-            $url = $this->apiUrl . 'realty/contracts/tenant_contracts/' . $contractId . '/';
-            $data = ['unit_usage' => ['is_archived' => false]];
-            return $this->sendRequest('PATCH', $url, $data);
-        } catch (Exception $e) {
-            Logger::warning("Could not unarchive contract directly: " . $e->getMessage(), ['contract_id' => $contractId]);
-            return true;
-        }
-    }
-    
     private function formatDate($dateStr) {
         if (empty($dateStr)) {
-            throw new InvalidArgumentException("Invalid date format: пустая строка");
+            throw new InvalidArgumentException("Date is required");
         }
-        $date = DateTime::createFromFormat('Y-m-d', $dateStr);
-        if ($date) {
+        
+        try {
+            $date = new DateTime($dateStr);
             return $date->format('Y-m-d\T00:00:00\Z');
+        } catch (Exception $e) {
+            throw new InvalidArgumentException("Invalid date format: $dateStr");
         }
-        $date = DateTime::createFromFormat(DateTime::ATOM, $dateStr);
-        if ($date) {
-            return $date->format('Y-m-d\T00:00:00\Z');
-        }
-        if (preg_match('/^\d{4}-\d{2}-\d{2}/', $dateStr, $matches)) {
-            return $matches[0] . 'T00:00:00Z';
-        }
-        throw new InvalidArgumentException("Invalid date format: $dateStr");
     }
 
-    private function formatBirthday($dateStr) {
-        if (empty($dateStr)) {
-            return null;
-        }
-        
-        $formats = ['Y-m-d', 'Y-m-d H:i:s', 'Y-m-d\TH:i:s\Z', 'Y-m-d\TH:i:s+00:00'];
-        
-        foreach ($formats as $format) {
-            $date = DateTime::createFromFormat($format, $dateStr);
-            if ($date) {
-                return $date->format('Y-m-d\T00:00:00\Z');
-            }
-        }
-        
-        $date = new DateTime($dateStr);
-        if ($date) {
-            return $date->format('Y-m-d\T00:00:00\Z');
-        }
-        
-        throw new InvalidArgumentException("Invalid birthday format: $dateStr");
-    }
 
     private function prepareContractData(array $bitrixData, $clientId, $unitId) {
         $startDate = $this->formatDate($bitrixData['UF_CRM_20_CONTRACT_START_DATE']);
         $endDate = $this->formatDate($bitrixData['UF_CRM_20_CONTRACT_END_DATE']);
         
-        // Логируем даты для отладки
-        Logger::info("Contract dates processing", [
-            'contract_id' => $bitrixData['id'],
-            'raw_start_date' => $bitrixData['UF_CRM_20_CONTRACT_START_DATE'],
-            'raw_end_date' => $bitrixData['UF_CRM_20_CONTRACT_END_DATE'],
-            'formatted_start_date' => $startDate,
-            'formatted_end_date' => $endDate,
-            'unit_id' => $unitId
-        ], 'contract', $bitrixData['id']);
         
         $contractData = [
             'external_id' => $bitrixData['id'],
@@ -442,6 +340,8 @@ class AlmaTenantContractApi {
         return $contractData;
     }
 
+    // Удалено: генерация нового external_id больше не используется
+
     private function validateBitrixData(array $bitrixData) {
         $requiredFields = [
             'id', 'title', 'unit_external_id', 'client_data',
@@ -465,51 +365,26 @@ class AlmaTenantContractApi {
             }
         }
 
-        $this->validateDate($bitrixData['UF_CRM_20_CONTRACT_START_DATE']);
-        $this->validateDate($bitrixData['UF_CRM_20_CONTRACT_END_DATE']);
-    }
-
-    private function validateDate($dateStr) {
-        if (empty($dateStr)) {
-            throw new InvalidArgumentException("Invalid date format: пустая строка");
-        }
-        if (DateTime::createFromFormat('Y-m-d', $dateStr)) {
-            return;
-        }
-        if (DateTime::createFromFormat(DateTime::ATOM, $dateStr)) {
-            return;
-        }
-        if (preg_match('/^\d{4}-\d{2}-\d{2}/', $dateStr)) {
-            return;
-        }
-        throw new InvalidArgumentException("Invalid date format: $dateStr. Expected Y-m-d or ISO8601");
     }
 
     private function mapContractType($bitrixType) {
-        $mapping = [
-            '884' => 'Short term from 1 to 3 months',
-            '886' => 'Long-term 3+ months', 
-            '1304' => 'Booking',
-            '1306' => 'Short contract up to 1 month',
-            '6578' => 'Less than a month'
-        ];
-
-        $bitrixTypeStr = (string)$bitrixType;
-
-        // Исключаем Airbnb и Ejari контракты из синхронизации
-        if ($bitrixTypeStr === '882') {
-            throw new InvalidArgumentException("Airbnb contracts are not synchronized to Alma");
-        }
+        $mappedType = ProjectMapping::mapContractType($bitrixType, $GLOBALS['projectName']);
         
-        if ($bitrixTypeStr === '8672') {
-            throw new InvalidArgumentException("Ejari contracts are not synchronized to Alma");
-        }
-
-        if (!isset($mapping[$bitrixTypeStr])) {
+        if ($mappedType === null) {
+            $bitrixTypeStr = (string)$bitrixType;
+            
+            if ($bitrixTypeStr === '882') {
+                throw new InvalidArgumentException("Airbnb contracts are not synchronized to Alma");
+            }
+            
+            if ($bitrixTypeStr === '8672') {
+                throw new InvalidArgumentException("Ejari contracts are not synchronized to Alma");
+            }
+            
             throw new InvalidArgumentException("Unknown contract type: $bitrixType");
         }
-
-        return $mapping[$bitrixTypeStr];
+        
+        return $mappedType;
     }
 
     private function uploadFile($fileUrl) {
@@ -595,174 +470,227 @@ class AlmaTenantContractApi {
     }
 
     /**
-     * Получить alma_id для объекта на основе ID из Bitrix24
+     * DEPRECATED: Устаревший метод, не используется в tenatContract.php
+     * Заменён на findAlmaObjectById() который возвращает только ID объекта
+     * 
+     * Этот метод возвращает полный ответ с HTTP кодом,
+     * но не вызывается ни в одном месте этого файла
      */
-    public function getCorrectAlmaUnitId($unitId) {
-        if (empty($unitId)) {
-            throw new InvalidArgumentException("Unit ID is empty");
+    /*
+    public function getRentalObject($bitrixId) {
+        $url = $this->apiUrl . 'realty/rental_object/' . rawurlencode($bitrixId) . '/';
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => [
+                'Api-Key: ' . $this->apiKey,
+                'Content-Type: application/json',
+                'Accept: application/json'
+            ],
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_CUSTOMREQUEST => 'GET'
+        ]);
+        $response = curl_exec($curl);
+        $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+
+        if ($code >= 400 && $code !== 404) {
+            Logger::logApiRequest('GET', $url, [], $response, $code);
         }
 
-        // Определяем тип объекта и получаем данные
-        $bitrixData = $this->getBitrixUnitData($unitId);
+        $decoded = json_decode($response, true);
+        return ['code' => $code, 'response' => $decoded];
+    }
+    */
+
+    /**
+     * Найти правильный объект в Alma согласно логике шеринга
+     * 
+     * Используется rental_object API с системой приоритетов:
+     * - Приоритет 3: Полный юнит по additional_external_id (is_used = true)
+     * - Приоритет 2: Дочерние объекты (parent_unit > 0) 
+     * - Приоритет 1: Обычные объекты
+     * - Приоритет 0: Специальный случай (additional = "", is_used = true)
+     */
+    public function findCorrectAlmaObject($bitrixData) {
+        $unitId = $bitrixData['unit_external_id'];
         
-        // Проверяем статус "Stage for alma" для апартаментов
-        if ($bitrixData['type'] === 'apartment' && $bitrixData['stage_for_alma'] === 'Ex-Apartments') {
-            throw new InvalidArgumentException("Apartment has 'Ex-Apartments' status - cannot synchronize");
-        }
-
-        // Ищем объект в Alma
-        $almaId = $this->findAlmaObject($bitrixData);
+        // Получаем данные юнита из Bitrix24
+        $unitData = $this->bitrix->call('crm.item.get', [
+            'entityTypeId' => 167,
+            'id' => $unitId
+        ]);
         
-        if (!$almaId) {
-            throw new InvalidArgumentException("Object not found in Alma for unit ID: $unitId");
+        if (!$unitData) {
+            throw new Exception("Unit not found in Bitrix24: $unitId");
         }
-
-        return $almaId;
+        
+        // Извлекаем данные из структуры result.item
+        $unitItem = $unitData['result']['item'] ?? $unitData;
+        
+        // Получаем ID апартамента из юнита
+        $apartmentId = $unitItem['ufCrm8_1684429208'][0] ?? null;
+        
+        Logger::info("Unit data analysis", [
+            'unit_id' => $unitId,
+            'apartment_id' => $apartmentId
+        ], 'contract', $bitrixData['id']);
+        
+        if (!$apartmentId) {
+            throw new Exception("Apartment ID not found in unit: $unitId");
+        }
+        
+        // Получаем данные апартамента из Bitrix24
+        $apartmentData = $this->bitrix->call('crm.item.get', [
+            'entityTypeId' => 144,
+            'id' => $apartmentId
+        ]);
+        
+        if (!$apartmentData) {
+            throw new Exception("Apartment not found in Bitrix24: $apartmentId");
+        }
+        
+        // Извлекаем данные из структуры result.item
+        $apartmentItem = $apartmentData['result']['item'] ?? $apartmentData;
+        
+        // Определяем тип аренды
+        $rentType = $apartmentItem['ufCrm6_1736951470242'] ?? null;
+        
+        Logger::info("Determined rental type", [
+            'unit_id' => $unitId,
+            'apartment_id' => $apartmentId,
+            'rent_type' => $rentType,
+            'is_sharing' => ($rentType === 4600)
+        ], 'contract', $bitrixData['id']);
+        
+        // Всегда ищем по ID комнаты через rental_object
+        // rental_object API автоматически определит правильный объект по приоритетам
+        return $this->findAlmaObjectById($unitId);
     }
 
     /**
-     * Получить данные объекта из Bitrix24
+     * Найти объект в Alma по Bitrix ID согласно документации
+     * GET: external_api/realty/rental_object/{{bitrix_id}}/
+     * 
+     * Использует систему приоритетов rental_object API:
+     * - Сначала ищутся все объекты по external_id и additional_external_id
+     * - Затем сортируются по приоритетам и возвращается первый
      */
-    private function getBitrixUnitData($unitId) {
-        // Получаем маппинг полей для проекта
-        $projectMapping = ProjectMapping::getFieldMapping('Dubai');
-        
-        // Сначала пробуем как юнит
-        $response = $this->bitrix->call('crm.item.get', [
-            'entityTypeId' => 167, // Юниты
-            'id' => $unitId,
-        ]);
-
-        if (isset($response['result']['item'])) {
-            $unit = $response['result']['item'];
-            $apartmentId = $unit['parentId144'] ?? null;
-            
-            // Получаем данные апартамента для определения типа (шеринговый или нет)
-            $rentType = 'unit'; // по умолчанию
-            if ($apartmentId) {
-                try {
-                    $apartmentResponse = $this->bitrix->call('crm.item.get', [
-                        'entityTypeId' => $projectMapping['entity_type_id'],
-                        'id' => $apartmentId,
-                    ]);
-                    
-                    if (isset($apartmentResponse['result']['item'])) {
-                        $apartment = $apartmentResponse['result']['item'];
-                        $rentTypeField = $projectMapping['fields']['rent_type'];
-                        $rentTypeValue = $apartment[$rentTypeField] ?? '4598'; // По умолчанию unit
-                        $rentTypeMapping = $projectMapping['rent_type_mapping'];
-                        $rentType = $rentTypeMapping[$rentTypeValue] ?? 'unit';
-                    }
-                } catch (Exception $e) {
-                    Logger::warning("Could not get apartment data for rent_type", ['apartment_id' => $apartmentId, 'error' => $e->getMessage()]);
-                }
-            }
-            
-            return [
-                'type' => 'unit',
-                'id' => $unit['id'],
-                'apartment_id' => $apartmentId,
-                'stage_for_alma' => null,
-                'rent_type' => $rentType,
-                'is_sharing' => ($rentType === 'rooms')
-            ];
+    public function findAlmaObjectById($bitrixId) {
+        if (empty($bitrixId)) {
+            throw new InvalidArgumentException("Bitrix ID is empty");
         }
 
-        // Если не найден как юнит, пробуем как апартамент
-        $response = $this->bitrix->call('crm.item.get', [
-            'entityTypeId' => $projectMapping['entity_type_id'], // Используем маппинг
-            'id' => $unitId,
-        ]);
-
-        if (isset($response['result']['item'])) {
-            $apartment = $response['result']['item'];
-            $rentTypeField = $projectMapping['fields']['rent_type'];
-            $rentTypeValue = $apartment[$rentTypeField] ?? '4598'; // По умолчанию unit
-            $rentTypeMapping = $projectMapping['rent_type_mapping'];
-            $rentType = $rentTypeMapping[$rentTypeValue] ?? 'unit';
-            
-            return [
-                'type' => 'apartment',
-                'id' => $apartment['id'],
-                'apartment_id' => $apartment['id'],
-                'stage_for_alma' => $apartment[$projectMapping['fields']['stage']] ?? null,
-                'rent_type' => $rentType,
-                'is_sharing' => ($rentType === 'rooms')
-            ];
-        }
-
-        throw new InvalidArgumentException("Unit not found in Bitrix24 with ID: $unitId");
-    }
-
-    /**
-     * Найти объект в Alma (правильная логика для шеринговых и обычных апартаментов)
-     */
-    private function findAlmaObject($bitrixData) {
         try {
-            // Для шеринговых апартаментов ищем комнату по unit_id
-            if ($bitrixData['is_sharing'] && $bitrixData['type'] === 'unit') {
-                $url = $this->apiUrl . 'realty/rental_object/' . $bitrixData['id'] . '/';
-                $response = $this->sendRequest('GET', $url);
+            $url = $this->apiUrl . 'realty/rental_object/' . $bitrixId . '/';
+            
+            Logger::info("Searching for object in Alma", [
+                'bitrix_id' => $bitrixId,
+                'url' => $url
+            ], 'contract', $bitrixId);
+            
+            $response = $this->sendRequest('GET', $url);
+            
+            if (isset($response['id'])) {
+                $this->isRoom = !empty($response['parent_unit']);
                 
-                if (isset($response['id'])) {
-                    // Проверяем, что это комната (есть parent_unit)
-                    if (isset($response['parent_unit']) && $response['parent_unit']) {
-                        $this->isRoom = true; // Это комната
-                        Logger::info("Found sharing room in Alma", [
-                            'unit_id' => $bitrixData['id'],
-                            'room_id' => $response['id'],
-                            'parent_unit' => $response['parent_unit']
-                        ], 'contract', $bitrixData['id']);
-                        return $response['id'];
-                    } else {
-                        Logger::warning("Expected room but found apartment for sharing unit", [
-                            'unit_id' => $bitrixData['id'],
-                            'alma_id' => $response['id']
-                        ], 'contract', $bitrixData['id']);
-                    }
-                }
-            } else {
-                // Для обычных апартаментов ищем апартамент по apartment_id
-                $url = $this->apiUrl . 'realty/rental_object/' . $bitrixData['apartment_id'] . '/';
-                $response = $this->sendRequest('GET', $url);
+                Logger::info("Found object in Alma", [
+                    'bitrix_id' => $bitrixId,
+                    'alma_id' => $response['id'],
+                    'external_id' => $response['external_id'] ?? 'not_set',
+                    'is_room' => $this->isRoom,
+                    'parent_unit' => $response['parent_unit'] ?? null
+                ], 'contract', $bitrixId);
                 
-                if (isset($response['id'])) {
-                    // Проверяем, что это апартамент (нет parent_unit)
-                    if (!isset($response['parent_unit']) || !$response['parent_unit']) {
-                        $this->isRoom = false; // Это апартамент
-                        Logger::info("Found regular apartment in Alma", [
-                            'apartment_id' => $bitrixData['apartment_id'],
-                            'alma_id' => $response['id']
-                        ], 'contract', $bitrixData['id']);
-                        return $response['id'];
-                    } else {
-                        Logger::warning("Expected apartment but found room for regular unit", [
-                            'apartment_id' => $bitrixData['apartment_id'],
-                            'alma_id' => $response['id'],
-                            'parent_unit' => $response['parent_unit']
-                        ], 'contract', $bitrixData['id']);
+                return $response['id'];
+            }
+            
+            Logger::warning("Object not found - no ID in response", [
+                'bitrix_id' => $bitrixId,
+                'response' => $response
+            ], 'contract', $bitrixId);
+            
+        } catch (Exception $e) {
+            Logger::warning("Object not found in Alma: " . $e->getMessage(), [
+                'bitrix_id' => $bitrixId,
+                'url' => $url ?? 'not_set'
+            ], 'contract', $bitrixId);
+        }
+        
+        throw new InvalidArgumentException("Object not found in Alma for Bitrix ID: $bitrixId");
+    }
+
+    /**
+     * DEPRECATED: Устаревший метод, не используется
+     * Заменён на findAlmaObjectById() который использует rental_object API
+     * 
+     * Найти апартамент в Alma по Bitrix ID
+     * GET: external_api/realty/units/ (ищем по external_id)
+     * 
+     * Проблемы этого метода:
+     * - Неэффективен (получает ВСЕ апартаменты из базы)
+     * - Не учитывает систему приоритетов rental_object API
+     * - Не работает с комнатами (rooms)
+     * - Игнорирует additional_external_id и is_used_additional_external_id
+     */
+    /*
+    public function findAlmaApartmentById($bitrixId) {
+        if (empty($bitrixId)) {
+            throw new InvalidArgumentException("Bitrix ID is empty");
+        }
+
+        try {
+            $url = $this->apiUrl . 'realty/units/';
+            
+            Logger::info("Searching for apartment in Alma", [
+                'bitrix_id' => $bitrixId,
+                'url' => $url
+            ], 'contract', $bitrixId);
+            
+            $response = $this->sendRequest('GET', $url);
+            
+            Logger::info("Apartments API response received", [
+                'bitrix_id' => $bitrixId,
+                'apartments_count' => is_array($response) ? count($response) : 0
+            ], 'contract', $bitrixId);
+            
+            if (is_array($response)) {
+                foreach ($response as $apartment) {
+                    if (isset($apartment['external_id']) && $apartment['external_id'] == $bitrixId) {
+                        Logger::info("Found apartment in Alma", [
+                            'bitrix_id' => $bitrixId,
+                            'alma_id' => $apartment['id'],
+                            'external_id' => $apartment['external_id'],
+                            'name' => $apartment['name'] ?? 'not_set'
+                        ], 'contract', $bitrixId);
+                        
+                        return $apartment['id'];
                     }
                 }
             }
+            
+            Logger::warning("Apartment not found in Alma", [
+                'bitrix_id' => $bitrixId,
+                'searched_in' => is_array($response) ? count($response) : 0
+            ], 'contract', $bitrixId);
+            
         } catch (Exception $e) {
-            Logger::warning("Failed to find Alma object via rental_object API", [
-                'bitrix_data' => $bitrixData,
-                'error' => $e->getMessage()
-            ], 'contract', $bitrixData['id']);
+            Logger::warning("Error searching apartment in Alma: " . $e->getMessage(), [
+                'bitrix_id' => $bitrixId
+            ], 'contract', $bitrixId);
         }
-
-        return null;
+        
+        throw new InvalidArgumentException("Apartment not found in Alma for Bitrix ID: $bitrixId");
     }
-
+    */
 }
-
 
 
 try {
     $almaApi = new AlmaTenantContractApi();
     $bitrix = new Bitrix24Rest(WEBHOOK_URL);
 
-    // Получаем данные контракта
     $contractResponse = $bitrix->call('crm.item.get', [
         'entityTypeId' => 183,
         'id' => $_GET['id'],
@@ -774,7 +702,6 @@ try {
     
     $contractData = $contractResponse['result']['item'];
 
-    // Получаем данные контакта
     $contactResponse = $bitrix->call('crm.contact.get', [
         'id' => $contractData['contactId']
     ]);
@@ -785,7 +712,6 @@ try {
     
     $contact = $contactResponse['result'];
 
-    // Подготавливаем данные для синхронизации
     $syncData = [
         'id' => $contractData['id'],
         'title' => $contractData['title'],
@@ -794,7 +720,7 @@ try {
             'id' => $contact['ID'],
             'first_name' => $contact['NAME'],
             'last_name' => $contact['LAST_NAME'],
-            'email' => $contact['EMAIL'][0]['VALUE'] ?? '',
+            'email' => $contact['UF_CRM_1727788747'] ?? '',
             'phone' => $contact['PHONE'][0]['VALUE'] ?? '',
             'birthday' => $contact['BIRTHDATE'] ?? '',
         ],
@@ -806,19 +732,29 @@ try {
         'ufCrm20Contract' => $contractData['ufCrm20Contract'] ?? null,
     ];
 
-    // Синхронизируем контракт
     $result = $almaApi->syncContract($syncData);
 
-    // Возвращаем результат
-    if (isset($result['id'])) {
+    if (isset($result['response']['id']) || (isset($result['code']) && $result['code'] >= 200 && $result['code'] < 300)) {
+        $almaId = $result['response']['id'] ?? $result['id'] ?? null;
+        $method = $result['method'] ?? 'unknown';
+        $message = $method === 'POST' 
+            ? 'Contract successfully created in Alma' 
+            : 'Contract successfully updated in Alma';
+        
         echo json_encode([
             'success' => true,
-            'message' => 'Contract successfully synchronized',
-            'alma_id' => $result['id'],
-            'data' => $result
+            'message' => $message,
+            'alma_id' => $almaId,
+            'method' => $method,
+            'operation' => $method === 'POST' ? 'created' : 'updated',
+            'data' => $result['response'] ?? $result
         ]);
     } else {
-        throw new Exception('Contract synchronization failed');
+        $errorMessage = 'Contract synchronization failed';
+        if (isset($result['response']['error'])) {
+            $errorMessage .= ': ' . $result['response']['error'];
+        }
+        throw new Exception($errorMessage);
     }
 
 } catch (InvalidArgumentException $e) {
@@ -834,9 +770,16 @@ try {
         'message' => 'API error: ' . $e->getMessage()
     ]);
 } catch (Exception $e) {
+    Logger::error("Unexpected error in contract synchronization: " . $e->getMessage(), [
+        'exception_type' => get_class($e),
+        'file' => $e->getFile(),
+        'line' => $e->getLine(),
+        'trace' => $e->getTraceAsString()
+    ], 'contract', $_GET['id'] ?? 'unknown');
+    
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'message' => 'Unexpected error: ' . $e->getMessage()
+        'message' => 'Unexpected error: Contract synchronization failed'
     ]);
 }

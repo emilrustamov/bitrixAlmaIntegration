@@ -15,7 +15,6 @@ class ProjectMapping {
                     'property_type' => 'ufCrm6_1682232863625',
                     'floor' => 'ufCrm6_1682232312628',
                     'address' => 'ufCrm6_1718821717',
-                    'address_number' => 'ufCrm6_1718821717', // Пока используем то же поле, что и address
                     'subway_station' => 'ufCrm6_1682233481671',
                     'internet_login' => 'ufCrm6_1682235809295',
                     'internet_password' => 'ufCrm6_1686728251990',
@@ -25,7 +24,8 @@ class ProjectMapping {
                     'is_swimming_pool' => 'ufCrm6_1697622591377',
                     'additional_external_id' => 'ufCrm6_1684425402',
                     'stage' => 'ufCrm6_1742486676',
-                    'rent_type' => 'ufCrm6_1736951470242'
+                    'rent_type' => 'ufCrm6_1736951470242',
+                    'email' => 'UF_CRM_1727788747'
                 ],
                 'property_type_mapping' => [
                     '52' => 'studio',
@@ -48,6 +48,13 @@ class ProjectMapping {
                 'rent_type_mapping' => [
                     '4600' => 'rooms',  // шеринг
                     '4598' => 'unit'    // обычный апартамент
+                ],
+                'contract_type_mapping' => [
+                    '884' => 'Short term from 1 to 3 months',
+                    '886' => 'Long-term 3+ months', 
+                    '1304' => 'Booking',
+                    '1306' => 'Short contract up to 1 month',
+                    '6578' => 'Less than a month'
                 ],
                 'metro_mapping' => [
                     66 => 'Rashidiya',
@@ -121,7 +128,8 @@ class ProjectMapping {
                     'keybox_code' => 'ufCrm11Keys',
                     'is_swimming_pool' => 'ufCrm11PoolInBuilding',
                     'additional_external_id' => 'ufCrm11Units',
-                    'stage' => 'ufCrm11StageForAlma'
+                    'stage' => 'ufCrm11StageForAlma',
+                    'email' => 'UF_CRM_1727788747'
                 ],
                 'property_type_mapping' => [
                     '809' => 'apartment',
@@ -155,6 +163,18 @@ class ProjectMapping {
         ];
         
         return $configs[$projectName] ?? $configs['Dubai'];
+    }
+    
+    public static function getContractTypeMapping($projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        return $mapping['contract_type_mapping'] ?? [];
+    }
+    
+    public static function mapContractType($bitrixType, $projectName = 'Dubai') {
+        $mapping = self::getContractTypeMapping($projectName);
+        $bitrixTypeStr = (string)$bitrixType;
+        
+        return $mapping[$bitrixTypeStr] ?? null;
     }
     
 }

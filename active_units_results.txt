@@ -1,0 +1,415 @@
+External ID	Alma ID	Additional External ID	is_used	Name	Project	Has Additional ID
+----------------------------------------------------------------------------------------------------
+1866	15495	1836	true	Ap. 763. Binghatti Azure, apt. 1011	Dubai	YES
+1856	15463	1826	true	Ap. 755. BOUTIQUE XII, apt. 712	Dubai	YES
+1854	15464	1824	true	Ap. 752. Creek Palace, apt. 3007	Dubai	YES
+1852	15450	1822	true	Ap. 754. The Radisson Blu Residence, apt. 1	Dubai	YES
+1850	15482	1820	true	Ap. 732. Act One Act Two Tower 1, apt. 1905	Dubai	YES
+1846	15478	1816	true	Ap. 751. DAMAC HILLS - ARTESIA TOWER C, apt. C-1705	Dubai	YES
+1838	15472	1808	true	Ap. 746. Genesis, apt. 418	Dubai	YES
+1834	15442	1804	true	Ap. 743. AZIZI RIVIERA AZURE, apt. 505	Dubai	YES
+1832	15481	1802	true	Ap. 742. Floarea Residence, apt. 318	Dubai	YES
+1830	15473	1800	true	Ap. 741. The Paragon By IGO, apt. 416	Dubai	YES
+1826	15441	1796	true	Ap. 739. J ONE - 1, apt. 1910A	Dubai	YES
+1824	15447		true	Ap. 738. LIV Marina, apt. 1802	Dubai	NO
+1818	15480	1788	true	Ap. 736. Aykon City - Tower B, apt. 4403	Dubai	YES
+1816	15437	1786	true	Ap. 735. Sobha Hartland - The Crest Tower B, apt. B3704	Dubai	YES
+1808	15438		true	Ap. 530. MeDoRe, apt. 2203	Dubai	NO
+1806	15429	1776	true	Ap. 731. 15 Northside - Tower 2, apt. B-503	Dubai	YES
+1804	2609	1774	true	Ap. 427. Binghatti Corner, apt. 2508	Dubai	YES
+1802	15430	1772	true	Ap. 730. 15 Northside - Tower 1, apt. A-1102	Dubai	YES
+1798	15439	1768	true	Ap. 729. Concept 7, apt. 812	Dubai	YES
+1794	15449	1764	true	Ap. 727. THE GROVE BY IMAN, apt. 809	Dubai	YES
+1792	15474	1762	true	Ap. 689. Peninsula One, apt. 510	Dubai	YES
+1790	15475	1760	true	Ap. 688. Peninsula One, apt. 413	Dubai	YES
+1786	15476	1756	true	Ap. R3. One Za'abeel Private Homes, apt. 5501	Dubai	YES
+1782	15421	1752	true	Ap. 773. The Address Residences Dubai Opera T2, apt. 4501	Dubai	YES
+1780	15420	1750	true	Ap. 667. Grand Bleu Tower interiors by Elie Saab Tower 2, apt. 2403	Dubai	YES
+1774	15412	1742	true	Ap. 717. Liv Marina, apt. 2004	Dubai	YES
+1764	15406	1732	true	Ap. 640. Maktoum City District One Phase III Residences 2, apt. 303	Dubai	YES
+1762	15405	1730	true	Ap. 714. Serenity Lakes 5, apt. G01	Dubai	YES
+1760	15404	1728	true	Ap. 713. THE POINT TOWER, apt. 203	Dubai	YES
+1748	15380	1716	true	Ap. 703. BLVD CENTRAL 2, apt. 1304	Dubai	YES
+1744	15378	1712	true	Ap. 686. Azizi Riviera 47, apt. 920	Dubai	YES
+1740	15373	1708	true	Ap. 701. Sway Residences, apt. 904	Dubai	YES
+1736	15371	1704	true	Ap. 699.  J ONE - 1, apt. 914А	Dubai	YES
+1734	15356	1702	true	Ap. 691. MED 85, apt. 214	Dubai	YES
+1732	15355	1700	true	Ap. 419. JVT District 9, apt. G8	Dubai	YES
+1730	15354	1698	true	Ap. 690. Azizi Berton, apt. 428	Dubai	YES
+1728	15352	1696	true	Ap. 698. Binghatti Nova, apt. 1005	Dubai	YES
+1720	15345	1688	true	Ap. 696. Ellington Beach House, apt. N-406	Dubai	YES
+1716	15343	1684	true	Ap. 685. Grove at Creek Beach Building 5, Apt. 602	Dubai	YES
+1710	15340	1678	true	Ap. 637. Burj Royale, apt. 5006	Dubai	YES
+1708	15339	1676	true	Ap. 638. Burj Royale, apt. 5005	Dubai	YES
+1694	15321	1664	true	Ap. 680. The Address DownTown, apt. 1911	Dubai	YES
+1692	15320	1662	true	Ap. 684. LIV Marina, apt. 1707	Dubai	YES
+1690	15319	1660	true	Ap. 683. LIV Marina, apt. 902	Dubai	YES
+1686	15316	1656	true	Ap. 611. Discovery Gardens MED 92, apt. 308	Dubai	YES
+1684	15315	1654	true	Ap. 660. Collective Tower 2, apt. 314	Dubai	YES
+1676	15312	1646	true	Ap. 678. Urban Oasis, apt. 415B	Dubai	YES
+1668	15305	1638	true	Ap. 642. 52|42, apt. 2903	Dubai	YES
+1666	15304	1634	true	Ap. 673. Collective 2.0 Tower B, apt. 1208	Dubai	YES
+1652	15297	1618	true	Ap. 648. FIVE AT PALM JUMEIRAH  DUBAI, apt. 41009	Dubai	YES
+1650	15296	1616	true	Ap. 644. Palm View, apt. 2303	Dubai	YES
+1648	15295	1614	true	Ap. 649. THE 8, apt. 20206	Dubai	YES
+1644	15292	1610	true	Ap. 670. Sobha Hartland Waves, apt. 1705	Dubai	YES
+1640	15465	1606	true	Ap. 663. Elite Residence, apt. 1512	Dubai	YES
+1632	15287	1592	true	Ap. 652. The Community, apt. 2303	Dubai	YES
+1628	15285	1588	true	Ap. 653. The Community, apt. 2302	Dubai	YES
+1626	15284	1586	true	Ap. 654. The Community, apt. 2003	Dubai	YES
+1622	15282	1582	true	Ap. 656. The Paragon by IGO, apt. 409	Dubai	YES
+1618	15350	1578	true	Ap. 661. THE RESIDENCE AT MARINA GATE 2, apt. 5208	Dubai	YES
+1612	15273	1572	true	Ap. 658. THE POINT TOWER, apt. 201	Dubai	YES
+1604	15446	1564	true	Ap. 629.  Sobha Creek Vistas Reserve, apt. B1210	Dubai	YES
+1598	15249	1556	true	Ap. 616. One Za’abeel Tower 1, apt. 6003	Dubai	YES
+1582	15198	1542	true	Ap. 621. Bloom Towers C, apt. C-0702	Dubai	YES
+1572	15177	1532	true	Ap. 609. Central Park , apt. 321	Dubai	YES
+1564	15171	1524	true	Ap. 612. Palm View, apt. 1702	Dubai	YES
+1560	15165	1520	true	Ap. 607. Peninsula Five, apt. 1004	Dubai	YES
+1554	15087	1514	true	Ap. 585. GoldCrest Executive, apt. 3017	Dubai	YES
+1534	15175	1494	true	Ap. 589. MJL Jadeel 2, apt. 103	Dubai	YES
+1522	15036	1478	true	Ap. 592. DEC Towers T1, apt. 1808	Dubai	YES
+1510	15025	1452	true	Ap. 581. PALM VIEWS WEST, apt. 302	Dubai	YES
+1502	15021	1444	true	Ap. 571. Me Do Re, apt. 310	Dubai	YES
+1476	15009	1394	true	Ap. 580. Trident Grand Residence, apt. 1201	Dubai	YES
+1474	15008	1390	true	Ap. 577. J One, apt. 1314A	Dubai	YES
+1472	15007	1392	true	Ap. 579. Palace Beach Residence Tower 1, apt. 603	Dubai	YES
+1468	15005	1386	true	Ap. 576. La Sirene Building 5, apt. 404	Dubai	YES
+1452	14998	1370	true	Ap. 570. Lotus at Creek Beach Building 3, apt. 906	Dubai	YES
+1434	14954	1352	true	Ap. 498. Elysee 3, apt. 220	Dubai	YES
+1414	15425		true	Ap. 543.  ZADA TOWER, apt. 520	Dubai	NO
+1408	14945	1320	true	Ap. 435. Sunrise Bay Tower 2, apt. 404	Dubai	YES
+1374	9306	1274	true	Ap. 538. Marina Star, apt. S1101	Dubai	YES
+1344	5557	1228	true	AP. 526. Ahad Residences, apt. 1409	Dubai	YES
+1340	5554	1224	true	Ap. 508. Concept 7, apt. 704	Dubai	YES
+1332	5542	1216	true	Ap. 519. Ocean Heights, apt. 3108	Dubai	YES
+1318	5526	1202	true	Ap. 520. MBL Royal, apt. 1903	Dubai	YES
+1312	5522	1194	true	Ap. 516. The Address Residences Dubai Opera T1, apt. 1109	Dubai	YES
+1264	5469	1142	true	Ap. 500. Urban Oasis, apt. 1812 B	Dubai	YES
+1246	5398	1120	true	Ap. 483. Luma 22, apt. 152	Dubai	YES
+1240	5503	1112	true	Ap. 482. Time Place, apt. 2609	Dubai	YES
+1238	5400	1110	true	Ap. 468. Mag 545, apt. 314	Dubai	YES
+1228	4879	1100	true	Ap. 488. The Pinnacle, apt. 603	Dubai	YES
+1206	4704	1078	true	Ap. 474. Marina Star, apt. S501	Dubai	YES
+1204	5409	1076	true	Ap. 478. Sky Gardens, apt. 709	Dubai	YES
+1192	5412	1064	true	Ap. 371. Aycon City Tower B, apt. 4001	Dubai	YES
+1190	4700	1062	true	Ap. 456. Time Place, apt. 3107	Dubai	YES
+1112	5529	998	true	Ap. 463. Jumairah Bay Tower X1,  ap. 2307	Dubai	YES
+1104	2591	990	true	Ap. 425. Elite Downtown Residence, apt. 412	Dubai	YES
+1102	2592	988	true	Ap. 423. Cayan Tower, apt. 4106	Dubai	YES
+1098	1626	984	true	Ap. 422. Silverene Tower B, apt. 1411	Dubai	YES
+1040	1643	962	true	Ap. 406. Socio Tower 1, apt. 1102	Dubai	YES
+1034	1639	956	true	Ap. 402. Park Ridge Tower C, apt. 1716	Dubai	YES
+986	1648	926	true	Ap. 341. Marina Quay East, apt. 710	Dubai	YES
+972	1650	912	true	Ap. 394. Botanica Tower 1, apt. 1405	Dubai	YES
+964	1676	904	true	Ap. 311. La Vie, apt. 2203	Dubai	YES
+958	1664	900	true	Ap. 393. The Pinnacle, apt. 503	Dubai	YES
+952	1665	894	true	Ap. 387. Azizi Shaista, apt. 1103	Dubai	YES
+928	1673	878	true	Ap. 353. Azizi Shaista Residence, apt. 1010	Dubai	YES
+924	1672	874	true	Ap. 357. Armada 1, apt. 711	Dubai	YES
+914	1681	864	true	Ap. 339. Sulafa Tower, apt. 2014	Dubai	YES
+898	1682	854	true	Ap. 344. Ocean Heights, apt. 11A09	Dubai	YES
+868	1687	830	true	Ap. 323. Princess tower, apt. 1010	Dubai	YES
+864	1705	826	true	Ap. 326. Jumeirah Living Marina Gate, apt. 2504	Dubai	YES
+826	1713	794	true	Ap. 286. Sobha Creek Vistas Reserve, apt. 3110	Dubai	YES
+742	1728	720	true	Ap. 270. Al Wasl One Residence 1, apt. 3105	Dubai	YES
+736	1740	714	true	Ap. 269. Azizi Riviera 41, apt. 407	Dubai	YES
+734	1743	712	true	Ap. 257. Damac Heights, apt. 903	Dubai	YES
+630	1762	678	true	Ap. 258. Elite Residence, apt. 2009	Dubai	YES
+620	1747	672	true	Ap. 271. Bay Central 2, apt. 707	Dubai	YES
+592	1749	670	true	Ap. 256. Aykon City 2 Tower C, apt. 1809	Dubai	YES
+590	1752	668	true	Ap. 251. Binghatti Nova, apt. 406	Dubai	YES
+570	1766	656	true	Ap. 253. Prive Residence, apt. 1102	Dubai	YES
+568	1756	654	true	Ap. 239. Binghatti Nova, apt. 610	Dubai	YES
+550	1775	636	true	Ap. 241. Concorde tower 1, apt. 4102	Dubai	YES
+526	1779	612	true	Ap. 229. Prive Residence, apt. 1203	Dubai	YES
+480	1783	564	true	Ap. 220. Westwood by Imtiaz, apt. 610	Dubai	YES
+436	1795	530	true	Ap. 213. Beach Vista Tower 2, apt. 702	Dubai	YES
+434	1791	528	true	Ap. 212. Binghatti Crescent, apt. 516	Dubai	YES
+426	1790	518	true	Ap. 207. Park Ridge Tower C, apt. 312	Dubai	YES
+402	1815	486	true	Ap. 195. Elite Residence, apt. 1909	Dubai	YES
+398	1816	490	true	Ap. 193. Marina Crown, apt. 901	Dubai	YES
+392	1814	496	true	Ap. 190. Bay Central 1, apt. 1909	Dubai	YES
+390	1809	498	true	Ap. 189. Creek Edge Tower 1, apt. 305	Dubai	YES
+366	1817	458	true	Ap. 179. Al Waleed Paradise, apt. 1103	Dubai	YES
+364	1824	456	true	Ap. 178. Indigo Tower, apt. 1215	Dubai	YES
+358	1829	450	true	Ap. 175. J One 1, apt. 1601	Dubai	YES
+356	1827	448	true	Ap. 174. Indigo tower, apt. 1504	Dubai	YES
+354	1831	446	true	Ap. 173. Azizi Berton, apt. 124	Dubai	YES
+330	1844	420	true	Ap. 161. Sky View Tower, apt. 1309	Dubai	YES
+328	1836	418	true	Ap. 160. Goldcrest Executive, apt. 3304	Dubai	YES
+316	1852	406	true	Ap. 154. Zada Tower, apt. 1214	Dubai	YES
+314	1850	404	true	Ap. 153. Jumairah Bay X1-1, apt. 2312	Dubai	YES
+280	1860	388	true	Ap. 136. Ontario tower, apt. 2105	Dubai	YES
+276	1875	364	true	Ap. 135. Equiti Residence, apt. 904	Dubai	YES
+270	1868	358	true	Ap. 132. Candace Aster, apt. 614	Dubai	YES
+264	1866	350	true	Ap. 129. Merano Tower, apt. 2804	Dubai	YES
+244	1883	330	true	Ap. 119. Collective Tower 2, apt. 703	Dubai	YES
+238	1885	324	true	Ap. 116. Marina Vista Tower 2, apt. 2409	Dubai	YES
+220	1887	308	true	Ap. 107. Noor 1, apt. 510	Dubai	YES
+210	1906	298	true	Ap. 102. Armada 3, apt. 1908	Dubai	YES
+204	1901	294	true	Ap. 96. Park Island Bonaire, apt. 2304	Dubai	YES
+176	1909	262	true	Ap. 85. Zada tower, apt. 214	Dubai	YES
+164	1927	46	true	Ap. 83. Creek Gate Tower 1, apt. 2308	Dubai	YES
+160	1924	42	true	Ap. 81. Marina Gate 2, apt. 1708	Dubai	YES
+156	1921	38	true	Ap. 79. Bay Central West, apt. 201	Dubai	YES
+136	1929	18	true	Ap. 69. Park Central, apt. 1405	Dubai	YES
+108	1940	180	true	Ap. 55. Princess, apt. 1707	Dubai	YES
+106	1952	178	true	Ap. 54. Bellevue Towers-1, apt. 1806	Dubai	YES
+82	1966	154	true	Ap. 42. Iris Blue, apt. 2003	Dubai	YES
+80	1959	152	true	Ap. 41. Candace Acacia, apt. 122	Dubai	YES
+56	1972	120	true	Ap. 29. DEC Towers, apt. 2008	Dubai	YES
+52	1975	116	true	Ap. 27. Discovery gardens 38, apt. 401	Dubai	YES
+46	1987	102	true	Ap. 24. Marina Crown, apt. 1512	Dubai	YES
+42	1985	98	true	Ap. 22. Reef Residence, apt. 3305	Dubai	YES
+28	1983	84	true	Ap. 15. Lakeside Residence, apt. 1104	Dubai	YES
+26	1992	82	true	Ap. 14. Goldcrest views 1, apt. 1313	Dubai	YES
+22	1998	78	true	Ap. 12. Escan Marina Tower, apt. 2306	Dubai	YES
+12	1995	246	true	Ap. 07. Lake Terrace. apt. 3604	Dubai	YES
+1810	15462	1780	true	Ap. 726. ROYAL OCEANIC-1, apt. 202	Dubai	YES
+1800	15428	1770	true	Ap. 728. HAMILTON RESIDENCY, apt. 204	Dubai	YES
+1788	15422	1758	true	Ap. 721. BOTANICA TOWER, apt. 1605	Dubai	YES
+1778	15415	1748	true	Ap. 718. Peninsula Five - 3, apt. 1304	Dubai	YES
+1776	15414	1744	true	Ap. 987. TEST TEST, apt. 00	Dubai	YES
+1770	15409	1738	true	Ap. 712. Indigo Tower, apt. 2211	Dubai	YES
+1768	15408	1736	true	Ap. 715. Sobha Creek Vistas - Tower B, apt. B906	Dubai	YES
+1766	15407	1734	true	Ap. 639. Burj Royal, apt. 5004	Dubai	YES
+1758	15387	1726	true	Ap. 708. Luma22 - East Tower, apt. 106	Dubai	YES
+1754	15385	1722	true	Ap. 711. Azizi Riviera 41, apt. 310	Dubai	YES
+1746	15379	1714	true	Ap. 704. Marina Star, apt. S902	Dubai	YES
+1742	15440	1710	true	Ap. 702. REVA RESIDENCES , apt. 2108	Dubai	YES
+1726	15351	1694	true	Ap. 697. Silverene Tower, apt. 2106	Dubai	YES
+1724	15348	1692	true	Ap. 668. CLAREN TOWER 2, apt. 1902	Dubai	YES
+1698	15335	1668	true	Ap. 641. La Cote Building 1, apt. 410	Dubai	YES
+1682	15461	1652	true	Ap. 531.  The Paragon by IGO, apt. 605	Dubai	YES
+1680	15314	1650	true	Ap. 664. The Paragon  by  IGO, apt. 2106	Dubai	YES
+1678	15313	1648	true	Ap. 682. Prive Residence, apt. 906	Dubai	YES
+1672	15308	1642	true	Ap. 657. Socio Tower 2, apt. 104	Dubai	YES
+1664	15303	1632	true	Ap. 672. Park View Tower, apt. 109	Dubai	YES
+1662	15302	1630	true	Ap. 647. THE COVE Building 1 , apt. 1407	Dubai	YES
+1660	15301	1626	true	Ap. 636. La Voile - Building 1, apt. 312	Dubai	YES
+1658	15300	1624	true	Ap. 643. La Cote Building 5, apt. 404	Dubai	YES
+1656	15299	1622	true	Ap. 646. Bluewaters Residences 2, apt. 405	Dubai	YES
+1654	15298	1620	true	Ap. 645. One Za'abeel The Residences, apt. 20-03	Dubai	YES
+1638	15466	1600	true	Ap. 626. MED 67, apt. 507	Dubai	YES
+1620	15281	1580	true	Ap. 650. Golf Vista Tower A, apt. G+P 04	Dubai	YES
+1610	15272	1570	true	Ap. 584. ZUMURUD, apt. 1304	Dubai	YES
+1596	15248	1554	true	Ap. 630. ICON 2, apt. 710	Dubai	YES
+1586	15200	1546	true	Ap. 502.  Prive by Damac A, apt. 402	Dubai	YES
+1584	15199	1544	true	Ap. 618. The Sterling East House, apt. 212	Dubai	YES
+1580	15445	1540	true	Ap. 620. Oxford 212, apt. 313	Dubai	YES
+1578	15196	1538	true	Ap. 619. Executive Residences, apt. 106	Dubai	YES
+1574	15274	1534	true	Ap. 610. Central Park , apt. 101	Dubai	YES
+1568	15174	1528	true	Ap. 600. Time Place Tower, apt. 1608	Dubai	YES
+1558	15089		true	Ap. 603. Urban Oasis, apt. 2601	Dubai	NO
+1556	15088	1516	true	Ap. 601. Princess Tower, apt.  3509	Dubai	YES
+1552	15086	1512	true	Ap. 563. Goldcrest Views 2, apt. 1110	Dubai	YES
+1544	15022	1504	true	Ap. 560.  Socio Tower 1, apt.  419	Dubai	YES
+1532	15039	1492	true	Ap. 588. CREEK EDGE Tower 1, apt.  907	Dubai	YES
+1518	15032	1468	true	Ap. 590. Binghatti Heights, apt. 1404	Dubai	YES
+1516	15030	1464	true	Ap. 586. Lotus at Creek Beach Building 2, apt. 304	Dubai	YES
+1506	15023	1448	true	Ap. 554. Orchid Creek Beach, apt. 401	Dubai	YES
+1500	15020	1442	true	Ap. 575. Blue Bell Residence, apt. P2-03	Dubai	YES
+1470	15006	1388	true	Ap. 578. Stella Maris, apt. 1501	Dubai	YES
+1464	15003	1384	true	Ap. 426. Nobles, apt. 205	Dubai	YES
+1456	15468	1374	true	Ap. 559. Zada tower, apt. 1020	Dubai	YES
+1450	14988	1366	true	Ap. 514. CONCEPT 7 RESIDENCES, apt. 204	Dubai	YES
+1432	14953	1348	true	Ap. 557. Beach Isle, apt. 507	Dubai	YES
+1430	14952	1346	true	Ap. 561. Murjan 2, apt. 211	Dubai	YES
+1412	15427	1322	true	Ap. 544.  ZADA TOWER, apt. 203	Dubai	YES
+1410	14989	1330	true	AP. 550. Vera tower, apt. 518	Dubai	YES
+1390	14935	1290	true	Ap. 549. Sparkle Tower 2, apt. 1107	Dubai	YES
+1388	14934	1288	true	Ap. 548. BD Standpoint B, apt. 1208	Dubai	YES
+1382	14932	1278	true	Ap. 545. BLVD Central 2, apt. 1704	Dubai	YES
+1376	9307	1276	true	Ap. 542. Park Heights, apt. 302	Dubai	YES
+1372	9305	1272	true	Ap. 537. Al Waleed Paradise, apt. 503	Dubai	YES
+1356	5573	1254	true	Ap. 533. Azizi Berton, apt. 329	Dubai	YES
+1352	5571	1250	true	Ap. 534. Lake View, apt. 1716	Dubai	YES
+1350	5565	1248	true	Ap. 532. Binghatti Corner, apt. 506	Dubai	YES
+1346	5559	1230	true	Ap. 527. Damac Hills Carson B,  apt. 2012	Dubai	YES
+1328	5540	1212	true	Ap. 517. Concorde tower, apt. 1002	Dubai	YES
+1326	5539	1210	true	Ap. 515. Beach Vista Tower 1, apt. 701	Dubai	YES
+1294	5497	1170	true	Ap. 464. MBL Royal, apt. 204	Dubai	YES
+1292	5495	1168	true	Ap. 441. MBL Royal, apt. 1902	Dubai	YES
+1286	5489	1162	true	Ap. 491. MAG 214, apt. 1703	Dubai	YES
+1280	5484	1158	true	Ap. 495. The Residences at Marina Gate 1, apt. 4204	Dubai	YES
+1276	5481	1154	true	Ap. 494. Socio Tower 2, apt. 109	Dubai	YES
+1258	5463	1134	true	Ap. 489. ZADA tower, apt. 2520	Dubai	YES
+1256	5462	1130	true	Ap. 492. Collective 2.0 Tower A, apt. 711	Dubai	YES
+1252	5457	1124	true	Ap. 274. Azizi Riviera 48, apt. 425	Dubai	YES
+1248	5531	1126	true	Ap. 487. MAG218, apt.  1407	Dubai	YES
+1230	4881	1102	true	Ap. 469. Binghatti Corner, apt. 2404	Dubai	YES
+1212	5408	1084	true	Ap. 437. Azizi Riviera 48, apt. 804	Dubai	YES
+1186	4698	1058	true	Ap. 467. MeDoRe, apt. 1611	Dubai	YES
+1168	5417	1044	true	Ap. 475. Binghatti House, apt. 2403	Dubai	YES
+1160	4694	1038	true	Ap. 383. Binghatti Corner, apt. 2512	Dubai	YES
+1150	4675	1030	true	Ap. 442. Binghatti Corner, apt. 1808	Dubai	YES
+1142	2619	1026	true	Ap. 420. Boutique XII, apt. 502	Dubai	YES
+1140	5424	1024	true	Ap. 450. Luma22 - East Tower, apt. 205	Dubai	YES
+1108	2593	994	true	Ap. 368. MJL Asayel 2, apt. 305	Dubai	YES
+1100	2589	986	true	Ap. 408. Zumurud, apt. 213	Dubai	YES
+1086	1634	980	true	Ap. 421. Park Island Bonaire, apt. 604	Dubai	YES
+1060	1635	976	true	Ap. 418. Azizi Riviera 42, apt. 203	Dubai	YES
+1058	1631	974	true	Ap. 401. MeDoRe, apt. 1508	Dubai	YES
+1050	1636	970	true	Ap. 318. Oakley Square Residences B, apt. 019	Dubai	YES
+1046	1633	966	true	Ap. 409. Binghatti Corner, apt. 421	Dubai	YES
+1036	1638	958	true	Ap. 429. Al Waleed Paradise, apt. 203	Dubai	YES
+1024	1642	950	true	Ap. 248. Binghatti Corner, apt. 1806	Dubai	YES
+988	1655	928	true	Ap. 391. Summer at Creek Beach Building 4, apt. 406	Dubai	YES
+974	1647	914	true	Ap. 396. Al Wasl One Residence 2, apt. 2503	Dubai	YES
+970	1661	910	true	Ap. 247. Binghatti Emerald, apt. 817	Dubai	YES
+968	1660	908	true	Ap. 310. Azizi Riviera 26, apt. 335	Dubai	YES
+966	1658	906	true	Ap. 312. La Vie, apt. 2204	Dubai	YES
+962	1662	902	true	Ap. 367. Aycon City Tower C, apt. 3026	Dubai	YES
+948	1669	890	true	Ap. 346. Binghatti Crest, apt. 1506	Dubai	YES
+946	1666	888	true	Ap. 332. Reva Residence, apt. 2008	Dubai	YES
+942	1670	886	true	Ap. 370. Azizi Berton, apt. 528	Dubai	YES
+930	1668	880	true	Ap. 349. Roy Mediterranean, apt. 528	Dubai	YES
+926	1674	876	true	Ap. 315. Me do re, apt. 1308	Dubai	YES
+918	1686	868	true	Ap. 358. Socio Tower 2, apt. 303	Dubai	YES
+916	1678	866	true	Ap. 369. The Residence at Marina Gate 2, apt. 3707	Dubai	YES
+904	1680	860	true	Ap. 340. Al Waleed Paradise , apt. 614	Dubai	YES
+900	1685	856	true	Ap. 350. Hamilton Residency, apt. 1106	Dubai	YES
+892	1689	848	true	Ap. 354. Asayel 3, apt. 306	Dubai	YES
+890	1694	846	true	Ap. 352. Liv Residence, apt. 1102	Dubai	YES
+888	1693	844	true	Ap. 327. Me Do Re, apt. 1202	Dubai	YES
+882	1696	840	true	Ap. 328. Palm View, apt. 2301	Dubai	YES
+874	1695	836	true	Ap. 324. Azizi Mina, apt. 420	Dubai	YES
+872	1692	834	true	Ap. 209. Azizi Riviera 45, apt. 209	Dubai	YES
+870	1691	832	true	Ap. 330. Lake Terrace, apt. 2013	Dubai	YES
+862	1706	824	true	Ap. 250. Goldcrest Views 2, apt. 411	Dubai	YES
+860	1697	822	true	Ap. 309. G R Travo B, apt. 207	Dubai	YES
+856	1701	818	true	Ap. 291. Elite Downtown residence, apt. 507	Dubai	YES
+854	1703	816	true	Ap. 305. Starz Tower 1, apt. 203	Dubai	YES
+852	1698	814	true	Ap. 316. Concorde Tower 1, apt. 3711	Dubai	YES
+850	1700	812	true	Ap. 314. Silverene Towers A, apt. 1202	Dubai	YES
+840	1711	808	true	Ap. 302. May Residence Tower 4, apt. 309	Dubai	YES
+838	1716	806	true	Ap. 317. Meera Tower, apt. 1009	Dubai	YES
+836	1707	804	true	Ap. 283. MeDoRe, apt. 408	Dubai	YES
+834	1715	802	true	Ap. 288. Park Point Building B, apt. 313	Dubai	YES
+832	1710	800	true	Ap. 289. Park Ridge Tower C, apt. 1601	Dubai	YES
+830	1709	798	true	Ap. 290. Park Ridge Tower C, apt. 10	Dubai	YES
+828	1712	796	true	Ap. 295. Park Ridge Tower C, apt. 403	Dubai	YES
+822	1718	790	true	Ap. 308. Azizi Berton, apt. 116	Dubai	YES
+820	1720	788	true	Ap. 294. Reva Residences, apt. 2618	Dubai	YES
+818	1723	786	true	Ap. 115. MeDoRe, apt. 1010	Dubai	YES
+814	1722	782	true	Ap. 293. The Sterling East House, apt. 217	Dubai	YES
+812	1721	780	true	Ap. 262. Azizi Riviera 36, apt. 105	Dubai	YES
+808	1724	776	true	Ap. 255. The V Tower, apt. 819	Dubai	YES
+798	1732	764	true	Ap. 243. Azizi Riviera 44, apt. 602	Dubai	YES
+796	1731	762	true	Ap. 297. Ahad Residences, apt. 1006	Dubai	YES
+794	1727	760	true	Ap. 298. Ahad Residences, apt. 1306	Dubai	YES
+778	1733	744	true	Ap. 292. Mayfair Residence, apt. 1005	Dubai	YES
+764	1735	738	true	Ap. 234. Zada Tower, apt. 2603	Dubai	YES
+762	1729	734	true	Ap. 285. Bayshore at Creek Beach Building 4, apt. 404	Dubai	YES
+740	1744	718	true	Ap. 284. MeDoRe, apt. 510	Dubai	YES
+732	1745	710	true	Ap. 281. Jumairah Bay Tower X1, apt. 209	Dubai	YES
+730	1738	708	true	Ap. 278. Lakeshore tower 1, apt. 807	Dubai	YES
+728	1739	706	true	Ap. 272. Sobha Hartland Waves, apt. 1706	Dubai	YES
+726	1737	704	true	Ap. 277. Concorde tower, apt. 401	Dubai	YES
+680	1753	692	true	Ap. 275. Azizi Riviera 42, apt. 501	Dubai	YES
+644	1754	684	true	Ap. 266. No.9, apt. 205	Dubai	YES
+642	1748	682	true	Ap. 252. Bay Central 2, apt. 701	Dubai	YES
+640	1755	680	true	Ap. 254. Lake view, apt. 1510	Dubai	YES
+628	1750	676	true	Ap. 267. Elite Residence, apt. 2010	Dubai	YES
+626	1751	674	true	Ap. 259. Park Ridge Tower C, apt. 221	Dubai	YES
+572	1758	658	true	Ap. 261. Azizi Riviera 42, apt. 308	Dubai	YES
+562	1763	648	true	Ap. 245. Executive residences 2, apt. 129	Dubai	YES
+558	1761	644	true	Ap. 242. saba3, apt. 1604	Dubai	YES
+540	1770	626	true	Ap. 236. Binghatti Nova, apt. 613	Dubai	YES
+538	1769	624	true	Ap. 233. Concorde Tower, apt. 1111	Dubai	YES
+534	1773	620	true	Ap. 235. Prive Residence, apt. 105	Dubai	YES
+532	1776	618	true	Ap. 231. Jumairah Bay tower X1-1, apt. 605	Dubai	YES
+530	1772	616	true	Ap. 230. Yacht bay, apt. 504	Dubai	YES
+494	1789	578	true	Ap. 226. Forte T1, apt. 211	Dubai	YES
+478	1777	562	true	Ap. 219. Binghatti Nova, apt. 1010	Dubai	YES
+468	1786	554	true	Ap. 217. Summer at Creek Beach Building 3, apt. 201	Dubai	YES
+440	1794	534	true	Ap. 215. Binghatti Canal, apt. 1705	Dubai	YES
+428	1787	520	true	Ap. 208. Park Ridge Tower C, apt. 306	Dubai	YES
+424	1803	516	true	Ap. 206. Studio One Tower, apt. 2107	Dubai	YES
+422	1804	514	true	Ap. 205. Sky Garden, apt. 409	Dubai	YES
+418	1799	510	true	Ap. 203. MJL - Lamtara 2, apt. 707	Dubai	YES
+414	1797	474	true	Ap. 201. Lake City Tower, apt. 1303	Dubai	YES
+412	1806	476	true	Ap. 200. AG Tower, apt. 1109B	Dubai	YES
+408	1802	650	true	Ap. 198. Azizi Berton, apt. 706	Dubai	YES
+406	1798	482	true	Ap. 197. Prive Residence , apt. 1004	Dubai	YES
+396	1808	492	true	Ap. 192. Marina Wharf 2, apt. 1103	Dubai	YES
+394	1812	494	true	Ap. 191. Marina Quays West , apt. 701	Dubai	YES
+384	1820	504	true	Ap. 186. Mag218, apt. 4104	Dubai	YES
+380	1818	508	true	Ap. 184. Westwood, apt. 402	Dubai	YES
+360	1830	452	true	Ap. 176. Dubai Gate 1, apt. 709	Dubai	YES
+352	1828	442	true	Ap. 172. Bay Central 1, apt. 3102	Dubai	YES
+346	5532	436	true	Ap. 169. Yacht Bay, apt. 202	Dubai	YES
+344	1835	434	true	Ap. 168. Panoramic, apt. 6007	Dubai	YES
+336	1838	426	true	Ap. 164. Azizi Samia , apt. 621	Dubai	YES
+334	1837	424	true	Ap. 163. Ocean Heights, apt. 1202	Dubai	YES
+332	1840	422	true	Ap. 162. Princess tower, apt. 1202	Dubai	YES
+324	1841	414	true	Ap. 158. Royal Oceanic, apt. 705	Dubai	YES
+312	1855	402	true	Ap. 152. Princess tower, apt. 3102	Dubai	YES
+310	1849	400	true	Ap. 151. Discovery Gardens MED 64, apt. 405	Dubai	YES
+300	1851	390	true	Ap. 146. Saba 2, apt. 2904	Dubai	YES
+298	1864	386	true	Ap. 145. Elite Residence, apt. 1410	Dubai	YES
+296	1856	384	true	Ap. 144. Zada Tower, apt. 2009	Dubai	YES
+290	1865	378	true	Ap. 141. Lake view, apt. 703	Dubai	YES
+286	1862	374	true	Ap. 139. Continental tower, apt. 2405	Dubai	YES
+282	1861	370	true	Ap. 137. Jumeirah Bay Tower X1 - JLT, apt. 705	Dubai	YES
+272	1871	360	true	Ap. 133. Al Waleed Paradise, apt. 1204	Dubai	YES
+268	1870	356	true	Ap. 131. O2 Residences , apt. 201	Dubai	YES
+266	1872	352	true	Ap. 130. Discovery Gardens 91, apt. 511	Dubai	YES
+262	1874	348	true	Ap. 128. Dubai Gate 1, apt. 1006	Dubai	YES
+260	1869	346	true	Ap. 127. Lake View, apt. 2801	Dubai	YES
+254	1877	340	true	Ap. 124. Saba 3 Tower, apt. 1112	Dubai	YES
+248	1882	334	true	Ap. 121. Sparkle Tower 2, apt. 605	Dubai	YES
+246	1876	332	true	Ap. 120. Lakeside, apt. 610	Dubai	YES
+240	1880	326	true	Ap. 117. Burj Royale, apt. 1805	Dubai	YES
+234	1888	320	true	Ap. 114. Prime Views , apt. 339	Dubai	YES
+232	1892	318	true	Ap. 113. Bay Central 1, apt. 1610	Dubai	YES
+228	1894	314	true	Ap. 111. Lake View , apt. 605	Dubai	YES
+224	1895	312	true	Ap. 109. Candace Aster, apt. 308	Dubai	YES
+218	1889	306	true	Ap. 106. Damac Heights, apt. 2810	Dubai	YES
+216	1891	304	true	Ap. 105. Candace Aster, apt. 514	Dubai	YES
+212	1902	300	true	Ap. 103. Goldcrest Executive, apt. 2616	Dubai	YES
+208	1905	296	true	Ap. 101. Fairview, apt. 1605	Dubai	YES
+202	1898	292	true	Ap. 95. Mag 218, apt. 5108	Dubai	YES
+198	1900	286	true	Ap. 100. Saba 2, apt. 2305	Dubai	YES
+192	1913	280	true	Ap. 97. Princess, apt. 2002	Dubai	YES
+188	1914	274	true	Ap. 91.  Bay Central 1, apt. 2508	Dubai	YES
+186	1910	272	true	Ap. 90. Creek Vistas A, apt. 1809	Dubai	YES
+184	1907	270	true	Ap. 89. No.9, apt. 1708	Dubai	YES
+182	1915	268	true	Ap. 88. Time Place, apt. 2001	Dubai	YES
+180	1911	266	true	Ap. 87. Marina Tower, apt. 3102	Dubai	YES
+178	1912	264	true	Ap. 86. The Bay, apt.  1408	Dubai	YES
+174	1908	260	true	Ap. 93. Sparkle tower 2, apt. 1309	Dubai	YES
+162	1920	10	true	Ap. 82.  Goldcrest Executive, apt. 2117	Dubai	YES
+158	1925	40	true	Ap. 80. Beach vista 2, apt. 2301	Dubai	YES
+154	1923	36	true	Ap. 78. Zada tower, apt. 218	Dubai	YES
+152	1926	34	true	Ap. 77. DEC Towers, apt. 10	Dubai	YES
+150	1928		true	Ap. 76. The Residence at Marina Gate 2, apt. 3310	Dubai	NO
+148	1922	30	true	Ap. 75. Saba 3, apt. 3110	Dubai	YES
+144	1930	26	true	Ap. 73. Sobha Creek Vistas Reserve A (left side), apt. 1411	Dubai	YES
+134	1937	16	true	Ap. 68. Princess tower, apt. 4410	Dubai	YES
+132	1934		true	Ap. 67. GoldCrest Executive, apt. 2310	Dubai	NO
+128	1968		true	Ap. 65. Yacht Bay, apt. 1504	Dubai	NO
+124	1946	206	true	Ap. 63. Bonaire, apt. 2404	Dubai	YES
+122	1938	204	true	Ap. 62. Princess, apt. 2704	Dubai	YES
+120	1942	202	true	Ap. 61. Park Point. Block B. apt. 513	Dubai	YES
+114	1944		true	Ap. 58. Burj Al Noujoum, apt. 2304	Dubai	NO
+110	1939	182	true	Ap. 56. Concorde Tower, apt. 2106	Dubai	YES
+104	1948	176	true	Ap. 53. Reva Residences, apt. 617	Dubai	YES
+100	1947		true	Ap. 51. Jumeirah Bay X1, apt. 1008	Dubai	NO
+96	1953	168	true	Ap. 49. Concorde Tower, apt. 1706	Dubai	YES
+94	1954	166	true	Ap. 48. LIV Residence, apt. 203	Dubai	YES
+90	1957	162	true	Ap. 46. Botanica, apt. 808	Dubai	YES
+88	1951	160	true	Ap. 45. Iris Blue, apt. 2106	Dubai	YES
+86	1965	158	true	Ap. 44. Studio One, apt. 2701	Dubai	YES
+78	1961	150	true	Ap. 40. Marina View A, apt. 604	Dubai	YES
+76	1960	148	true	Ap. 39. Dubai Gate 1, apt. 210	Dubai	YES
+74	1964	146	true	Ap. 38. Al Arta 1, apt. 216	Dubai	YES
+70	1967	142	true	Ap. 36. Princess Tower, apt. 807	Dubai	YES
+68	1963	140	true	Ap. 35. Concorde Tower, apt. 1309	Dubai	YES
+62	1973		true	Ap. 32. Princess tower, apt. 6001	Dubai	NO
+50	1974	114	true	Ap. 26. Sulafa Tower, apt. 2204	Dubai	YES
+38	1982	94	true	Ap. 20. Dubai Gate 1, apt. 1309	Dubai	YES
+36	1984	92	true	Ap. 19. MJL Rahaal 2, apt. 506	Dubai	YES
+30	1980	86	true	Ap. 16. Bahar 6, apt. 105	Dubai	YES
+24	1991	80	true	Ap. 13. Al Waleed Paradise, apt. 1005	Dubai	YES

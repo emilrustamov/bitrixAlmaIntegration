@@ -6,14 +6,13 @@ require_once('ProjectMapping.php');
 
 Config::load();
 
-// Проект
 $projectName   = $_GET['project'] ?? 'Dubai';
 $projectConfig = ProjectMapping::getProjectConfig($projectName);
 $fieldMapping  = ProjectMapping::getFieldMapping($projectName);
 
 define('WEBHOOK_URL',     $projectConfig['webhook_url']);
 define('ALMA_API_KEY',    Config::get('ALMA_API_KEY'));
-define('ALMA_API_URL',    Config::get('ALMA_REALTY_API_URL'));
+define('ALMA_API_URL',    Config::get('ALMA_API_URL'));
 define('PROJECT_ID',      $projectConfig['id']);
 
 $METRO = $fieldMapping['metro_mapping'];
@@ -50,7 +49,7 @@ class AlmaApi {
 
     public function __construct($apiKey, $apiUrl) {
         $this->apiKey = $apiKey;
-        $this->apiUrl = rtrim($apiUrl, '/') . '/external_api/realty/';
+        $this->apiUrl = rtrim($apiUrl, '/');
         $this->actionLogger = new ApartmentActionLogger();
     }
 
@@ -62,8 +61,9 @@ class AlmaApi {
     }
 
     public function call($method, $endpoint, $data = [], $isPost = true) {
-        $url = $this->apiUrl . ltrim($endpoint, '/');
+        $url = $this->apiUrl . '/realty/' . ltrim($endpoint, '/');
         $headers = $this->baseHeaders();
+        
 
         $curl = curl_init();
         $options = [
@@ -96,6 +96,24 @@ class AlmaApi {
 
         if ($httpCode >= 400) {
             Logger::logApiRequest($method, $url, $data, $response, $httpCode);
+            
+            // Логируем подробности ошибки для отладки
+            $errorDetails = json_decode($response, true);
+            if ($errorDetails) {
+                Logger::error("API Error Details", [
+                    'method' => $method,
+                    'url' => $url,
+                    'http_code' => $httpCode,
+                    'error' => $errorDetails
+                ]);
+            } else {
+                Logger::error("API Error (Non-JSON)", [
+                    'method' => $method,
+                    'url' => $url,
+                    'http_code' => $httpCode,
+                    'response_preview' => substr($response, 0, 200)
+                ]);
+            }
         }
 
         return [
@@ -105,8 +123,7 @@ class AlmaApi {
     }
 
     public function getRentalObject($bitrixId) {
-        // здесь используем другой базовый путь (без /realty/) для rental_object
-        $url = rtrim(ALMA_API_URL, '/') . '/external_api/realty/rental_object/' . rawurlencode($bitrixId) . '/';
+        $url = rtrim(ALMA_API_URL, '/') . '/realty/rental_object/' . rawurlencode($bitrixId) . '/';
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_URL => $url,
@@ -119,45 +136,43 @@ class AlmaApi {
         $code     = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
 
-        if ($code >= 400) {
+        if ($code >= 400 && $code !== 404) {
             Logger::logApiRequest('GET', $url, [], $response, $code);
         }
 
         $decoded = json_decode($response, true);
 
-        if ($code !== 200) {
-            Logger::warning("Rental object not found via rental_object API", ['external_id' => $bitrixId]);
-        }
 
         return ['code' => $code, 'response' => $decoded];
     }
 
     public function createOrUpdateApartment($data, $bitrixId) {
-        // 1) Пытаемся найти rental_object
         $rentalObject = $this->getRentalObject($bitrixId);
 
         if ($rentalObject['code'] === 200 && is_array($rentalObject['response'])) {
-            // Если вернулся room (есть parent_unit), апдейтить надо unit (апартамент)
             $targetId = !empty($rentalObject['response']['parent_unit'])
                 ? $rentalObject['response']['parent_unit']
                 : $rentalObject['response']['id'];
 
             $endpoint = 'units/' . $targetId . '/';
 
-            // 2) Проверяем архивность
-            $unitDetails = $this->call('GET', $endpoint, [], false);
-            if ($unitDetails['code'] === 200 &&
-                isset($unitDetails['response']['is_archived']) &&
-                $unitDetails['response']['is_archived']) {
 
-                $unitName = $unitDetails['response']['name'] ?? ('Apartment ' . $bitrixId);
-                Logger::warning("Apartment $unitName is archived, unarchiving for update", [], 'apartment', $bitrixId);
-                $this->unarchiveApartment($targetId);
-            }
-
-            // 3) PATCH
             $oldData  = $rentalObject['response'];
-            $response = $this->call('PATCH', $endpoint, $data, true);
+            
+            $patchData = $data;
+            if (isset($patchData['building']) && is_array($patchData['building'])) {
+                $patchData['building'] = $patchData['building']['id'];
+            }
+            
+            // API Alma требует name и building при обновлении
+            if (!isset($patchData['name']) || empty($patchData['name'])) {
+                $patchData['name'] = $data['name'] ?? ('Apartment ' . $bitrixId);
+            }
+            if (!isset($patchData['building']) || empty($patchData['building'])) {
+                $patchData['building'] = $data['building'];
+            }
+            
+            $response = $this->call('PATCH', $endpoint, $patchData, true);
             $response['method'] = 'PATCH';
 
             if ($response['code'] === 200) {
@@ -171,7 +186,6 @@ class AlmaApi {
             return $response;
         }
 
-        // 4) Не нашли — создаем
         $endpoint = 'units/';
         $response = $this->call('POST', $endpoint, $data, true);
         $response['method'] = 'POST';
@@ -197,11 +211,6 @@ class AlmaApi {
         return $response;
     }
 
-    private function unarchiveApartment($almaId) {
-        $url  = 'units/' . $almaId . '/archive/';
-        $data = ['is_archived' => false];
-        return $this->call('PATCH', $url, $data, true);
-    }
 
     public function createOrGetBuilding($buildingName) {
         $response = $this->call('GET', 'buildings/', [], false);
@@ -221,7 +230,6 @@ class AlmaApi {
             return $response['response']['id'];
         }
 
-        Logger::error("Failed to create building", ['response' => $response]);
         throw new Exception('Failed to create building: ' . json_encode($response));
     }
 
@@ -246,7 +254,6 @@ try {
 
     $apartmentData = $bitrixApartment['result']['item'];
 
-    // Проверка статуса стадий (кроме Гонконга, если поле пустое)
     $stageField    = $fieldMapping['fields']['stage'];
     $stageForAlma  = $apartmentData[$stageField] ?? '';
     $allowedStages = ['Available', 'Rented'];
@@ -262,13 +269,18 @@ try {
         }
     }
 
-    // Здание
     $buildingNameField = $fieldMapping['fields']['building_name'];
     $buildingName = trim($apartmentData[$buildingNameField] ?? 'Default Building');
     if ($buildingName === '') { $buildingName = 'Default Building'; }
-    $buildingId = $alma->createOrGetBuilding($buildingName);
+    
+    
+    try {
+        $buildingId = $alma->createOrGetBuilding($buildingName);
+    } catch (Exception $e) {
+        Logger::error("Failed to get building", ['building_name' => $buildingName, 'error' => $e->getMessage()], 'apartment', $apartmentId);
+        throw new Exception("Failed to get building '$buildingName': " . $e->getMessage());
+    }
 
-    // Тип и спальни
     $propertyTypeMap = $fieldMapping['property_type_mapping'];
     $bedroomsMap     = $fieldMapping['bedrooms_mapping'];
     $propertyTypeField = $fieldMapping['fields']['property_type'];
@@ -276,18 +288,14 @@ try {
     $propertyType      = $propertyTypeMap[$apartmentType] ?? 'apartment';
     $numberOfBedrooms  = $bedroomsMap[$apartmentType]     ?? 1;
 
-    // ID
     $externalId = $apartmentData['id'] ?? $apartmentId;
     if (empty($externalId)) {
-        Logger::error('External ID is required', [], 'apartment', $apartmentId);
         throw new Exception('External ID is required');
     }
 
-    // Имя
     $name = $apartmentData['title'] ?? ('Apartment ' . $externalId);
     if ($name === '') { $name = 'Apartment ' . $externalId; }
 
-    // additional_external_id (может быть строкой или массивом в Bitrix)
     $additionalExternalIdField = $fieldMapping['fields']['additional_external_id'];
     $additionalExternalId = null;
     if (array_key_exists($additionalExternalIdField, $apartmentData)) {
@@ -296,19 +304,23 @@ try {
         if ($additionalExternalId === '') { $additionalExternalId = null; }
     }
 
-    // Тип аренды (unit / rooms)
     $rentTypeField   = $fieldMapping['fields']['rent_type'];
-    $rentTypeValue   = $apartmentData[$rentTypeField] ?? '4598'; // по умолчанию unit
+    $rentTypeValue   = $apartmentData[$rentTypeField] ?? '4598';
     $rentTypeMapping = $fieldMapping['rent_type_mapping'];
     $rentType        = $rentTypeMapping[$rentTypeValue] ?? 'unit';
 
-    // Если шаринг (по комнатам) — чистим additional_external_id
-    if ($rentType !== 'rooms') {
-        $additionalExternalId = null;
+    // Определяем логику внешних ID согласно документации:
+    // Для шеринговых (rooms): additional_external_id = "", is_used = false  
+    // Для НЕ-шеринговых (unit): additional_external_id = ID юнита, is_used = true
+    
+    if ($rentType === 'rooms') {  // Шеринговый апартамент 
+        $additionalExternalId = null; // Пустой для шеринговых
     }
-    $useAdditionalExternalId = ($rentType === 'rooms'); // rooms = шеринговый
+    // Для НЕ-шеринговых $additionalExternalId остается как есть (ID юнита)
+    
+    // is_used_additional_external_id: true для unit (не-шеринговых), false для rooms (шеринговых)
+    $useAdditionalExternalId = ($rentTypeValue === '4598');
 
-    // Поля
     $numberField         = $fieldMapping['fields']['apartment_number'];
     $internalAreaField   = $fieldMapping['fields']['internal_area'];
     $goalRentCostField   = $fieldMapping['fields']['goal_rent_cost'];
@@ -328,40 +340,70 @@ try {
 
     $data = [
         'external_id'                    => (string)$externalId,
-        'additional_external_id'         => $additionalExternalId,                  // null при шаринге
-        'is_used_additional_external_id' => $useAdditionalExternalId,               // true только если unit И есть additional_external_id
+        'is_used_additional_external_id' => $useAdditionalExternalId,
         'name'                           => $name,
         'header'                         => $apartmentData['title'] ?? $name,
         'building'                       => $buildingId,
         'property_type'                  => $propertyType,
         'number'                         => ($apartmentData[$numberField] ?? '0') ?: '0',
         'internal_area'                  => (float)($apartmentData[$internalAreaField] ?? 0),
-        'photos'                         => [],                                     // загрузка фото отдельной логикой
+        'photos'                         => [], // Обязательное поле
         'goal_rent_cost'                 => (float)($apartmentData[$goalRentCostField] ?? 0),
         'address'                        => $apartmentData[$addressField] ?? '',
-        'number_of_bedrooms'             => (int)$numberOfBedrooms,
-        'number_of_baths'                => (int)($apartmentData[$bathsField] ?? 0), // по доке: пусто => 0
-        'is_roof_garden'                 => false,
-        'parking'                        => 'not_applicable',
-        'is_swimming_pool'               => (($apartmentData[$isPoolField] ?? 'N') === 'Y'),
-        'total_buildable_area'           => (float)($apartmentData[$internalAreaField] ?? 0),
+        'number_of_bedrooms'             => (int)$numberOfBedrooms, // Обязательное поле
+        'number_of_baths'                => (int)($apartmentData[$bathsField] ?? 0), // Обязательное поле
+        'is_roof_garden'                 => false, // Обязательное поле
+        'parking'                        => 'not_applicable', // Обязательное поле
+        'is_swimming_pool'               => (($apartmentData[$isPoolField] ?? 'N') === 'Y'), // Обязательное поле
+        'total_buildable_area'           => (float)($apartmentData[$internalAreaField] ?? 0), // Обязательное поле
         'floor'                          => $apartmentData[$floorField] ?? null,
         'internet_login'                 => $apartmentData[$internetLoginField] ?? '',
         'internet_password'              => $apartmentData[$internetPassField] ?? '',
         'subway_station'                 => $subwayValue,
         'parking_number'                 => $apartmentData[$parkingNumberField] ?? '',
-        'keybox_code'                    => ($apartmentData[$keyboxField] ?? null) ?: null,            // null вместо 'N/A'
-        'electronic_lock_password'       => ($apartmentData[$elLockField] ?? null) ?: null,            // null вместо 'N/A'
+        'keybox_code'                    => ($apartmentData[$keyboxField] ?? null) ?: null,
+        'electronic_lock_password'       => !empty($apartmentData[$elLockField]) ? substr($apartmentData[$elLockField], 0, 8) : null,
     ];
+
+    // Добавляем additional_external_id только если это не шеринговый апартамент
+    if ($rentType !== 'rooms' && $additionalExternalId !== null) {
+        $data['additional_external_id'] = $additionalExternalId;
+    }
+
+    // Проверяем обязательные поля согласно документации
+    if (empty($data['name'])) {
+        throw new Exception("Missing required field: name");
+    }
+    if (empty($data['building'])) {
+        throw new Exception("Missing required field: building");
+    }
+    if (empty($data['property_type'])) {
+        throw new Exception("Missing required field: property_type");
+    }
+    
+    // Временное логирование для отладки
+    Logger::info("Sending apartment data to Alma", [
+        'apartment_id' => $apartmentId,
+        'external_id' => $externalId,
+        'data' => $data
+    ], 'apartment', $apartmentId);
 
     $response = $alma->createOrUpdateApartment($data, $externalId);
 
-    if ($response['code'] === 200 || $response['code'] === 201) {
+    if (isset($response['response']['id']) || (isset($response['code']) && $response['code'] >= 200 && $response['code'] < 300)) {
+        $almaId = $response['response']['id'] ?? $response['id'] ?? null;
+        $method = $response['method'] ?? 'unknown';
+        $message = $method === 'POST' 
+            ? 'Apartment successfully created in Alma' 
+            : 'Apartment successfully updated in Alma';
+        
         echo json_encode([
             'success' => true,
-            'message' => 'Apartment successfully processed',
-            'method'  => $response['method'] ?? 'unknown',
-            'data'    => $response['response']
+            'message' => $message,
+            'alma_id' => $almaId,
+            'method' => $method,
+            'operation' => $method === 'POST' ? 'created' : 'updated',
+            'data' => $response['response'] ?? $response
         ]);
     } else {
         Logger::error('Failed to process apartment', ['response' => $response], 'apartment', $apartmentId);
@@ -369,7 +411,6 @@ try {
     }
 
 } catch (Exception $e) {
-    // best-effort логгер, даже если $alma не создан
     try {
         if (isset($alma)) {
             $alma->getActionLogger()->logError(
@@ -380,7 +421,6 @@ try {
             );
         }
     } catch (\Throwable $t) {
-        // игнор
     }
 
     Logger::error('Exception occurred: ' . $e->getMessage(), [

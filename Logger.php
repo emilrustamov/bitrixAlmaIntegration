@@ -4,7 +4,7 @@ class Logger
 {
     private static $logFile = __DIR__ . '/alma_integration.log';
     private static $instance = null;
-    private static $minLevel = self::LEVEL_WARNING; // Изменено с INFO на WARNING
+    private static $minLevel = self::LEVEL_DEBUG; // Временно для отладки
     
     const LEVEL_DEBUG = 'DEBUG';
     const LEVEL_INFO = 'INFO';
