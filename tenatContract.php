@@ -4,6 +4,7 @@ ini_set('max_execution_time', 60);
 
 require_once('Bitrix24Rest.php');
 require_once('Logger.php');
+require_once('EnhancedLogger.php');
 require_once('Config.php');
 require_once('ProjectMapping.php');
 
@@ -40,7 +41,10 @@ class AlmaTenantContractApi {
         ], 'contract', $bitrixData['id']);
 
         try {
-            $clientId = $this->ensureClientExists($bitrixData['client_data']);
+            $contractType = $bitrixData['UF_CRM_20_1693561495'] ?? '';
+            $this->mapContractType($contractType);
+            
+            $clientId = $this->ensureClientExists($bitrixData['client_data'], $contractType);
             $unitId = $this->findCorrectAlmaObject($bitrixData);
             $this->validateRentalObject($unitId, $bitrixData);
             
@@ -48,7 +52,12 @@ class AlmaTenantContractApi {
             
             return $this->createOrUpdateContract($contractData, $bitrixData['id']);
         } catch (Exception $e) {
-            Logger::error("Contract synchronization failed: " . $e->getMessage(), [], 'contract', $bitrixData['id'] ?? 'unknown');
+            EnhancedLogger::logContractError($bitrixData['id'], "Contract synchronization failed: " . $e->getMessage(), [
+                'exception_type' => get_class($e),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
             throw new Exception("Contract synchronization failed: " . $e->getMessage());
         }
     }
@@ -123,10 +132,11 @@ class AlmaTenantContractApi {
             
             return ['code' => 201, 'response' => $response, 'method' => 'POST'];
         } catch (Exception $e) {
-            Logger::error("Failed to create contract: " . $e->getMessage(), [
+            EnhancedLogger::logContractError($contractData['external_id'] ?? 'unknown', "Failed to create contract: " . $e->getMessage(), [
                 'contract_data' => $contractData,
-                'url' => $url
-            ], 'contract', $contractData['external_id'] ?? 'unknown');
+                'url' => $url,
+                'method' => 'POST'
+            ]);
             
             return ['code' => 400, 'response' => ['error' => $e->getMessage()], 'method' => 'POST'];
         }
@@ -220,12 +230,27 @@ class AlmaTenantContractApi {
     }
 
 
-    public function ensureClientExists(array $clientData) {
+    public function ensureClientExists(array $clientData, $contractType = '') {
+        $isAirbnb = ((string)$contractType === '882');
+        
+        if (empty($clientData['email']) && $isAirbnb) {
+            $clientData['email'] = $this->generateAirbnbEmail($clientData['first_name'] ?? '', $clientData['last_name'] ?? '');
+        }
+        
+        if ($isAirbnb && !empty($clientData['last_name'])) {
+            $lastName = trim($clientData['last_name']);
+            $suffix = ' airbnb';
+            if (strlen($lastName) < strlen($suffix) || substr($lastName, -strlen($suffix)) !== $suffix) {
+                $clientData['last_name'] = $lastName . $suffix;
+            }
+        }
+        
         Logger::info("ensureClientExists called with clientData", [
             'client_id' => $clientData['id'],
             'email' => $clientData['email'],
             'first_name' => $clientData['first_name'],
-            'last_name' => $clientData['last_name']
+            'last_name' => $clientData['last_name'],
+            'is_airbnb' => $isAirbnb
         ], 'contract', $clientData['id']);
         
         try {
@@ -306,6 +331,9 @@ class AlmaTenantContractApi {
         $startDate = $this->formatDate($bitrixData['UF_CRM_20_CONTRACT_START_DATE']);
         $endDate = $this->formatDate($bitrixData['UF_CRM_20_CONTRACT_END_DATE']);
         
+        $contractType = $bitrixData['UF_CRM_20_1693561495'] ?? '';
+        $isAirbnb = ((string)$contractType === '882');
+        $price = $isAirbnb ? '0.00' : number_format($bitrixData['opportunity'], 2, '.', '');
         
         $contractData = [
             'external_id' => $bitrixData['id'],
@@ -314,8 +342,8 @@ class AlmaTenantContractApi {
             'name' => $bitrixData['title'],
             'start_date' => $startDate,
             'end_date' => $endDate,
-            'price' => number_format($bitrixData['opportunity'], 2, '.', ''),
-            'type_contract' => $this->mapContractType($bitrixData['UF_CRM_20_1693561495'] ?? ''),
+            'price' => $price,
+            'type_contract' => ProjectMapping::mapContractType($contractType, $GLOBALS['projectName']),
         ];
 
         if (!empty($bitrixData['UF_CRM_20_CONTRACT_HISTORY'])) {
@@ -373,10 +401,6 @@ class AlmaTenantContractApi {
         if ($mappedType === null) {
             $bitrixTypeStr = (string)$bitrixType;
             
-            if ($bitrixTypeStr === '882') {
-                throw new InvalidArgumentException("Airbnb contracts are not synchronized to Alma");
-            }
-            
             if ($bitrixTypeStr === '8672') {
                 throw new InvalidArgumentException("Ejari contracts are not synchronized to Alma");
             }
@@ -385,6 +409,26 @@ class AlmaTenantContractApi {
         }
         
         return $mappedType;
+    }
+
+    private function generateAirbnbEmail($firstName, $lastName) {
+        $first = mb_strtolower(trim($firstName));
+        $last = mb_strtolower(trim($lastName));
+        
+        $firstClean = preg_replace('/[^a-z0-9]/', '', $first);
+        $lastClean = preg_replace('/[^a-z0-9]/', '', $last);
+        
+        if (empty($firstClean) && empty($lastClean)) {
+            $username = 'airbnb' . bin2hex(random_bytes(2));
+        } elseif (empty($firstClean)) {
+            $username = $lastClean;
+        } elseif (empty($lastClean)) {
+            $username = $firstClean;
+        } else {
+            $username = $firstClean . '.' . $lastClean;
+        }
+        
+        return "{$username}@airbnb.colife";
     }
 
     private function uploadFile($fileUrl) {
@@ -691,10 +735,18 @@ try {
     $almaApi = new AlmaTenantContractApi();
     $bitrix = new Bitrix24Rest(WEBHOOK_URL);
 
-    $contractResponse = $bitrix->call('crm.item.get', [
-        'entityTypeId' => 183,
-        'id' => $_GET['id'],
-    ]);
+    try {
+        $contractResponse = $bitrix->call('crm.item.get', [
+            'entityTypeId' => 183,
+            'id' => $_GET['id'],
+        ]);
+    } catch (Exception $e) {
+        Logger::error("Failed to get contract from Bitrix24", [
+            'contract_id' => $_GET['id'],
+            'error' => $e->getMessage()
+        ], 'contract', $_GET['id']);
+        throw new Exception("Failed to get contract from Bitrix24: " . $e->getMessage());
+    }
 
     if (!isset($contractResponse['result']['item'])) {
         throw new Exception("Contract not found in Bitrix24 with ID: " . $_GET['id']);
@@ -702,9 +754,17 @@ try {
     
     $contractData = $contractResponse['result']['item'];
 
-    $contactResponse = $bitrix->call('crm.contact.get', [
-        'id' => $contractData['contactId']
-    ]);
+    try {
+        $contactResponse = $bitrix->call('crm.contact.get', [
+            'id' => $contractData['contactId']
+        ]);
+    } catch (Exception $e) {
+        Logger::error("Failed to get contact from Bitrix24", [
+            'contact_id' => $contractData['contactId'],
+            'error' => $e->getMessage()
+        ], 'contract', $_GET['id']);
+        throw new Exception("Failed to get contact from Bitrix24: " . $e->getMessage());
+    }
     
     if (!isset($contactResponse['result'])) {
         throw new Exception("Contact not found in Bitrix24 with ID: " . $contractData['contactId']);
@@ -770,12 +830,12 @@ try {
         'message' => 'API error: ' . $e->getMessage()
     ]);
 } catch (Exception $e) {
-    Logger::error("Unexpected error in contract synchronization: " . $e->getMessage(), [
+    EnhancedLogger::logContractError($_GET['id'] ?? 'unknown', "Unexpected error in contract synchronization: " . $e->getMessage(), [
         'exception_type' => get_class($e),
         'file' => $e->getFile(),
         'line' => $e->getLine(),
         'trace' => $e->getTraceAsString()
-    ], 'contract', $_GET['id'] ?? 'unknown');
+    ]);
     
     http_response_code(500);
     echo json_encode([

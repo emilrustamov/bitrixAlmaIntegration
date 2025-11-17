@@ -50,11 +50,21 @@ class ProjectMapping {
                     '4598' => 'unit'    // обычный апартамент
                 ],
                 'contract_type_mapping' => [
+                    '882' => 'Airbnb',
                     '884' => 'Short term from 1 to 3 months',
                     '886' => 'Long-term 3+ months', 
                     '1304' => 'Booking',
                     '1306' => 'Short contract up to 1 month',
                     '6578' => 'Less than a month'
+                ],
+                'work_model_mapping' => [
+                    '1696' => 'Rent to rent',
+                    '1698' => 'TM 10%',
+                    '1700' => 'TM 15%',
+                    '1702' => 'TM 17%',
+                    '1704' => 'TM 20%',
+                    '1706' => 'Long term',
+                    '1730' => 'TM 18%'
                 ],
                 'metro_mapping' => [
                     66 => 'Rashidiya',
@@ -172,6 +182,18 @@ class ProjectMapping {
     
     public static function mapContractType($bitrixType, $projectName = 'Dubai') {
         $mapping = self::getContractTypeMapping($projectName);
+        $bitrixTypeStr = (string)$bitrixType;
+        
+        return $mapping[$bitrixTypeStr] ?? null;
+    }
+    
+    public static function getWorkModelMapping($projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        return $mapping['work_model_mapping'] ?? [];
+    }
+    
+    public static function mapWorkModel($bitrixType, $projectName = 'Dubai') {
+        $mapping = self::getWorkModelMapping($projectName);
         $bitrixTypeStr = (string)$bitrixType;
         
         return $mapping[$bitrixTypeStr] ?? null;

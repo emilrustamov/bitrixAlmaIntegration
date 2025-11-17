@@ -133,8 +133,6 @@ class AlmaTenantsApi
 
         if (!empty($bitrixData['UF_CRM_1727788747'])) {
             $data['email'] = $bitrixData['UF_CRM_1727788747'];
-        } else {
-            $data['email'] = 'no-email-' . $bitrixData['id'] . '@colife.local';
         }
         if (!empty($bitrixData['UF_CRM_20_1696523391'])) {
             $data['passport'] = $bitrixData['UF_CRM_20_1696523391'];

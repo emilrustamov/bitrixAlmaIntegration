@@ -230,24 +230,45 @@ curl -s "https://colife.argo.properties:1337/external_api/realty/rental_object/A
 
 ### Проверка в Bitrix24:
 
-#### Проверка контракта:
+#### Получить один элемент (get):
 ```bash
+# Контракт
 curl -s "https://colifeae.bitrix24.eu/rest/86428/veqe4foxak36hydi/crm.item.get?entityTypeId=183&id=КОНТРАКТ_ID"
-```
 
-#### Проверка юнита:
-```bash
+# Юнит
 curl -s "https://colifeae.bitrix24.eu/rest/86428/veqe4foxak36hydi/crm.item.get?entityTypeId=167&id=UNIT_ID"
-```
 
-#### Проверка апартамента:
-```bash
+# Апартамент
 curl -s "https://colifeae.bitrix24.eu/rest/86428/veqe4foxak36hydi/crm.item.get?entityTypeId=144&id=APARTMENT_ID"
+
+# Клиент
+curl -s "https://colifeae.bitrix24.eu/rest/86428/veqe4foxak36hydi/crm.contact.get?id=CLIENT_ID"
 ```
 
-#### Проверка клиента:
+#### Получить список элементов (list):
 ```bash
-curl -s "https://colifeae.bitrix24.eu/rest/86428/veqe4foxak36hydi/crm.contact.get?id=CLIENT_ID"
+# Все контракты с лимитом
+curl -s "https://colifeae.bitrix24.eu/rest/86428/veqe4foxak36hydi/crm.item.list?entityTypeId=183&start=0&limit=50"
+
+# Все юниты с лимитом
+curl -s "https://colifeae.bitrix24.eu/rest/86428/veqe4foxak36hydi/crm.item.list?entityTypeId=167&start=0&limit=50"
+
+# Все апартаменты с лимитом
+curl -s "https://colifeae.bitrix24.eu/rest/86428/veqe4foxak36hydi/crm.item.list?entityTypeId=144&start=0&limit=50"
+
+# Контракты с фильтром по типу (POST запрос)
+curl -s -X POST "https://colifeae.bitrix24.eu/rest/86428/veqe4foxak36hydi/crm.item.list" \
+  -d "entityTypeId=183&filter[ufCrm20_1693561495]=884"
+
+# Контракты для определенного клиента
+curl -s -X POST "https://colifeae.bitrix24.eu/rest/86428/veqe4foxak36hydi/crm.item.list" \
+  -d "entityTypeId=183&filter[ufCrm20_1693919019]=UNIT_ID"
+
+# С пагинацией (start=0, limit=50 для первой страницы)
+curl -s "https://colifeae.bitrix24.eu/rest/86428/veqe4foxak36hydi/crm.item.list?entityTypeId=183&start=0&limit=50"
+
+# Вторая страница
+curl -s "https://colifeae.bitrix24.eu/rest/86428/veqe4foxak36hydi/crm.item.list?entityTypeId=183&start=50&limit=50"
 ```
 
 ### Примеры проверки:
@@ -276,7 +297,10 @@ curl -s "https://colifeae.bitrix24.eu/rest/86428/veqe4foxak36hydi/crm.item.get?e
 | Синхронизировать контракт | `cd /var/www/alma && php -r '$_GET["id"] = "ID"; include "tenatContract.php";'` |
 | Проверить контракт в Alma | `curl -s "https://colife.argo.properties:1337/external_api/realty/contracts/tenant_contracts/external_id/ID/" -H "Api-Key: 3ae0539d134e9b7320e6d3ff28a11bde"` |
 | Проверить контракт в Bitrix24 | `curl -s "https://colifeae.bitrix24.eu/rest/86428/veqe4foxak36hydi/crm.item.get?entityTypeId=183&id=ID"` |
+| **Получить список контрактов в Bitrix24** | `curl -s "https://colifeae.bitrix24.eu/rest/86428/veqe4foxak36hydi/crm.item.list?entityTypeId=183&start=0&limit=50"` |
 | Проверить комнату в Alma | `curl -s "https://colife.argo.properties:1337/external_api/realty/rooms/external_id/ID/" -H "Api-Key: 3ae0539d134e9b7320e6d3ff28a11bde"` |
 | Проверить юнит в Bitrix24 | `curl -s "https://colifeae.bitrix24.eu/rest/86428/veqe4foxak36hydi/crm.item.get?entityTypeId=167&id=ID"` |
+| **Получить список юнитов в Bitrix24** | `curl -s "https://colifeae.bitrix24.eu/rest/86428/veqe4foxak36hydi/crm.item.list?entityTypeId=167&start=0&limit=50"` |
 | Проверить апартамент в Bitrix24 | `curl -s "https://colifeae.bitrix24.eu/rest/86428/veqe4foxak36hydi/crm.item.get?entityTypeId=144&id=ID"` |
+| **Получить список апартаментов в Bitrix24** | `curl -s "https://colifeae.bitrix24.eu/rest/86428/veqe4foxak36hydi/crm.item.list?entityTypeId=144&start=0&limit=50"` |
 | Проверить клиента в Bitrix24 | `curl -s "https://colifeae.bitrix24.eu/rest/86428/veqe4foxak36hydi/crm.contact.get?id=ID"` |

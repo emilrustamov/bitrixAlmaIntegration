@@ -1,5 +1,6 @@
 <?php
 
+require_once('Bitrix24Rest.php');
 require_once('Logger.php');
 require_once('Config.php');
 require_once('ProjectMapping.php');
@@ -16,31 +17,6 @@ define('ALMA_API_URL',    Config::get('ALMA_API_URL'));
 define('PROJECT_ID',      $projectConfig['id']);
 
 $METRO = $fieldMapping['metro_mapping'];
-
-class Bitrix24Rest {
-    private $webhookUrl;
-    public function __construct($webhookUrl) { $this->webhookUrl = $webhookUrl; }
-
-    public function call($method, $params = []) {
-        $url = $this->webhookUrl . $method;
-        $query = http_build_query($params);
-        $curl = curl_init();
-
-        curl_setopt_array($curl, [
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_POST => true,
-            CURLOPT_HEADER => false,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_URL => $url,
-            CURLOPT_POSTFIELDS => $query,
-        ]);
-
-        $result = curl_exec($curl);
-        curl_close($curl);
-
-        return json_decode($result, true);
-    }
-}
 
 class AlmaApi {
     private $apiKey;
@@ -170,6 +146,17 @@ class AlmaApi {
             }
             if (!isset($patchData['building']) || empty($patchData['building'])) {
                 $patchData['building'] = $data['building'];
+            }
+            
+            // ✅ ВАЖНО: Всегда включаем is_used_additional_external_id при обновлении (PATCH)
+            // Это поле критично для системы приоритетов rental_object API и не должно теряться
+            if (isset($data['is_used_additional_external_id'])) {
+                $patchData['is_used_additional_external_id'] = $data['is_used_additional_external_id'];
+            }
+            
+            // ✅ Если additional_external_id указано в данных, включаем его в PATCH
+            if (isset($data['additional_external_id'])) {
+                $patchData['additional_external_id'] = $data['additional_external_id'];
             }
             
             $response = $this->call('PATCH', $endpoint, $patchData, true);
@@ -309,17 +296,24 @@ try {
     $rentTypeMapping = $fieldMapping['rent_type_mapping'];
     $rentType        = $rentTypeMapping[$rentTypeValue] ?? 'unit';
 
-    // Определяем логику внешних ID согласно документации:
-    // Для шеринговых (rooms): additional_external_id = "", is_used = false  
-    // Для НЕ-шеринговых (unit): additional_external_id = ID юнита, is_used = true
+    // ✅ Определяем логику внешних ID согласно документации:
+    // ШЕРИНГОВЫЕ апартаменты (rooms, rentTypeValue = 4600):
+    //   - additional_external_id = "" (пустой/null) - комнаты не используют дополнительный ID
+    //   - is_used_additional_external_id = false - флаг отключен, дополнительный ID не учитывается
+    // 
+    // НЕ-ШЕРИНГОВЫЕ апартаменты (unit, rentTypeValue = 4598):
+    //   - additional_external_id = ID юнита (если есть в Bitrix) - используется для поиска
+    //   - is_used_additional_external_id = true - флаг включен, дополнительный ID учитывается при поиске
     
-    if ($rentType === 'rooms') {  // Шеринговый апартамент 
-        $additionalExternalId = null; // Пустой для шеринговых
+    // Определяем, используется ли дополнительный ID:
+    // true  = для обычных апартаментов (unit) - дополнительный ID включен для системы приоритетов rental_object
+    // false = для шеринговых апартаментов (rooms) - дополнительный ID отключен
+    $useAdditionalExternalId = ($rentType === 'unit');
+    
+    // Для шеринговых апартаментов очищаем additional_external_id
+    if ($rentType === 'rooms') {
+        $additionalExternalId = null;
     }
-    // Для НЕ-шеринговых $additionalExternalId остается как есть (ID юнита)
-    
-    // is_used_additional_external_id: true для unit (не-шеринговых), false для rooms (шеринговых)
-    $useAdditionalExternalId = ($rentTypeValue === '4598');
 
     $numberField         = $fieldMapping['fields']['apartment_number'];
     $internalAreaField   = $fieldMapping['fields']['internal_area'];

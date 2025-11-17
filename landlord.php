@@ -16,7 +16,7 @@ define('ALMA_API_URL', Config::get('ALMA_API_URL'));
 define('PROJECT_ID', $projectConfig['id']);
 define('WEBHOOK_URL', $projectConfig['webhook_url']);
 
-class AlmaTenantsApi
+class AlmaLandlordsApi
 {
     private $apiKey;
     private $apiUrl;
@@ -28,53 +28,53 @@ class AlmaTenantsApi
         $this->apiKey = $apiKey;
         $this->apiUrl = $apiUrl;
         $this->debug = $debug;
-        $this->actionLogger = new TenantActionLogger();
+        $this->actionLogger = new LandlordActionLogger();
     }
 
-    public function syncTenant(array $bitrixData)
+    public function syncLandlord(array $bitrixData)
     {
         $this->validateBitrixData($bitrixData);
 
         try {
-            $tenantData = $this->prepareTenantData($bitrixData);
-            $externalId = $tenantData['external_id'];
-            $existingTenant = $this->getTenantByExternalId($externalId);
+            $landlordData = $this->prepareLandlordData($bitrixData);
+            $externalId = $landlordData['external_id'];
+            $existingLandlord = $this->getLandlordByExternalId($externalId);
 
-            if ($existingTenant) {
-                return $this->updateTenant($existingTenant['id'], $tenantData);
+            if ($existingLandlord) {
+                return $this->updateLandlord($existingLandlord['id'], $landlordData);
             } else {
-                return $this->createTenant($tenantData);
+                return $this->createLandlord($landlordData);
             }
         } catch (Exception $e) {
-            throw new Exception("Tenant synchronization failed: " . $e->getMessage());
+            throw new Exception("Landlord synchronization failed: " . $e->getMessage());
         }
     }
 
-    public function createTenant(array $tenantData)
+    public function createLandlord(array $landlordData)
     {
         $url = $this->apiUrl . 'users/clients/';
-        $response = $this->sendRequest('POST', $url, $tenantData);
+        $response = $this->sendRequest('POST', $url, $landlordData);
 
-        $this->actionLogger->logTenantCreation(
+        $this->actionLogger->logLandlordCreation(
             $response['id'],
-            $tenantData['first_name'] ?? '',
-            $tenantData['last_name'] ?? '',
-            $tenantData['email'] ?? '',
-            $tenantData['phone'] ?? '',
+            $landlordData['first_name'] ?? '',
+            $landlordData['last_name'] ?? '',
+            $landlordData['email'] ?? '',
+            $landlordData['phone'] ?? '',
             [
-                'external_id' => $tenantData['external_id'] ?? '',
-                'birthday' => $tenantData['birthday'] ?? null,
-                'country' => $tenantData['country'] ?? 4
+                'external_id' => $landlordData['external_id'] ?? '',
+                'birthday' => $landlordData['birthday'] ?? null,
+                'country' => $landlordData['country'] ?? 4
             ]
         );
 
         return $response;
     }
 
-    public function updateTenant($tenantId, array $tenantData)
+    public function updateLandlord($landlordId, array $landlordData)
     {
-        $oldTenantData = $this->getTenant($tenantId);
-        $dataForUpdate = $tenantData;
+        $oldLandlordData = $this->getLandlord($landlordId);
+        $dataForUpdate = $landlordData;
         unset($dataForUpdate['external_id']);
         $fieldsToRemove = ['external_id', 'id', 'status'];
         foreach ($fieldsToRemove as $field) {
@@ -83,31 +83,31 @@ class AlmaTenantsApi
             }
         }
 
-        $url = $this->apiUrl . 'users/clients/' . $tenantId . '/';
+        $url = $this->apiUrl . 'users/clients/' . $landlordId . '/';
         $response = $this->sendRequest('PATCH', $url, $dataForUpdate);
 
-        $entityName = trim(($tenantData['first_name'] ?? '') . ' ' . ($tenantData['last_name'] ?? ''));
+        $entityName = trim(($landlordData['first_name'] ?? '') . ' ' . ($landlordData['last_name'] ?? ''));
         if (empty($entityName)) {
-            $entityName = 'Tenant ' . $tenantId;
+            $entityName = 'Landlord ' . $landlordId;
         }
 
         $this->actionLogger->logUpdate(
-            $tenantId,
+            $landlordId,
             $entityName,
-            $oldTenantData,
+            $oldLandlordData,
             $dataForUpdate
         );
 
         return $response;
     }
 
-    public function getTenant($tenantId)
+    public function getLandlord($landlordId)
     {
-        $url = $this->apiUrl . 'users/clients/' . $tenantId . '/';
+        $url = $this->apiUrl . 'users/clients/' . $landlordId . '/';
         return $this->sendRequest('GET', $url);
     }
 
-    public function getTenantByExternalId($externalId)
+    public function getLandlordByExternalId($externalId)
     {
         $url = $this->apiUrl . 'users/clients/external_id/' . $externalId . '/';
 
@@ -122,7 +122,7 @@ class AlmaTenantsApi
         }
     }
 
-    public function getAllTenants()
+    public function getAllLandlords()
     {
         $url = $this->apiUrl . 'users/clients/';
         return $this->sendRequest('GET', $url);
@@ -133,7 +133,7 @@ class AlmaTenantsApi
         return $this->actionLogger;
     }
 
-    private function prepareTenantData(array $bitrixData)
+    private function prepareLandlordData(array $bitrixData)
     {
         $data = [
             'external_id' => (string)$bitrixData['id'],
@@ -147,11 +147,12 @@ class AlmaTenantsApi
         if (!empty($bitrixData['UF_CRM_1727788747'])) {
             $data['email'] = $bitrixData['UF_CRM_1727788747'];
         }
-        if (!empty($bitrixData['UF_CRM_20_1696523391'])) {
-            $data['passport'] = $bitrixData['UF_CRM_20_1696523391'];
+        
+        if (!empty($bitrixData['UF_CRM_10_1740556751168'])) {
+            $data['passport'] = $bitrixData['UF_CRM_10_1740556751168'];
         }
 
-        $passportScan = $this->uploadFile($bitrixData['UF_CRM_20_1696615939']['urlMachine'] ?? null);
+        $passportScan = $this->uploadFile($bitrixData['UF_CRM_10_1694000435068']['urlMachine'] ?? null);
         if ($passportScan) {
             $data['passport_scan'] = $passportScan;
         }
@@ -235,7 +236,7 @@ class AlmaTenantsApi
         $uploadUrl = $this->apiUrl . 'external-image/';
         $fileData = [
             'url' => $fileUrl,
-            'description' => 'Client document'
+            'description' => 'Landlord document'
         ];
 
         try {
@@ -309,8 +310,6 @@ class AlmaTenantsApi
     }
 }
 
-
-
 try {
     $contactId = $_GET['id'] ?? null;
 
@@ -319,25 +318,11 @@ try {
     }
 
     $bitrix = new Bitrix24Rest(WEBHOOK_URL);
-    $almaApi = new AlmaTenantsApi(ALMA_API_KEY, ALMA_API_URL, true);
+    $almaApi = new AlmaLandlordsApi(ALMA_API_KEY, ALMA_API_URL, true);
 
-    try {
-        $bitrixContact = $bitrix->call('crm.contact.get', [
-            'id' => $contactId
-        ]);
-    } catch (Exception $e) {
-        Logger::error("Failed to get contact from Bitrix24", [
-            'contact_id' => $contactId,
-            'error' => $e->getMessage()
-        ], 'tenant', $contactId);
-        
-        http_response_code(500);
-        echo json_encode([
-            'success' => false,
-            'message' => 'Failed to get contact from Bitrix24: ' . $e->getMessage()
-        ]);
-        exit;
-    }
+    $bitrixContact = $bitrix->call('crm.contact.get', [
+        'id' => $contactId
+    ]);
 
     if (!isset($bitrixContact['result'])) {
         echo json_encode([
@@ -350,38 +335,14 @@ try {
 
     $contactData = $bitrixContact['result'];
 
-    // Проверяем, есть ли у контакта активные Airbnb/Ejari контракты
-    try {
-        $contracts = $bitrix->call('crm.item.list', [
-            'entityTypeId' => 183, // Контракты
-            'filter' => [
-                'contactId' => $contactId
-            ],
-            'select' => ['id', 'ufCrm20_1693561495'] // ID и тип контракта
-        ]);
-    } catch (Exception $e) {
-        Logger::warning("Failed to check contracts", [
-            'contact_id' => $contactId,
-            'error' => $e->getMessage()
-        ], 'tenant', $contactId);
-        $contracts = ['result' => ['items' => []]];
-    }
-
-    if (isset($contracts['result']['items'])) {
-        foreach ($contracts['result']['items'] as $contract) {
-            $contractType = (string)($contract['ufCrm20_1693561495'] ?? '');
-            if ($contractType === '882' || $contractType === '8672') {
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Contact has Airbnb/Ejari contracts - not synchronized',
-                    'contact_id' => $contactId,
-                    'contract_type' => $contractType === '882' ? 'Airbnb' : 'Ejari',
-                    'contract_id' => $contract['id']
-                ]);
-                exit;
-            }
-        }
-    }
+    // Проверяем, есть ли у контакта активные LL контракты
+    $contracts = $bitrix->call('crm.item.list', [
+        'entityTypeId' => 148, // LL Contracts
+        'filter' => [
+            'contactId' => $contactId
+        ],
+        'select' => ['id', 'ufCrm10_1708955821'] // ID и work_model
+    ]);
 
     $phone = '';
     if (!empty($contactData['PHONE']) && is_array($contactData['PHONE'])) {
@@ -393,34 +354,35 @@ try {
         }
     }
 
-    $bitrixTenantData = [
+    $bitrixLandlordData = [
         'id' => $contactData['ID'],
         'name' => $contactData['NAME'] ?? '',
         'last_name' => $contactData['LAST_NAME'] ?? '',
         'UF_CRM_1727788747' => $contactData['UF_CRM_1727788747'] ?? '',
         'phone_work' => $contactData['PHONE_WORK_0'] ?? $phone,
         'birthdate' => $contactData['BIRTHDATE'] ?? null,
-        'ufCrm10_1694000435068' => $contactData['UF_CRM_1694000435068'] ?? []
+        'UF_CRM_10_1694000435068' => $contactData['UF_CRM_10_1694000435068'] ?? [],
+        'UF_CRM_10_1740556751168' => $contactData['UF_CRM_10_1740556751168'] ?? ''
     ];
 
-    $result = $almaApi->syncTenant($bitrixTenantData);
+    $result = $almaApi->syncLandlord($bitrixLandlordData);
 
     if (isset($result['id'])) {
         echo json_encode([
             'success' => true,
-            'message' => 'Tenant successfully synchronized',
+            'message' => 'Landlord successfully synchronized',
             'alma_id' => $result['id'],
             'data' => $result
         ]);
     } else {
-        throw new Exception('Tenant synchronization failed');
+        throw new Exception('Landlord synchronization failed');
     }
 } catch (InvalidArgumentException $e) {
     $almaApi->getActionLogger()->logError(
         $contactId ?? 'unknown',
         'Contact Validation Error',
         $e->getMessage(),
-        ['contact_data' => $bitrixTenantData ?? []]
+        ['contact_data' => $bitrixLandlordData ?? []]
     );
 
     http_response_code(400);
@@ -433,7 +395,7 @@ try {
         $contactId ?? 'unknown',
         'API Error',
         $e->getMessage(),
-        ['contact_data' => $bitrixTenantData ?? []]
+        ['contact_data' => $bitrixLandlordData ?? []]
     );
 
     http_response_code(500);
@@ -446,7 +408,7 @@ try {
         $contactId ?? 'unknown',
         'Unexpected Error',
         $e->getMessage(),
-        ['contact_data' => $bitrixTenantData ?? []]
+        ['contact_data' => $bitrixLandlordData ?? []]
     );
 
     http_response_code(500);
@@ -455,3 +417,4 @@ try {
         'message' => 'Unexpected error: ' . $e->getMessage()
     ]);
 }
+

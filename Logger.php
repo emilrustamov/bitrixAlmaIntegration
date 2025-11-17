@@ -468,3 +468,77 @@ class ApartmentActionLogger extends ActionLogger
         $this->logAction('UPDATED', $apartmentId, $apartmentName, [], $changes);
     }
 }
+
+class LandlordActionLogger extends ActionLogger
+{
+    public function __construct()
+    {
+        parent::__construct('landlord');
+    }
+
+    public function logLandlordCreation($landlordId, $firstName, $lastName, $email, $phone, $details = [])
+    {
+        $this->logAction('CREATED', $landlordId, trim($firstName . ' ' . $lastName), array_merge([
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'email' => $email,
+            'phone' => $phone
+        ], $details));
+    }
+
+    public function logUpdate($landlordId, $landlordName, $oldData, $newData)
+    {
+        $changes = [];
+        
+        $fieldsToCompare = ['first_name', 'last_name', 'email', 'phone', 'birthday'];
+        foreach ($fieldsToCompare as $field) {
+            $oldValue = $oldData[$field] ?? '';
+            $newValue = $newData[$field] ?? '';
+            
+            if ($oldValue !== $newValue) {
+                $changes[$field] = [
+                    'old_value' => $oldValue,
+                    'new_value' => $newValue
+                ];
+            }
+        }
+
+        $this->logAction('UPDATED', $landlordId, $landlordName, [], $changes);
+    }
+}
+
+class LandlordContractActionLogger extends ActionLogger
+{
+    public function __construct()
+    {
+        parent::__construct('landlord_contract');
+    }
+
+    public function logContractCreation($contractId, $contractName, $landlordId, $apartmentId, $details = [])
+    {
+        $this->logAction('CREATED', $contractId, $contractName, array_merge([
+            'landlord_id' => $landlordId,
+            'apartment_id' => $apartmentId
+        ], $details));
+    }
+
+    public function logUpdate($contractId, $contractName, $oldData, $newData)
+    {
+        $changes = [];
+        
+        $fieldsToCompare = ['name', 'start_date', 'end_date', 'work_model', 'unit_id', 'client_id'];
+        foreach ($fieldsToCompare as $field) {
+            $oldValue = $oldData[$field] ?? '';
+            $newValue = $newData[$field] ?? '';
+            
+            if ($oldValue !== $newValue) {
+                $changes[$field] = [
+                    'old_value' => $oldValue,
+                    'new_value' => $newValue
+                ];
+            }
+        }
+
+        $this->logAction('UPDATED', $contractId, $contractName, [], $changes);
+    }
+}
