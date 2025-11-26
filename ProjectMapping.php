@@ -6,6 +6,27 @@ class ProjectMapping {
         $mappings = [
             'Dubai' => [
                 'entity_type_id' => 144,
+                'unit_entity_type_id' => 167,
+                'contract_entity_type_id' => 183,
+                'contract_fields' => [
+                    'unit_id' => 'ufCrm20_1693919019',
+                    'apartment_id' => null,
+                    'start_date' => 'ufCrm20ContractStartDate',
+                    'end_date' => 'ufCrm20ContractEndDate',
+                    'contract_type' => 'ufCrm20_1693561495',
+                    'history' => 'ufCrm20ContractHistory',
+                    'contract_scan' => 'ufCrm20Contract',
+                ],
+                'tenant_fields' => [
+                    'email' => 'UF_CRM_1727788747',
+                    'passport_number' => 'UF_CRM_20_1696523391',
+                    'passport_scan' => 'UF_CRM_20_1696615939',
+                ],
+                'landlord_fields' => [
+                    'email' => 'UF_CRM_1727788747',
+                    'passport_number' => 'UF_CRM_10_1740556751168',
+                    'passport_scan' => 'UF_CRM_10_1694000435068',
+                ],
                 'fields' => [
                     'building_name' => 'ufCrm6_1682232363193',
                     'apartment_number' => 'ufCrm6_1682232396330', 
@@ -122,11 +143,33 @@ class ProjectMapping {
             ],
             'HongKong' => [
                 'entity_type_id' => 1054,
+                'unit_entity_type_id' => 1058,
+                'contract_entity_type_id' => 2,
+                'contract_stage_id' => 'UC_BGQ39T',
+                'contract_fields' => [
+                    'unit_id' => 'UF_CRM_1764013723',
+                    'apartment_id' => 'UF_CRM_1764013747',
+                    'start_date' => 'UF_CRM_6745817E27230',
+                    'end_date' => 'UF_CRM_1733107462743',
+                    'contract_type' => 'UF_CRM_1758865148194',
+                    'history' => null,
+                    'contract_scan' => null,
+                ],
+                'tenant_fields' => [
+                    'email' => 'UF_CRM_1727788747',
+                    'passport_number' => 'UF_CRM_20_1696523391',
+                    'passport_scan' => 'UF_CRM_20_1696615939',
+                ],
+                'landlord_fields' => [
+                    'email' => 'UF_CRM_1727788747',
+                    'passport_number' => 'UF_CRM_10_1740556751168',
+                    'passport_scan' => 'UF_CRM_10_1694000435068',
+                ],
                 'fields' => [
                     'building_name' => 'ufCrm11Building',
                     'apartment_number' => 'ufCrm11ApartmentNumber',
                     'internal_area' => 'ufCrm11ApartmentAreaSqmtrs',
-                    'goal_rent_cost' => 'opportunity', // Поле opportunity есть в обеих системах
+                    'goal_rent_cost' => 'opportunity',
                     'number_of_baths' => 'ufCrm11Bathrooms',
                     'property_type' => 'ufCrm11Type',
                     'floor' => 'ufCrm11Floor',
@@ -139,19 +182,30 @@ class ProjectMapping {
                     'is_swimming_pool' => 'ufCrm11PoolInBuilding',
                     'additional_external_id' => 'ufCrm11Units',
                     'stage' => 'ufCrm11StageForAlma',
+                    'rent_type' => null,
+                    'subway_station' => null,
                     'email' => 'UF_CRM_1727788747'
                 ],
                 'property_type_mapping' => [
                     '809' => 'apartment',
-                    '813' => 'apartment', 
-                    // TODO: Добавить другие типы недвижимости для Гонконга
+                    '813' => 'apartment',
                 ],
                 'bedrooms_mapping' => [
                     '809' => 2,
-                    '813' => 2, 
-                    // TODO: Добавить маппинг количества спален для Гонконга
+                    '813' => 2,
                 ],
-                'metro_mapping' => [] // В Гонконге нет метро Dubai
+                'rent_type_mapping' => [],
+                'contract_type_mapping' => [
+                    '983' => 'Short contract up to 1 month',
+                    '985' => 'Airbnb',
+                    '987' => 'Booking',
+                    '989' => 'Less than a month',
+                    '991' => 'Short term from 1 to 3 months',
+                    '993' => 'Long-term 3+ months',
+                    '995' => 'Ejari'
+                ],
+                'work_model_mapping' => [],
+                'metro_mapping' => []
             ]
         ];
         
@@ -197,6 +251,54 @@ class ProjectMapping {
         $bitrixTypeStr = (string)$bitrixType;
         
         return $mapping[$bitrixTypeStr] ?? null;
+    }
+    
+    public static function getUnitEntityTypeId($projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        return $mapping['unit_entity_type_id'] ?? 167;
+    }
+    
+    public static function getContractEntityTypeId($projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        return $mapping['contract_entity_type_id'] ?? 183;
+    }
+    
+    public static function getContractStageId($projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        return $mapping['contract_stage_id'] ?? null;
+    }
+    
+    public static function isDealBasedContract($projectName = 'Dubai') {
+        return $projectName === 'HongKong';
+    }
+    
+    public static function getContractField($fieldName, $projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        return $mapping['contract_fields'][$fieldName] ?? null;
+    }
+    
+    public static function getTenantField($fieldName, $projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        return $mapping['tenant_fields'][$fieldName] ?? null;
+    }
+    
+    public static function getLandlordField($fieldName, $projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        return $mapping['landlord_fields'][$fieldName] ?? null;
+    }
+    
+    public static function getUnitApartmentField($projectName = 'Dubai') {
+        if ($projectName === 'HongKong') {
+            return 'ufCrm13Apartments';
+        }
+        return 'ufCrm8_1684429208';
+    }
+    
+    public static function getApartmentRentTypeField($projectName = 'Dubai') {
+        if ($projectName === 'HongKong') {
+            return null;
+        }
+        return 'ufCrm6_1736951470242';
     }
     
 }

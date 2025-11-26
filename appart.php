@@ -291,28 +291,21 @@ try {
         if ($additionalExternalId === '') { $additionalExternalId = null; }
     }
 
-    $rentTypeField   = $fieldMapping['fields']['rent_type'];
-    $rentTypeValue   = $apartmentData[$rentTypeField] ?? '4598';
-    $rentTypeMapping = $fieldMapping['rent_type_mapping'];
-    $rentType        = $rentTypeMapping[$rentTypeValue] ?? 'unit';
-
-    // ✅ Определяем логику внешних ID согласно документации:
-    // ШЕРИНГОВЫЕ апартаменты (rooms, rentTypeValue = 4600):
-    //   - additional_external_id = "" (пустой/null) - комнаты не используют дополнительный ID
-    //   - is_used_additional_external_id = false - флаг отключен, дополнительный ID не учитывается
-    // 
-    // НЕ-ШЕРИНГОВЫЕ апартаменты (unit, rentTypeValue = 4598):
-    //   - additional_external_id = ID юнита (если есть в Bitrix) - используется для поиска
-    //   - is_used_additional_external_id = true - флаг включен, дополнительный ID учитывается при поиске
+    $rentTypeField   = $fieldMapping['fields']['rent_type'] ?? null;
+    $rentTypeValue   = null;
+    $rentType        = 'unit';
+    $useAdditionalExternalId = true;
     
-    // Определяем, используется ли дополнительный ID:
-    // true  = для обычных апартаментов (unit) - дополнительный ID включен для системы приоритетов rental_object
-    // false = для шеринговых апартаментов (rooms) - дополнительный ID отключен
-    $useAdditionalExternalId = ($rentType === 'unit');
-    
-    // Для шеринговых апартаментов очищаем additional_external_id
-    if ($rentType === 'rooms') {
-        $additionalExternalId = null;
+    if ($rentTypeField !== null) {
+        $rentTypeValue = $apartmentData[$rentTypeField] ?? '4598';
+        $rentTypeMapping = $fieldMapping['rent_type_mapping'] ?? [];
+        $rentType = $rentTypeMapping[$rentTypeValue] ?? 'unit';
+        
+        $useAdditionalExternalId = ($rentType === 'unit');
+        
+        if ($rentType === 'rooms') {
+            $additionalExternalId = null;
+        }
     }
 
     $numberField         = $fieldMapping['fields']['apartment_number'];
@@ -323,14 +316,17 @@ try {
     $floorField          = $fieldMapping['fields']['floor'];
     $internetLoginField  = $fieldMapping['fields']['internet_login'];
     $internetPassField   = $fieldMapping['fields']['internet_password'];
-    $subwayField         = $fieldMapping['fields']['subway_station'];
+    $subwayField         = $fieldMapping['fields']['subway_station'] ?? null;
     $parkingNumberField  = $fieldMapping['fields']['parking_number'];
     $keyboxField         = $fieldMapping['fields']['keybox_code'];
     $elLockField         = $fieldMapping['fields']['electronic_lock_password'];
     $isPoolField         = $fieldMapping['fields']['is_swimming_pool'];
 
-    $subwayKey   = $apartmentData[$subwayField] ?? '';
-    $subwayValue = $METRO[$subwayKey] ?? '';
+    $subwayValue = '';
+    if ($subwayField !== null) {
+        $subwayKey = $apartmentData[$subwayField] ?? '';
+        $subwayValue = $METRO[$subwayKey] ?? '';
+    }
 
     $data = [
         'external_id'                    => (string)$externalId,

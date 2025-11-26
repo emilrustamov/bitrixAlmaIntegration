@@ -10,6 +10,7 @@ Config::load();
 // Получаем проект из параметра или определяем автоматически
 $projectName = $_GET['project'] ?? 'Dubai';
 $projectConfig = ProjectMapping::getProjectConfig($projectName);
+$GLOBALS['projectName'] = $projectName;
 
 define('ALMA_API_KEY', Config::get('ALMA_API_KEY'));
 define('ALMA_API_URL', Config::get('ALMA_API_URL'));
@@ -135,6 +136,10 @@ class AlmaTenantsApi
 
     private function prepareTenantData(array $bitrixData)
     {
+        $projectName = $GLOBALS['projectName'] ?? 'Dubai';
+        $emailField = ProjectMapping::getTenantField('email', $projectName);
+        $passportNumberField = ProjectMapping::getTenantField('passport_number', $projectName);
+        $passportScanField = ProjectMapping::getTenantField('passport_scan', $projectName);
         $data = [
             'external_id' => (string)$bitrixData['id'],
             'first_name' => $bitrixData['name'] ?? '',
@@ -144,14 +149,19 @@ class AlmaTenantsApi
             'birthday' => $this->formatBirthday($bitrixData['birthdate'] ?? null)
         ];
 
-        if (!empty($bitrixData['UF_CRM_1727788747'])) {
-            $data['email'] = $bitrixData['UF_CRM_1727788747'];
+        if ($emailField && !empty($bitrixData[$emailField])) {
+            $data['email'] = $bitrixData[$emailField];
         }
-        if (!empty($bitrixData['UF_CRM_20_1696523391'])) {
-            $data['passport'] = $bitrixData['UF_CRM_20_1696523391'];
+        if ($passportNumberField && !empty($bitrixData[$passportNumberField])) {
+            $data['passport'] = $bitrixData[$passportNumberField];
         }
 
-        $passportScan = $this->uploadFile($bitrixData['UF_CRM_20_1696615939']['urlMachine'] ?? null);
+        $passportScanSource = null;
+        if ($passportScanField && !empty($bitrixData[$passportScanField])) {
+            $passportScanValue = $bitrixData[$passportScanField];
+            $passportScanSource = is_array($passportScanValue) ? ($passportScanValue['urlMachine'] ?? null) : $passportScanValue;
+        }
+        $passportScan = $this->uploadFile($passportScanSource);
         if ($passportScan) {
             $data['passport_scan'] = $passportScan;
         }
@@ -166,6 +176,8 @@ class AlmaTenantsApi
 
     private function validateBitrixData(array $bitrixData)
     {
+        $projectName = $GLOBALS['projectName'] ?? 'Dubai';
+        $emailField = ProjectMapping::getTenantField('email', $projectName);
         $requiredFields = ['id', 'name'];
 
         foreach ($requiredFields as $field) {
@@ -178,8 +190,8 @@ class AlmaTenantsApi
             }
         }
 
-        if (!empty($bitrixData['UF_CRM_1727788747']) && !filter_var($bitrixData['UF_CRM_1727788747'], FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException("Invalid email format: " . $bitrixData['UF_CRM_1727788747']);
+        if ($emailField && !empty($bitrixData[$emailField]) && !filter_var($bitrixData[$emailField], FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException("Invalid email format: " . $bitrixData[$emailField]);
         }
 
         if (!empty($bitrixData['birthdate'])) {
@@ -351,13 +363,14 @@ try {
     $contactData = $bitrixContact['result'];
 
     // Проверяем, есть ли у контакта активные Airbnb/Ejari контракты
+    $contractTypeField = ProjectMapping::getContractField('contract_type', $projectName);
     try {
         $contracts = $bitrix->call('crm.item.list', [
             'entityTypeId' => 183, // Контракты
             'filter' => [
                 'contactId' => $contactId
             ],
-            'select' => ['id', 'ufCrm20_1693561495'] // ID и тип контракта
+            'select' => array_values(array_filter(['id', $contractTypeField]))
         ]);
     } catch (Exception $e) {
         Logger::warning("Failed to check contracts", [
@@ -369,7 +382,7 @@ try {
 
     if (isset($contracts['result']['items'])) {
         foreach ($contracts['result']['items'] as $contract) {
-            $contractType = (string)($contract['ufCrm20_1693561495'] ?? '');
+            $contractType = $contractTypeField ? (string)($contract[$contractTypeField] ?? '') : '';
             if ($contractType === '882' || $contractType === '8672') {
                 echo json_encode([
                     'success' => false,
@@ -393,15 +406,26 @@ try {
         }
     }
 
+    $emailField = ProjectMapping::getTenantField('email', $projectName);
+    $passportNumberField = ProjectMapping::getTenantField('passport_number', $projectName);
+    $passportScanField = ProjectMapping::getTenantField('passport_scan', $projectName);
     $bitrixTenantData = [
         'id' => $contactData['ID'],
         'name' => $contactData['NAME'] ?? '',
         'last_name' => $contactData['LAST_NAME'] ?? '',
-        'UF_CRM_1727788747' => $contactData['UF_CRM_1727788747'] ?? '',
         'phone_work' => $contactData['PHONE_WORK_0'] ?? $phone,
         'birthdate' => $contactData['BIRTHDATE'] ?? null,
         'ufCrm10_1694000435068' => $contactData['UF_CRM_1694000435068'] ?? []
     ];
+    if ($emailField) {
+        $bitrixTenantData[$emailField] = $contactData[$emailField] ?? '';
+    }
+    if ($passportNumberField) {
+        $bitrixTenantData[$passportNumberField] = $contactData[$passportNumberField] ?? '';
+    }
+    if ($passportScanField) {
+        $bitrixTenantData[$passportScanField] = $contactData[$passportScanField] ?? [];
+    }
 
     $result = $almaApi->syncTenant($bitrixTenantData);
 
