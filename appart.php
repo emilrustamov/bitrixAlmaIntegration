@@ -18,6 +18,9 @@ define('PROJECT_ID',      $projectConfig['id']);
 
 $METRO = $fieldMapping['metro_mapping'];
 
+/**
+ * Alma API client for apartment synchronization.
+ */
 class AlmaApi {
     private $apiKey;
     private $apiUrl;
@@ -36,6 +39,14 @@ class AlmaApi {
         ];
     }
 
+    /**
+     * Send a request to Alma realty endpoints.
+     *
+     * @param string $method HTTP verb (POST, PATCH, GET)
+     * @param string $endpoint relative endpoint (without /realty)
+     * @param array  $data payload or query parameters
+     * @param bool   $isPost determines POST/PATCH vs GET
+     */
     public function call($method, $endpoint, $data = [], $isPost = true) {
         $url = $this->apiUrl . '/realty/' . ltrim($endpoint, '/');
         $headers = $this->baseHeaders();
@@ -72,24 +83,21 @@ class AlmaApi {
 
         if ($httpCode >= 400) {
             Logger::logApiRequest($method, $url, $data, $response, $httpCode);
-            
-            // Логируем подробности ошибки для отладки
             $errorDetails = json_decode($response, true);
-            if ($errorDetails) {
-                Logger::error("API Error Details", [
+            Logger::error(
+                $errorDetails ? "API Error Details" : "API Error (Non-JSON)",
+                $errorDetails ? [
                     'method' => $method,
                     'url' => $url,
                     'http_code' => $httpCode,
                     'error' => $errorDetails
-                ]);
-            } else {
-                Logger::error("API Error (Non-JSON)", [
+                ] : [
                     'method' => $method,
                     'url' => $url,
                     'http_code' => $httpCode,
                     'response_preview' => substr($response, 0, 200)
-                ]);
-            }
+                ]
+            );
         }
 
         return [
@@ -98,6 +106,9 @@ class AlmaApi {
         ];
     }
 
+    /**
+     * Fetch rental object by Bitrix ID.
+     */
     public function getRentalObject($bitrixId) {
         $url = rtrim(ALMA_API_URL, '/') . '/realty/rental_object/' . rawurlencode($bitrixId) . '/';
         $curl = curl_init();
@@ -122,6 +133,9 @@ class AlmaApi {
         return ['code' => $code, 'response' => $decoded];
     }
 
+    /**
+     * Create or update Alma apartment using Bitrix payload.
+     */
     public function createOrUpdateApartment($data, $bitrixId) {
         $rentalObject = $this->getRentalObject($bitrixId);
 
@@ -140,7 +154,6 @@ class AlmaApi {
                 $patchData['building'] = $patchData['building']['id'];
             }
             
-            // API Alma требует name и building при обновлении
             if (!isset($patchData['name']) || empty($patchData['name'])) {
                 $patchData['name'] = $data['name'] ?? ('Apartment ' . $bitrixId);
             }
@@ -148,13 +161,10 @@ class AlmaApi {
                 $patchData['building'] = $data['building'];
             }
             
-            // ✅ ВАЖНО: Всегда включаем is_used_additional_external_id при обновлении (PATCH)
-            // Это поле критично для системы приоритетов rental_object API и не должно теряться
             if (isset($data['is_used_additional_external_id'])) {
                 $patchData['is_used_additional_external_id'] = $data['is_used_additional_external_id'];
             }
             
-            // ✅ Если additional_external_id указано в данных, включаем его в PATCH
             if (isset($data['additional_external_id'])) {
                 $patchData['additional_external_id'] = $data['additional_external_id'];
             }
@@ -337,15 +347,15 @@ try {
         'property_type'                  => $propertyType,
         'number'                         => ($apartmentData[$numberField] ?? '0') ?: '0',
         'internal_area'                  => (float)($apartmentData[$internalAreaField] ?? 0),
-        'photos'                         => [], // Обязательное поле
+        'photos'                         => [],
         'goal_rent_cost'                 => (float)($apartmentData[$goalRentCostField] ?? 0),
         'address'                        => $apartmentData[$addressField] ?? '',
-        'number_of_bedrooms'             => (int)$numberOfBedrooms, // Обязательное поле
-        'number_of_baths'                => (int)($apartmentData[$bathsField] ?? 0), // Обязательное поле
-        'is_roof_garden'                 => false, // Обязательное поле
-        'parking'                        => 'not_applicable', // Обязательное поле
-        'is_swimming_pool'               => (($apartmentData[$isPoolField] ?? 'N') === 'Y'), // Обязательное поле
-        'total_buildable_area'           => (float)($apartmentData[$internalAreaField] ?? 0), // Обязательное поле
+        'number_of_bedrooms'             => (int)$numberOfBedrooms,
+        'number_of_baths'                => (int)($apartmentData[$bathsField] ?? 0),
+        'is_roof_garden'                 => false,
+        'parking'                        => 'not_applicable',
+        'is_swimming_pool'               => (($apartmentData[$isPoolField] ?? 'N') === 'Y'),
+        'total_buildable_area'           => (float)($apartmentData[$internalAreaField] ?? 0),
         'floor'                          => $apartmentData[$floorField] ?? null,
         'internet_login'                 => $apartmentData[$internetLoginField] ?? '',
         'internet_password'              => $apartmentData[$internetPassField] ?? '',
@@ -371,7 +381,6 @@ try {
         throw new Exception("Missing required field: property_type");
     }
     
-    // Временное логирование для отладки
     Logger::info("Sending apartment data to Alma", [
         'apartment_id' => $apartmentId,
         'external_id' => $externalId,
