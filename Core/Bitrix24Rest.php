@@ -30,10 +30,10 @@ class Bitrix24Rest
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_URL => $url,
             CURLOPT_POSTFIELDS => $query,
-            CURLOPT_TIMEOUT => 30,           // Общий таймаут 30 секунд
-            CURLOPT_CONNECTTIMEOUT => 10,    // Таймаут подключения 10 секунд
-            CURLOPT_FOLLOWLOCATION => true,  // Следовать редиректам
-            CURLOPT_MAXREDIRS => 3,          // Максимум 3 редиректа
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 3,
         ]);
 
         $result = curl_exec($curl);
@@ -70,3 +70,5 @@ class Bitrix24Rest
         return $decoded;
     }
 }
+
+

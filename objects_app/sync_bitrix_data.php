@@ -4,8 +4,8 @@
  * Запускается по cron каждый час
  */
 
-require_once(__DIR__ . '/../Config.php');
-require_once(__DIR__ . '/../Logger.php');
+require_once(__DIR__ . '/../Core/Config/Config.php');
+require_once(__DIR__ . '/../Core/Logger.php');
 require_once(__DIR__ . '/AlmaObjectsManager.php');
 require_once(__DIR__ . '/BitrixApiClient.php');
 

@@ -11,32 +11,29 @@ class Config
             return;
         }
 
-        $envFile = $envFile ?: __DIR__ . '/config.env';
-        
+        $envFile = $envFile ?: __DIR__ . '/../../config.env';
+
         if (!file_exists($envFile)) {
             throw new Exception("Environment file not found: $envFile");
         }
 
         $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        
+
         foreach ($lines as $line) {
-            // Пропускаем комментарии
             if (strpos(trim($line), '#') === 0) {
                 continue;
             }
-            
-            // Парсим строки вида KEY=VALUE
+
             if (strpos($line, '=') !== false) {
                 list($key, $value) = explode('=', $line, 2);
                 $key = trim($key);
                 $value = trim($value);
-                
-                // Убираем кавычки если есть
+
                 if ((substr($value, 0, 1) === '"' && substr($value, -1) === '"') ||
                     (substr($value, 0, 1) === "'" && substr($value, -1) === "'")) {
                     $value = substr($value, 1, -1);
                 }
-                
+
                 self::$config[$key] = $value;
             }
         }
@@ -71,3 +68,5 @@ class Config
         return isset(self::$config[$key]);
     }
 }
+
+

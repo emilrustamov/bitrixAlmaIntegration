@@ -1,10 +1,6 @@
 <?php
 
-/**
- * Конфигурация базы данных для ErrorTracker
- */
-
-require_once 'Config.php';
+require_once __DIR__ . '/../Config/Config.php';
 
 class DatabaseConfig
 {
@@ -15,11 +11,11 @@ class DatabaseConfig
         if (self::$config === null) {
             Config::load();
             self::$config = [
-                'host' => Config::get('DB_HOST', 'localhost'),
-                'name' => Config::get('DB_NAME', 'alma'),
-                'user' => Config::get('DB_USER', 'alma_user'),
-                'pass' => Config::get('DB_PASS', 'alma_password123'),
-                'charset' => Config::get('DB_CHARSET', 'utf8mb4')
+                'host' => Config::get('DB_HOST'),
+                'name' => Config::get('DB_NAME'),
+                'user' => Config::get('DB_USER'),
+                'pass' => Config::get('DB_PASS'),
+                'charset' => Config::get('DB_CHARSET')
             ];
         }
         return self::$config;
@@ -67,3 +63,5 @@ class DatabaseConfig
         return self::loadConfig()['charset'];
     }
 }
+
+

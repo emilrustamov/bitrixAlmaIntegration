@@ -1,9 +1,10 @@
 <?php
 
-require_once('Bitrix24Rest.php');
-require_once('Logger.php');
-require_once('Config.php');
-require_once('ProjectMapping.php');
+require_once __DIR__ . '/../Core/Bitrix24Rest.php';
+require_once __DIR__ . '/../Core/Logger.php';
+require_once __DIR__ . '/../Core/Config/Config.php';
+require_once __DIR__ . '/../Core/Config/ProjectMapping.php';
+require_once(__DIR__ . '/BaseApi.php');
 
 Config::load();
 
@@ -21,7 +22,7 @@ $METRO = $fieldMapping['metro_mapping'];
 /**
  * Alma API client for apartment synchronization.
  */
-class AlmaApi {
+class AppartApi {
     private $apiKey;
     private $apiUrl;
     private $actionLogger;
@@ -49,61 +50,12 @@ class AlmaApi {
      */
     public function call($method, $endpoint, $data = [], $isPost = true) {
         $url = $this->apiUrl . '/realty/' . ltrim($endpoint, '/');
-        $headers = $this->baseHeaders();
-        
 
-        $curl = curl_init();
-        $options = [
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_SSL_VERIFYPEER => false,
-        ];
-
-        if ($isPost) {
-            if ($method === 'PATCH') {
-                $options[CURLOPT_CUSTOMREQUEST] = 'PATCH';
-                $options[CURLOPT_POSTFIELDS]   = json_encode($data, JSON_UNESCAPED_UNICODE);
-            } else {
-                $options[CURLOPT_CUSTOMREQUEST] = 'POST';
-                $options[CURLOPT_POSTFIELDS]   = json_encode($data, JSON_UNESCAPED_UNICODE);
-            }
-        } else {
-            $options[CURLOPT_CUSTOMREQUEST] = 'GET';
-            if (!empty($data)) {
-                $url .= '?' . http_build_query($data);
-                $options[CURLOPT_URL] = $url;
-            }
+        if (!$isPost && !empty($data)) {
+            $url .= '?' . http_build_query($data);
         }
 
-        curl_setopt_array($curl, $options);
-        $response = curl_exec($curl);
-        $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
-
-        if ($httpCode >= 400) {
-            Logger::logApiRequest($method, $url, $data, $response, $httpCode);
-            $errorDetails = json_decode($response, true);
-            Logger::error(
-                $errorDetails ? "API Error Details" : "API Error (Non-JSON)",
-                $errorDetails ? [
-                    'method' => $method,
-                    'url' => $url,
-                    'http_code' => $httpCode,
-                    'error' => $errorDetails
-                ] : [
-                    'method' => $method,
-                    'url' => $url,
-                    'http_code' => $httpCode,
-                    'response_preview' => substr($response, 0, 200)
-                ]
-            );
-        }
-
-        return [
-            'code'     => $httpCode,
-            'response' => json_decode($response, true)
-        ];
+        return BaseApi::sendRequest($this->apiKey, $method, $url, $isPost ? $data : null, false);
     }
 
     /**
@@ -111,26 +63,7 @@ class AlmaApi {
      */
     public function getRentalObject($bitrixId) {
         $url = rtrim(ALMA_API_URL, '/') . '/realty/rental_object/' . rawurlencode($bitrixId) . '/';
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HTTPHEADER => $this->baseHeaders(),
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_CUSTOMREQUEST => 'GET'
-        ]);
-        $response = curl_exec($curl);
-        $code     = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
-
-        if ($code >= 400 && $code !== 404) {
-            Logger::logApiRequest('GET', $url, [], $response, $code);
-        }
-
-        $decoded = json_decode($response, true);
-
-
-        return ['code' => $code, 'response' => $decoded];
+        return BaseApi::sendRequest($this->apiKey, 'GET', $url, null, false);
     }
 
     /**
@@ -227,7 +160,7 @@ class AlmaApi {
             return $response['response']['id'];
         }
 
-        throw new Exception('Failed to create building: ' . json_encode($response));
+        throw new RuntimeException('Failed to create building: ' . json_encode($response));
     }
 
     public function getActionLogger() { return $this->actionLogger; }
@@ -235,10 +168,12 @@ class AlmaApi {
 
 try {
     $apartmentId = $_GET['id'] ?? null;
-    if (!$apartmentId) { throw new Exception('Apartment ID is required'); }
+    if (!$apartmentId) {
+        throw new InvalidArgumentException('Apartment ID is required');
+    }
 
     $bitrix = new Bitrix24Rest(WEBHOOK_URL);
-    $alma   = new AlmaApi(ALMA_API_KEY, ALMA_API_URL);
+    $alma   = new AppartApi(ALMA_API_KEY, ALMA_API_URL);
 
     $bitrixApartment = $bitrix->call('crm.item.get', [
         'entityTypeId' => $fieldMapping['entity_type_id'],
@@ -246,13 +181,21 @@ try {
     ]);
 
     if (!isset($bitrixApartment['result']['item'])) {
-        throw new Exception('Failed to get apartment data from Bitrix24');
+        throw new RuntimeException('Failed to get apartment data from Bitrix24');
     }
 
     $apartmentData = $bitrixApartment['result']['item'];
 
     $stageField    = $fieldMapping['fields']['stage'];
-    $stageForAlma  = $apartmentData[$stageField] ?? '';
+    $stageRawValue = $apartmentData[$stageField] ?? '';
+    
+    if ($projectName === 'HongKong' && !empty($stageRawValue)) {
+        $stageMapping = $fieldMapping['stage_mapping'] ?? [];
+        $stageForAlma = $stageMapping[(string)$stageRawValue] ?? $stageRawValue;
+    } else {
+        $stageForAlma = $stageRawValue;
+    }
+    
     $allowedStages = ['Available', 'Rented'];
     if ($projectName !== 'HongKong' || !empty($stageForAlma)) {
         if (!in_array($stageForAlma, $allowedStages, true)) {
@@ -287,7 +230,7 @@ try {
 
     $externalId = $apartmentData['id'] ?? $apartmentId;
     if (empty($externalId)) {
-        throw new Exception('External ID is required');
+        throw new InvalidArgumentException('External ID is required');
     }
 
     $name = $apartmentData['title'] ?? ('Apartment ' . $externalId);
@@ -365,27 +308,19 @@ try {
         'electronic_lock_password'       => !empty($apartmentData[$elLockField]) ? substr($apartmentData[$elLockField], 0, 8) : null,
     ];
 
-    // Добавляем additional_external_id только если это не шеринговый апартамент
     if ($rentType !== 'rooms' && $additionalExternalId !== null) {
         $data['additional_external_id'] = $additionalExternalId;
     }
-
-    // Проверяем обязательные поля согласно документации
+    
     if (empty($data['name'])) {
-        throw new Exception("Missing required field: name");
+        throw new InvalidArgumentException("Missing required field: name");
     }
     if (empty($data['building'])) {
-        throw new Exception("Missing required field: building");
+        throw new InvalidArgumentException("Missing required field: building");
     }
     if (empty($data['property_type'])) {
-        throw new Exception("Missing required field: property_type");
+        throw new InvalidArgumentException("Missing required field: property_type");
     }
-    
-    Logger::info("Sending apartment data to Alma", [
-        'apartment_id' => $apartmentId,
-        'external_id' => $externalId,
-        'data' => $data
-    ], 'apartment', $apartmentId);
 
     $response = $alma->createOrUpdateApartment($data, $externalId);
 
@@ -406,30 +341,32 @@ try {
         ]);
     } else {
         Logger::error('Failed to process apartment', ['response' => $response], 'apartment', $apartmentId);
-        throw new Exception('Failed to process apartment (Method: ' . ($response['method'] ?? 'unknown') . '): ' . json_encode($response));
+        throw new RuntimeException('Failed to process apartment (Method: ' . ($response['method'] ?? 'unknown') . '): ' . json_encode($response));
     }
 
-} catch (Exception $e) {
-    try {
-        if (isset($alma)) {
-            $alma->getActionLogger()->logError(
-                $_GET['id'] ?? 'unknown',
-                'Apartment Processing Error',
-                $e->getMessage(),
-                ['apartment_data' => $apartmentData ?? []]
-            );
-        }
-    } catch (\Throwable $t) {
-    }
-
-    Logger::error('Exception occurred: ' . $e->getMessage(), [
-        'exception' => $e->getMessage(),
-        'trace'     => $e->getTraceAsString()
-    ], 'apartment', $_GET['id'] ?? 'unknown');
-
+} catch (InvalidArgumentException $e) {
     http_response_code(400);
     echo json_encode([
         'success' => false,
-        'message' => $e->getMessage()
+        'message' => 'Validation error: ' . $e->getMessage()
+    ]);
+} catch (RuntimeException $e) {
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'API error: ' . $e->getMessage()
+    ]);
+} catch (Exception $e) {
+    Logger::error("Unexpected error in apartment synchronization: " . $e->getMessage(), [
+        'exception_type' => get_class($e),
+        'file' => $e->getFile(),
+        'line' => $e->getLine(),
+        'trace' => $e->getTraceAsString()
+    ], 'apartment', $_GET['id'] ?? 'unknown');
+    
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Unexpected error: Apartment synchronization failed'
     ]);
 }

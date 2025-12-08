@@ -4,8 +4,10 @@ class BitrixApiClient {
     private $baseUrl;
     
     public function __construct() {
-        require_once(__DIR__ . '/../Logger.php');
-        require_once(__DIR__ . '/../Config.php');
+        require_once(__DIR__ . '/../Core/Logger.php');
+        require_once(__DIR__ . '/../Core/Config/Config.php');
+        
+        Config::load();
         
         // Используем webhook URL из конфига
         $this->baseUrl = Config::get('PROJECT_DUBAI_WEBHOOK_URL');

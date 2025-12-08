@@ -58,7 +58,7 @@ class ProjectMapping {
                     '64' => 'apartment'
                 ],
                 'bedrooms_mapping' => [
-                    '52' => 1,  // studio
+                    '52' => 1,
                     '54' => 1,
                     '56' => 2,
                     '58' => 3,
@@ -67,8 +67,8 @@ class ProjectMapping {
                     '64' => 6
                 ],
                 'rent_type_mapping' => [
-                    '4600' => 'rooms',  // шеринг
-                    '4598' => 'unit'    // обычный апартамент
+                    '4600' => 'rooms',
+                    '4598' => 'unit'
                 ],
                 'contract_type_mapping' => [
                     '882' => 'Airbnb',
@@ -139,7 +139,8 @@ class ProjectMapping {
                     184 => 'Al Furjan',
                     254 => 'Centrepoint',
                     2762 => null
-                ]
+                ],
+                'failure_stage_id' => 'DT183_28:FAIL'
             ],
             'HongKong' => [
                 'entity_type_id' => 1054,
@@ -205,7 +206,13 @@ class ProjectMapping {
                     '995' => 'Ejari'
                 ],
                 'work_model_mapping' => [],
-                'metro_mapping' => []
+                'metro_mapping' => [],
+                'stage_mapping' => [
+                    '1019' => 'Blocked',
+                    '1021' => 'Available',
+                    '1023' => 'Rented',
+                    '1025' => 'Ex'
+                ]
             ]
         ];
         
@@ -229,43 +236,30 @@ class ProjectMapping {
         return $configs[$projectName] ?? $configs['Dubai'];
     }
     
-    public static function getContractTypeMapping($projectName = 'Dubai') {
-        $mapping = self::getFieldMapping($projectName);
-        return $mapping['contract_type_mapping'] ?? [];
-    }
-    
     public static function mapContractType($bitrixType, $projectName = 'Dubai') {
-        $mapping = self::getContractTypeMapping($projectName);
-        $bitrixTypeStr = (string)$bitrixType;
-        
-        return $mapping[$bitrixTypeStr] ?? null;
-    }
-    
-    public static function getWorkModelMapping($projectName = 'Dubai') {
         $mapping = self::getFieldMapping($projectName);
-        return $mapping['work_model_mapping'] ?? [];
+        return $mapping['contract_type_mapping'][(string)$bitrixType] ?? null;
     }
     
     public static function mapWorkModel($bitrixType, $projectName = 'Dubai') {
-        $mapping = self::getWorkModelMapping($projectName);
-        $bitrixTypeStr = (string)$bitrixType;
-        
-        return $mapping[$bitrixTypeStr] ?? null;
+        $mapping = self::getFieldMapping($projectName);
+        return $mapping['work_model_mapping'][(string)$bitrixType] ?? null;
     }
     
     public static function getUnitEntityTypeId($projectName = 'Dubai') {
-        $mapping = self::getFieldMapping($projectName);
-        return $mapping['unit_entity_type_id'] ?? 167;
+        return self::getFieldMapping($projectName)['unit_entity_type_id'] ?? 167;
     }
     
     public static function getContractEntityTypeId($projectName = 'Dubai') {
-        $mapping = self::getFieldMapping($projectName);
-        return $mapping['contract_entity_type_id'] ?? 183;
+        return self::getFieldMapping($projectName)['contract_entity_type_id'] ?? 183;
     }
     
     public static function getContractStageId($projectName = 'Dubai') {
-        $mapping = self::getFieldMapping($projectName);
-        return $mapping['contract_stage_id'] ?? null;
+        return self::getFieldMapping($projectName)['contract_stage_id'] ?? null;
+    }
+
+    public static function getFailureStageId($projectName = 'Dubai') {
+        return self::getFieldMapping($projectName)['failure_stage_id'] ?? null;
     }
     
     public static function isDealBasedContract($projectName = 'Dubai') {
@@ -273,18 +267,15 @@ class ProjectMapping {
     }
     
     public static function getContractField($fieldName, $projectName = 'Dubai') {
-        $mapping = self::getFieldMapping($projectName);
-        return $mapping['contract_fields'][$fieldName] ?? null;
+        return self::getFieldMapping($projectName)['contract_fields'][$fieldName] ?? null;
     }
     
     public static function getTenantField($fieldName, $projectName = 'Dubai') {
-        $mapping = self::getFieldMapping($projectName);
-        return $mapping['tenant_fields'][$fieldName] ?? null;
+        return self::getFieldMapping($projectName)['tenant_fields'][$fieldName] ?? null;
     }
     
     public static function getLandlordField($fieldName, $projectName = 'Dubai') {
-        $mapping = self::getFieldMapping($projectName);
-        return $mapping['landlord_fields'][$fieldName] ?? null;
+        return self::getFieldMapping($projectName)['landlord_fields'][$fieldName] ?? null;
     }
     
     public static function getUnitApartmentField($projectName = 'Dubai') {
@@ -302,3 +293,5 @@ class ProjectMapping {
     }
     
 }
+
+

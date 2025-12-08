@@ -1,22 +1,24 @@
 <?php
 
-require_once('Bitrix24Rest.php');
-require_once('Logger.php');
-require_once('Config.php');
-require_once('ProjectMapping.php');
+require_once __DIR__ . '/../Core/Bitrix24Rest.php';
+require_once __DIR__ . '/../Core/Logger.php';
+require_once __DIR__ . '/../Core/Config/Config.php';
+require_once __DIR__ . '/../Core/Config/ProjectMapping.php';
+require_once(__DIR__ . '/BaseApi.php');
 
 Config::load();
 
 $projectName   = $_GET['project'] ?? 'Dubai';
 $projectConfig = ProjectMapping::getProjectConfig($projectName);
 $fieldMapping  = ProjectMapping::getFieldMapping($projectName);
+Logger::setProject($projectName);
 
 define('WEBHOOK_URL',     $projectConfig['webhook_url']);
 define('ALMA_API_KEY',    Config::get('ALMA_API_KEY'));
 define('ALMA_API_URL',    Config::get('ALMA_API_URL'));
 define('PROJECT_ID',      $projectConfig['id']);
 
-class AlmaRoomsApi {
+class UnitApi {
     private $apiKey;
     private $apiUrl;
     private $bitrix;
@@ -36,24 +38,7 @@ class AlmaRoomsApi {
 
     public function getRentalObject($bitrixId) {
         $url = rtrim(ALMA_API_URL, '/') . '/realty/rental_object/' . rawurlencode($bitrixId) . '/';
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HTTPHEADER => $this->baseHeaders(),
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_CUSTOMREQUEST => 'GET'
-        ]);
-        $response = curl_exec($curl);
-        $code     = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
-
-        if ($code >= 400 && $code !== 404) {
-            Logger::logApiRequest('GET', $url, [], $response, $code);
-        }
-
-        $decoded = json_decode($response, true);
-        return ['code' => $code, 'response' => $decoded];
+        return BaseApi::sendRequest($this->apiKey, 'GET', $url, null, false);
     }
 
     public function createOrUpdateRoom($data, $bitrixId) {
@@ -79,13 +64,6 @@ class AlmaRoomsApi {
             
             $response = $this->call('PATCH', $endpoint, $patchData, true);
             $response['method'] = 'PATCH';
-
-            if ($response['code'] === 200) {
-                Logger::info("Room updated in Alma", [
-                    'bitrix_id' => $bitrixId,
-                    'alma_id' => $targetId
-                ], 'unit', $bitrixId);
-            }
             return $response;
         }
 
@@ -93,73 +71,33 @@ class AlmaRoomsApi {
         $response = $this->call('POST', $endpoint, $data, true);
         $response['method'] = 'POST';
 
-        if (isset($response['response']['id'])) {
-            Logger::info("Room created in Alma", [
-                'bitrix_id' => $bitrixId,
-                'alma_id' => $response['response']['id']
-            ], 'unit', $bitrixId);
-        }
-
         return $response;
     }
 
     public function call($method, $endpoint, $data = [], $isPost = true) {
         $realtyApiUrl = rtrim(Config::get('ALMA_REALTY_API_URL'), '/');
         $url = $realtyApiUrl . '/' . ltrim($endpoint, '/');
-        $headers = $this->baseHeaders();
 
-        $curl = curl_init();
-        $options = [
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_SSL_VERIFYPEER => false,
-        ];
-
-        if ($isPost) {
-            if ($method === 'PATCH') {
-                $options[CURLOPT_CUSTOMREQUEST] = 'PATCH';
-                $options[CURLOPT_POSTFIELDS]   = json_encode($data, JSON_UNESCAPED_UNICODE);
-            } else {
-                $options[CURLOPT_CUSTOMREQUEST] = 'POST';
-                $options[CURLOPT_POSTFIELDS]   = json_encode($data, JSON_UNESCAPED_UNICODE);
-            }
-        } else {
-            $options[CURLOPT_CUSTOMREQUEST] = 'GET';
-            if (!empty($data)) {
-                $url .= '?' . http_build_query($data);
-                $options[CURLOPT_URL] = $url;
-            }
+        if (!$isPost && !empty($data)) {
+            $url .= '?' . http_build_query($data);
         }
 
-        curl_setopt_array($curl, $options);
-        $response = curl_exec($curl);
-        $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
-
-        if ($httpCode >= 400) {
-            Logger::logApiRequest($method, $url, $data, $response, $httpCode);
-        }
-
-        return [
-            'code'     => $httpCode,
-            'response' => json_decode($response, true)
-        ];
+        return BaseApi::sendRequest($this->apiKey, $method, $url, $isPost ? $data : null, false);
     }
 }
 
 try {
     $unitId = $_GET['id'] ?? null;
-    if (!$unitId) { 
-        throw new Exception('Unit ID is required'); 
+    if (!$unitId) {
+        throw new InvalidArgumentException('Unit ID is required');
     }
 
     if ($projectName !== 'HongKong') {
-        throw new Exception('This script is only for HongKong project');
+        throw new InvalidArgumentException('This script is only for HongKong project');
     }
 
     $bitrix = new Bitrix24Rest(WEBHOOK_URL);
-    $alma   = new AlmaRoomsApi(ALMA_API_KEY, ALMA_API_URL);
+    $alma   = new UnitApi(ALMA_API_KEY, ALMA_API_URL);
 
     $unitEntityTypeId = ProjectMapping::getUnitEntityTypeId($projectName);
     
@@ -169,12 +107,11 @@ try {
     ]);
 
     if (!isset($bitrixUnit['result']['item'])) {
-        throw new Exception('Failed to get unit data from Bitrix24');
+        throw new RuntimeException('Failed to get unit data from Bitrix24');
     }
 
     $unitData = $bitrixUnit['result']['item'];
 
-    // Получаем ID апартамента из юнита
     $apartmentField = ProjectMapping::getUnitApartmentField($projectName);
     $apartmentId = null;
     if (isset($unitData[$apartmentField])) {
@@ -183,13 +120,12 @@ try {
     }
 
     if (!$apartmentId) {
-        throw new Exception('Apartment ID not found in unit');
+        throw new InvalidArgumentException('Apartment ID not found in unit');
     }
 
-    // Получаем апартамент из Alma для parent_unit
     $apartmentRentalObject = $alma->getRentalObject($apartmentId);
     if ($apartmentRentalObject['code'] !== 200 || !isset($apartmentRentalObject['response']['id'])) {
-        throw new Exception("Apartment $apartmentId not found in Alma. Please sync apartment first.");
+        throw new RuntimeException("Apartment $apartmentId not found in Alma. Please sync apartment first.");
     }
     
     $parentUnitId = $apartmentRentalObject['response']['id'];
@@ -198,11 +134,9 @@ try {
     $name = $unitData['title'] ?? ('Room ' . $externalId);
     if ($name === '') { $name = 'Room ' . $externalId; }
 
-    // Поля для HongKong юнитов
     $internalArea = (float)($unitData['ufCrm13TotalAreaOfTheRoom'] ?? 0);
     $goalRentCost = (float)($unitData['opportunity'] ?? ($unitData['ufCrm13RentAmount'] ?? 0));
     
-    // property_type для rooms - всегда "room" для HongKong
     $propertyType = 'room';
 
     $data = [
@@ -215,13 +149,6 @@ try {
         'parent_unit' => $parentUnitId,
         'property_type' => $propertyType,
     ];
-
-    Logger::info("Sending room data to Alma", [
-        'unit_id' => $unitId,
-        'external_id' => $externalId,
-        'parent_unit' => $parentUnitId,
-        'data' => $data
-    ], 'unit', $unitId);
 
     $response = $alma->createOrUpdateRoom($data, $externalId);
 
@@ -242,19 +169,33 @@ try {
         ]);
     } else {
         Logger::error('Failed to process room', ['response' => $response], 'unit', $unitId);
-        throw new Exception('Failed to process room (Method: ' . ($response['method'] ?? 'unknown') . '): ' . json_encode($response));
+        throw new RuntimeException('Failed to process room (Method: ' . ($response['method'] ?? 'unknown') . '): ' . json_encode($response));
     }
 
-} catch (Exception $e) {
-    Logger::error('Exception occurred: ' . $e->getMessage(), [
-        'exception' => $e->getMessage(),
-        'trace'     => $e->getTraceAsString()
-    ], 'unit', $_GET['id'] ?? 'unknown');
-
+} catch (InvalidArgumentException $e) {
     http_response_code(400);
     echo json_encode([
         'success' => false,
-        'message' => $e->getMessage()
+        'message' => 'Validation error: ' . $e->getMessage()
+    ]);
+} catch (RuntimeException $e) {
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'API error: ' . $e->getMessage()
+    ]);
+} catch (Exception $e) {
+    Logger::error("Unexpected error in room synchronization: " . $e->getMessage(), [
+        'exception_type' => get_class($e),
+        'file' => $e->getFile(),
+        'line' => $e->getLine(),
+        'trace' => $e->getTraceAsString()
+    ], 'unit', $_GET['id'] ?? 'unknown');
+    
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Unexpected error: Room synchronization failed'
     ]);
 }
 

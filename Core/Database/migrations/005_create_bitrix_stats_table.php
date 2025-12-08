@@ -1,7 +1,7 @@
 <?php
 
-require_once(__DIR__ . '/../DatabaseConfig.php');
-require_once(__DIR__ . '/../Config.php');
+require_once __DIR__ . '/../Core/Database/DatabaseConfig.php';
+require_once __DIR__ . '/../Core/Config/Config.php';
 
 Config::load();
 

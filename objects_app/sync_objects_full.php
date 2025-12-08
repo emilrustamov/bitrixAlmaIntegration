@@ -1,13 +1,8 @@
 <?php
-/**
- * Полная синхронизация объектов Alma
- * Запускается по cron раз в час
- * Обновляет только измененные записи
- */
 
-require_once(__DIR__ . '/../Config.php');
-require_once(__DIR__ . '/../Logger.php');
-require_once(__DIR__ . '/../DatabaseConfig.php');
+require_once __DIR__ . '/../Core/Config/Config.php';
+require_once __DIR__ . '/../Core/Logger.php';
+require_once __DIR__ . '/../Core/Config/DatabaseConfig.php';
 
 Config::load();
 

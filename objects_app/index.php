@@ -10,9 +10,9 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 try {
-    require_once('../Config.php');
-    require_once('../Logger.php');
-    require_once('../DatabaseConfig.php');
+    require_once __DIR__ . '/../Core/Config/Config.php';
+    require_once __DIR__ . '/../Core/Logger.php';
+    require_once __DIR__ . '/../Core/Config/DatabaseConfig.php';
     require_once('AlmaObjectsManager.php');
 
     Config::load();

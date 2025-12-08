@@ -1,11 +1,7 @@
 <?php
-/**
- * Alma Migration Manager
- * Управление миграциями базы данных
- */
-
-require_once('Config.php');
-require_once('Logger.php');
+require_once __DIR__ . '/Config/Config.php';
+require_once __DIR__ . '/Config/DatabaseConfig.php';
+require_once __DIR__ . '/Logging/Logger.php';
 
 Config::load();
 
@@ -16,10 +12,10 @@ class MigrationManager {
     public function __construct() {
         $this->migrationsDir = __DIR__ . '/migrations';
         $this->pdo = new PDO(
-            "mysql:host=" . Config::get('DB_HOST') . ";dbname=" . Config::get('DB_NAME') . ";charset=" . Config::get('DB_CHARSET'),
-            Config::get('DB_USER'),
-            Config::get('DB_PASS'),
-            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+            DatabaseConfig::getDSN(),
+            DatabaseConfig::getUser(),
+            DatabaseConfig::getPass(),
+            DatabaseConfig::getOptions()
         );
         
         $this->ensureMigrationsTable();
@@ -152,10 +148,8 @@ class MigrationManager {
     }
     
     private function getMigrationClassName($migrationName) {
-        // Преобразуем имя файла в имя класса
-        // 001_create_alma_tables -> CreateAlmaTablesMigration
         $parts = explode('_', $migrationName);
-        array_shift($parts); // Убираем номер
+        array_shift($parts); 
         
         $className = '';
         foreach ($parts as $part) {
