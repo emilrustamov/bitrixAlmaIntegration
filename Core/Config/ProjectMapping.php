@@ -48,6 +48,43 @@ class ProjectMapping {
                     'rent_type' => 'ufCrm6_1736951470242',
                     'email' => 'UF_CRM_1727788747'
                 ],
+                'unit_fields' => [
+                    'internal_area' => 'ufCrm8_1686662606534',
+                    'goal_rent_cost' => 'opportunity',
+                    'number' => 'ufCrm8_1698838056004',
+                ],
+                'unit_number_mapping' => [
+                    '1294' => '1',
+                    '1296' => '2',
+                    '1298' => '3',
+                    '1300' => '4',
+                    '1302' => '5',
+                    '5860' => '6',
+                    '5862' => '7',
+                    '5864' => '8',
+                    '5866' => '9',
+                    '5868' => '10',
+                    '5902' => 'SP1-1',
+                    '5904' => 'SP1-2',
+                    '5906' => 'SP2-1',
+                    '5908' => 'SP2-2',
+                    '5910' => 'SP3-1',
+                    '5912' => 'SP3-2',
+                    '5914' => 'SP4-1',
+                    '5916' => 'SP4-2',
+                    '5918' => 'SP5-1',
+                    '5920' => 'SP5-2',
+                    '5922' => 'SP6-1',
+                    '5924' => 'SP6-2',
+                    '5926' => 'SP7-1',
+                    '5928' => 'SP7-2',
+                    '5930' => 'SP8-1',
+                    '5932' => 'SP8-2',
+                    '5934' => 'SP9-1',
+                    '5936' => 'SP9-2',
+                    '5938' => 'SP10-1',
+                    '5940' => 'SP10-2',
+                ],
                 'property_type_mapping' => [
                     '52' => 'studio',
                     '54' => 'apartment',
@@ -146,7 +183,7 @@ class ProjectMapping {
                 'entity_type_id' => 1054,
                 'unit_entity_type_id' => 1058,
                 'contract_entity_type_id' => 2,
-                'contract_stage_id' => 'UC_BGQ39T',
+                'contract_stage_id' => 'UC_KSMIAX',
                 'contract_fields' => [
                     'unit_id' => 'UF_CRM_1764013723',
                     'apartment_id' => 'UF_CRM_1764013747',
@@ -183,9 +220,47 @@ class ProjectMapping {
                     'is_swimming_pool' => 'ufCrm11PoolInBuilding',
                     'additional_external_id' => 'ufCrm11Units',
                     'stage' => 'ufCrm11StageForAlma',
-                    'rent_type' => null,
+                    'rent_type' => 'ufCrm11RentType',
                     'subway_station' => null,
                     'email' => 'UF_CRM_1727788747'
+                ],
+                'unit_fields' => [
+                    'internal_area' => 'ufCrm13TotalAreaOfTheRoom',
+                    'goal_rent_cost' => 'opportunity',
+                    'goal_rent_cost_alt' => 'ufCrm13RentAmount',
+                    'number' => 'UF_CRM_13_NUMBER_OF_UNIT',
+                ],
+                'unit_number_mapping' => [
+                    '725' => '1',
+                    '727' => '2',
+                    '729' => '3',
+                    '731' => '4',
+                    '733' => '5',
+                    '735' => '6',
+                    '737' => '7',
+                    '739' => '8',
+                    '741' => '9',
+                    '743' => '10',
+                    '745' => 'SP1-1',
+                    '747' => 'SP1-2',
+                    '749' => 'SP2-1',
+                    '751' => 'SP2-2',
+                    '753' => 'SP3-1',
+                    '755' => 'SP3-2',
+                    '757' => 'SP4-1',
+                    '759' => 'SP4-2',
+                    '761' => 'SP5-1',
+                    '763' => 'SP5-2',
+                    '765' => 'SP6-1',
+                    '767' => 'SP6-2',
+                    '769' => 'SP7-1',
+                    '771' => 'SP7-2',
+                    '773' => 'SP8-1',
+                    '775' => 'SP8-2',
+                    '777' => 'SP9-1',
+                    '779' => 'SP9-2',
+                    '781' => 'SP10-1',
+                    '783' => 'SP10-2',
                 ],
                 'property_type_mapping' => [
                     '809' => 'apartment',
@@ -195,7 +270,10 @@ class ProjectMapping {
                     '809' => 2,
                     '813' => 2,
                 ],
-                'rent_type_mapping' => [],
+                'rent_type_mapping' => [
+                    '1069' => 'unit',
+                    '1071' => 'rooms'
+                ],
                 'contract_type_mapping' => [
                     '983' => 'Short contract up to 1 month',
                     '985' => 'Airbnb',
@@ -290,6 +368,14 @@ class ProjectMapping {
             return null;
         }
         return 'ufCrm6_1736951470242';
+    }
+    
+    public static function getUnitField($fieldName, $projectName = 'Dubai') {
+        return self::getFieldMapping($projectName)['unit_fields'][$fieldName] ?? null;
+    }
+    
+    public static function getUnitNumberMapping($projectName = 'Dubai') {
+        return self::getFieldMapping($projectName)['unit_number_mapping'] ?? [];
     }
     
 }

@@ -37,29 +37,43 @@ class UnitApi {
     }
 
     public function getRentalObject($bitrixId) {
-        $url = rtrim(ALMA_API_URL, '/') . '/realty/rental_object/' . rawurlencode($bitrixId) . '/';
+        $realtyApiUrl = rtrim(Config::get('ALMA_REALTY_API_URL'), '/');
+        $url = $realtyApiUrl . '/rooms/external_id/' . rawurlencode($bitrixId) . '/';
         return BaseApi::sendRequest($this->apiKey, 'GET', $url, null, false);
     }
 
+    /**
+     * Создать комнату (только POST, без проверки существования).
+     * Используется в syncRoomsForApartment для создания новых комнат.
+     */
+    public function createRoom($data) {
+        $endpoint = 'rooms/';
+        $response = $this->call('POST', $endpoint, $data, true);
+        $response['method'] = 'POST';
+        return $response;
+    }
+
+    /**
+     * Создать или обновить комнату (POST если нет, PATCH если есть).
+     * Используется в RoomApi.php для обновления существующих комнат.
+     */
     public function createOrUpdateRoom($data, $bitrixId) {
         $rentalObject = $this->getRentalObject($bitrixId);
 
-        if ($rentalObject['code'] === 200 && is_array($rentalObject['response'])) {
+        if ($rentalObject['code'] === 200 && is_array($rentalObject['response']) && !empty($rentalObject['response']['id'])) {
             $targetId = $rentalObject['response']['id'];
             $endpoint = 'rooms/' . $targetId . '/';
             
-            $oldData = $rentalObject['response'];
-            
             $patchData = $data;
+            // parent_unit нужен при PATCH, если передан как объект — приводим к id
             if (isset($patchData['parent_unit']) && is_array($patchData['parent_unit'])) {
-                $patchData['parent_unit'] = $patchData['parent_unit']['id'];
+                $patchData['parent_unit'] = $patchData['parent_unit']['id'] ?? null;
             }
+            unset($patchData['external_id']);
+            unset($patchData['property_type']);
             
-            if (!isset($patchData['name']) || empty($patchData['name'])) {
+            if (empty($patchData['name'])) {
                 $patchData['name'] = $data['name'] ?? ('Room ' . $bitrixId);
-            }
-            if (!isset($patchData['parent_unit']) || empty($patchData['parent_unit'])) {
-                $patchData['parent_unit'] = $data['parent_unit'];
             }
             
             $response = $this->call('PATCH', $endpoint, $patchData, true);
@@ -86,116 +100,10 @@ class UnitApi {
     }
 }
 
-try {
-    $unitId = $_GET['id'] ?? null;
-    if (!$unitId) {
-        throw new InvalidArgumentException('Unit ID is required');
-    }
-
-    if ($projectName !== 'HongKong') {
-        throw new InvalidArgumentException('This script is only for HongKong project');
-    }
-
-    $bitrix = new Bitrix24Rest(WEBHOOK_URL);
-    $alma   = new UnitApi(ALMA_API_KEY, ALMA_API_URL);
-
-    $unitEntityTypeId = ProjectMapping::getUnitEntityTypeId($projectName);
-    
-    $bitrixUnit = $bitrix->call('crm.item.get', [
-        'entityTypeId' => $unitEntityTypeId,
-        'id' => $unitId
-    ]);
-
-    if (!isset($bitrixUnit['result']['item'])) {
-        throw new RuntimeException('Failed to get unit data from Bitrix24');
-    }
-
-    $unitData = $bitrixUnit['result']['item'];
-
-    $apartmentField = ProjectMapping::getUnitApartmentField($projectName);
-    $apartmentId = null;
-    if (isset($unitData[$apartmentField])) {
-        $apartmentFieldValue = $unitData[$apartmentField];
-        $apartmentId = is_array($apartmentFieldValue) ? ($apartmentFieldValue[0] ?? null) : $apartmentFieldValue;
-    }
-
-    if (!$apartmentId) {
-        throw new InvalidArgumentException('Apartment ID not found in unit');
-    }
-
-    $apartmentRentalObject = $alma->getRentalObject($apartmentId);
-    if ($apartmentRentalObject['code'] !== 200 || !isset($apartmentRentalObject['response']['id'])) {
-        throw new RuntimeException("Apartment $apartmentId not found in Alma. Please sync apartment first.");
-    }
-    
-    $parentUnitId = $apartmentRentalObject['response']['id'];
-
-    $externalId = $unitData['id'] ?? $unitId;
-    $name = $unitData['title'] ?? ('Room ' . $externalId);
-    if ($name === '') { $name = 'Room ' . $externalId; }
-
-    $internalArea = (float)($unitData['ufCrm13TotalAreaOfTheRoom'] ?? 0);
-    $goalRentCost = (float)($unitData['opportunity'] ?? ($unitData['ufCrm13RentAmount'] ?? 0));
-    
-    $propertyType = 'room';
-
-    $data = [
-        'external_id' => (string)$externalId,
-        'name' => $name,
-        'header' => $unitData['title'] ?? $name,
-        'goal_rent_cost' => $goalRentCost,
-        'internal_area' => $internalArea,
-        'photos' => [],
-        'parent_unit' => $parentUnitId,
-        'property_type' => $propertyType,
-    ];
-
-    $response = $alma->createOrUpdateRoom($data, $externalId);
-
-    if (isset($response['response']['id']) || (isset($response['code']) && $response['code'] >= 200 && $response['code'] < 300)) {
-        $almaId = $response['response']['id'] ?? $response['id'] ?? null;
-        $method = $response['method'] ?? 'unknown';
-        $message = $method === 'POST' 
-            ? 'Room successfully created in Alma' 
-            : 'Room successfully updated in Alma';
-        
-        echo json_encode([
-            'success' => true,
-            'message' => $message,
-            'alma_id' => $almaId,
-            'method' => $method,
-            'operation' => $method === 'POST' ? 'created' : 'updated',
-            'data' => $response['response'] ?? $response
-        ]);
-    } else {
-        Logger::error('Failed to process room', ['response' => $response], 'unit', $unitId);
-        throw new RuntimeException('Failed to process room (Method: ' . ($response['method'] ?? 'unknown') . '): ' . json_encode($response));
-    }
-
-} catch (InvalidArgumentException $e) {
-    http_response_code(400);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Validation error: ' . $e->getMessage()
-    ]);
-} catch (RuntimeException $e) {
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'message' => 'API error: ' . $e->getMessage()
-    ]);
-} catch (Exception $e) {
-    Logger::error("Unexpected error in room synchronization: " . $e->getMessage(), [
-        'exception_type' => get_class($e),
-        'file' => $e->getFile(),
-        'line' => $e->getLine(),
-        'trace' => $e->getTraceAsString()
-    ], 'unit', $_GET['id'] ?? 'unknown');
-    
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Unexpected error: Room synchronization failed'
-    ]);
-}
+// NOTE:
+// Ранее ниже был блок с автозапуском синхронизации комнаты по $_GET['id'].
+// Он выполнялся при include 'UnitApi.php' (например, из AppartApi.php)
+// и писал в лог/выводил JSON про комнаты.
+// Сейчас UnitApi используется только как библиотека,
+// а отдельный эндпоинт для комнат — Api/RoomApi.php.
 
