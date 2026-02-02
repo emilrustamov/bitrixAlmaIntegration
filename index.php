@@ -135,6 +135,8 @@ if ($isWebhookRequest) {
                     }
                     
                     file_get_contents($baseUrl . 'Api/TenantContractApi.php?id=' . urlencode($idEl) . '&project=' . urlencode($projectName));
+                } else {
+                    Logger::warning('Contract webhook: Bitrix deal returned no result', ['contract_id' => $idEl, 'project' => $projectName], 'contract', $idEl);
                 }
             } else {
                 $bitrixTenantContract = $bitrix->call('crm.item.get', [
@@ -144,9 +146,17 @@ if ($isWebhookRequest) {
 
                 if (isset($bitrixTenantContract['result'])) {
                     file_get_contents($baseUrl . 'Api/TenantContractApi.php?id=' . urlencode($idEl) . '&project=' . urlencode($projectName));
+                } else {
+                    Logger::warning('Contract webhook: Bitrix returned no result', ['contract_id' => $idEl, 'project' => $projectName], 'contract', $idEl);
                 }
             }
         } catch (Exception $e) {
+            Logger::error('Contract webhook failed before sync', [
+                'contract_id' => $idEl,
+                'project' => $projectName,
+                'error' => $e->getMessage(),
+                'exception' => get_class($e)
+            ], 'contract', $idEl);
         }
     } elseif ($idItem == 148) {
         try {

@@ -42,7 +42,10 @@ class Logger
         $logLine = json_encode($logEntry, JSON_UNESCAPED_UNICODE) . "\n";
         $logFile = self::resolveLogFilePath();
         file_put_contents($logFile, $logLine, FILE_APPEND | LOCK_EX);
-        
+        if ($level === self::LEVEL_ERROR || $level === self::LEVEL_WARNING) {
+            $errorLogFile = self::resolveErrorLogFilePath();
+            file_put_contents($errorLogFile, $logLine, FILE_APPEND | LOCK_EX);
+        }
         if ($level === self::LEVEL_ERROR) {
             echo htmlspecialchars("[$timestamp] [$level] $message") . "<br>\n";
             flush();
@@ -85,6 +88,16 @@ class Logger
             mkdir($dir, 0777, true);
         }
         return $dir . DIRECTORY_SEPARATOR . gmdate('H') . '.log';
+    }
+
+    private static function resolveErrorLogFilePath()
+    {
+        $project = self::$currentProject ?: 'general';
+        $dir = self::$logBaseDir . DIRECTORY_SEPARATOR . $project . DIRECTORY_SEPARATOR . gmdate('Y-m-d');
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
+        return $dir . DIRECTORY_SEPARATOR . gmdate('H') . '_error.log';
     }
     
     private static function sanitizeProjectName($projectName)

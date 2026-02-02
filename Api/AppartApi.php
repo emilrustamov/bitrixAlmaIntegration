@@ -13,10 +13,18 @@ $projectName   = $_GET['project'] ?? 'Dubai';
 $projectConfig = ProjectMapping::getProjectConfig($projectName);
 $fieldMapping  = ProjectMapping::getFieldMapping($projectName);
 
-define('WEBHOOK_URL',     $projectConfig['webhook_url']);
-define('ALMA_API_KEY',    Config::get('ALMA_API_KEY'));
-define('ALMA_API_URL',    Config::get('ALMA_API_URL'));
-define('PROJECT_ID',      $projectConfig['id']);
+if (!defined('WEBHOOK_URL')) {
+    define('WEBHOOK_URL', $projectConfig['webhook_url']);
+}
+if (!defined('ALMA_API_KEY')) {
+    define('ALMA_API_KEY', Config::get('ALMA_API_KEY'));
+}
+if (!defined('ALMA_API_URL')) {
+    define('ALMA_API_URL', Config::get('ALMA_API_URL'));
+}
+if (!defined('PROJECT_ID')) {
+    define('PROJECT_ID', $projectConfig['id']);
+}
 
 $METRO = $fieldMapping['metro_mapping'];
 
@@ -71,17 +79,29 @@ class AppartApi {
      * Create or update Alma apartment using Bitrix payload.
      */
     public function createOrUpdateApartment($data, $bitrixId) {
-        $rentalObject = $this->getRentalObject($bitrixId);
-
-        if ($rentalObject['code'] === 200 && is_array($rentalObject['response'])) {
-            $targetId = !empty($rentalObject['response']['parent_unit'])
-                ? $rentalObject['response']['parent_unit']
-                : $rentalObject['response']['id'];
-
+        $isSharing = ($data['is_used_additional_external_id'] ?? true) === false;
+        
+        $unitByExternalId = $this->getUnitByExternalId($bitrixId);
+        $targetId = null;
+        $oldData = null;
+        
+        if ($unitByExternalId['code'] === 200 && is_array($unitByExternalId['response'])) {
+            $foundUnit = $unitByExternalId['response'];
+            
+            if ($isSharing && isset($foundUnit['parent_unit'])) {
+                Logger::error('Found room instead of apartment for sharing apartment', [
+                    'bitrix_id' => $bitrixId,
+                    'found_id' => $foundUnit['id'],
+                    'parent_unit' => $foundUnit['parent_unit']
+                ], 'apartment', $bitrixId);
+            } else {
+                $targetId = $foundUnit['id'];
+                $oldData = $foundUnit;
+            }
+        }
+        
+        if ($targetId) {
             $endpoint = 'units/' . $targetId . '/';
-
-
-            $oldData  = $rentalObject['response'];
             
             $patchData = $data;
             if (isset($patchData['building']) && is_array($patchData['building'])) {
@@ -117,9 +137,21 @@ class AppartApi {
             return $response;
         }
 
+        $postData = $data;
+        if (isset($postData['building']) && is_array($postData['building'])) {
+            $postData['building'] = $postData['building']['id'];
+        }
+        
         $endpoint = 'units/';
-        $response = $this->call('POST', $endpoint, $data, true);
+        $response = $this->call('POST', $endpoint, $postData, true);
         $response['method'] = 'POST';
+
+        if (isset($response['code']) && $response['code'] >= 400) {
+            Logger::error('Failed to create apartment', [
+                'response' => $response,
+                'data' => $postData
+            ], 'apartment', $bitrixId);
+        }
 
         if (isset($response['response']['id'])) {
             $this->actionLogger->logApartmentCreation(
@@ -176,130 +208,178 @@ class AppartApi {
         return BaseApi::sendRequest($this->apiKey, 'GET', $url, null, false);
     }
 
-    // /**
-    //  * Synchronize rooms for sharing apartment.
-    //  */
-    // public function syncRoomsForApartment($apartmentId, $bitrix) {
-    //     global $projectName, $fieldMapping;
-    //     
-    //     // Получаем внутренний ID апартамента из Alma по external_id из Bitrix
-    //     $apartmentUnit = $this->getUnitByExternalId($apartmentId);
-    //     if ($apartmentUnit['code'] !== 200 || !isset($apartmentUnit['response']['id'])) {
-    //         Logger::error('Apartment not found in Alma for room sync', [
-    //             'apartment_id_bitrix' => $apartmentId
-    //         ], 'apartment', $apartmentId);
-    //         return;
-    //     }
-    //     
-    //     $almaApartmentId = $apartmentUnit['response']['id'];
-    //     
-    //     $unitEntityTypeId = ProjectMapping::getUnitEntityTypeId($projectName);
-    //     $apartmentField = ProjectMapping::getUnitApartmentField($projectName);
-    //     
-    //     $selectFields = ['id', 'title', 'opportunity'];
-    //     $unitInternalAreaField = ProjectMapping::getUnitField('internal_area', $projectName);
-    //     $unitGoalRentCostField = ProjectMapping::getUnitField('goal_rent_cost', $projectName);
-    //     $unitGoalRentCostAltField = ProjectMapping::getUnitField('goal_rent_cost_alt', $projectName);
-    //     $unitNumberField = ProjectMapping::getUnitField('number', $projectName);
-    //     
-    //     if ($unitInternalAreaField) {
-    //         $selectFields[] = $unitInternalAreaField;
-    //     }
-    //     if ($unitGoalRentCostAltField) {
-    //         $selectFields[] = $unitGoalRentCostAltField;
-    //     }
-    //     if ($unitNumberField) {
-    //         $selectFields[] = $unitNumberField;
-    //     }
-    //     
-    //     $unitsResponse = $bitrix->call('crm.item.list', [
-    //         'entityTypeId' => $unitEntityTypeId,
-    //         'filter' => [$apartmentField => $apartmentId],
-    //         'select' => $selectFields
-    //     ]);
-    //     
-    //     if (!isset($unitsResponse['result']['items'])) {
-    //         return;
-    //     }
-    //     
-    //     $unitApi = new UnitApi($this->apiKey, $this->apiUrl);
-    //     
-    //     foreach ($unitsResponse['result']['items'] as $unitData) {
-    //         try {
-    //             $unitExternalId = $unitData['id'] ?? null;
-    //             if (!$unitExternalId) {
-    //                 continue;
-    //             }
-    //             
-    //             $name = $unitData['title'] ?? ('Room ' . $unitExternalId);
-    //             if ($name === '') {
-    //                 $name = 'Room ' . $unitExternalId;
-    //             }
-    //             
-    //             $internalArea = $unitInternalAreaField ? (float)($unitData[$unitInternalAreaField] ?? 0) : 0;
-    //             
-    //             if ($unitGoalRentCostField) {
-    //                 $goalRentCost = (float)($unitData[$unitGoalRentCostField] ?? 0);
-    //                 if ($unitGoalRentCostAltField && $goalRentCost == 0) {
-    //                     $goalRentCost = (float)($unitData[$unitGoalRentCostAltField] ?? 0);
-    //                 }
-    //             } else {
-    //                 $goalRentCost = 0;
-    //             }
-    //             
-    //             $number = '0';
-    //             if ($unitNumberField && isset($unitData[$unitNumberField])) {
-    //                 $numberValue = $unitData[$unitNumberField];
-    //                 if (is_array($numberValue)) {
-    //                     $numberValue = $numberValue[0] ?? null;
-    //                 }
-    //                 
-    //                 if ($numberValue !== null) {
-    //                     $numberMapping = ProjectMapping::getUnitNumberMapping($projectName);
-    //                     $number = $numberMapping[(string)$numberValue] ?? (string)$numberValue;
-    //                 }
-    //             }
-    //             if ($number === '') {
-    //                 $number = '0';
-    //             }
-    //             
-    //             // Проверяем, существует ли комната в Alma
-    //             $existingRoom = $unitApi->getRentalObject($unitExternalId);
-    //             if ($existingRoom['code'] === 200 && isset($existingRoom['response']['id'])) {
-    //                 // Комната уже существует - пропускаем, обновление через RoomApi.php
-    //                 continue;
-    //             }
-    //             
-    //             // Комнаты нет - создаём
-    //             $roomData = [
-    //                 'external_id' => (string)$unitExternalId,
-    //                 'name' => $name,
-    //                 'header' => $unitData['title'] ?? $name,
-    //                 'goal_rent_cost' => $goalRentCost,
-    //                 'internal_area' => $internalArea,
-    //                 'photos' => [],
-    //                 'parent_unit' => $almaApartmentId,
-    //                 'property_type' => 'room',
-    //                 'number' => $number,
-    //             ];
-    //             
-    //             $response = $unitApi->createRoom($roomData);
-    //             
-    //             if (!isset($response['response']['id']) && !(isset($response['code']) && $response['code'] >= 200 && $response['code'] < 300)) {
-    //                 Logger::error('Failed to create room', [
-    //                     'unit_id' => $unitExternalId,
-    //                     'apartment_id' => $apartmentId,
-    //                     'response' => $response
-    //                 ], 'room', $unitExternalId);
-    //             }
-    //         } catch (Exception $e) {
-    //             Logger::error('Error syncing room: ' . $e->getMessage(), [
-    //                 'unit_id' => $unitData['id'] ?? 'unknown',
-    //                 'apartment_id' => $apartmentId
-    //             ], 'room', $unitData['id'] ?? 'unknown');
-    //         }
-    //     }
-    // }
+    /**
+     * Synchronize rooms for sharing apartment.
+     */
+    public function syncRoomsForApartment($apartmentId, $bitrix) {
+        global $projectName, $fieldMapping;
+        
+        // Logger::info('syncRoomsForApartment called', [
+        //     'apartment_id_bitrix' => $apartmentId,
+        //     'project' => $projectName
+        // ], 'apartment', $apartmentId);
+        
+        $apartmentUnit = $this->getUnitByExternalId($apartmentId);
+        if ($apartmentUnit['code'] !== 200 || !isset($apartmentUnit['response']['id'])) {
+            Logger::error('Apartment not found in Alma for room sync', [
+                'apartment_id_bitrix' => $apartmentId,
+                'response_code' => $apartmentUnit['code'] ?? null
+            ], 'apartment', $apartmentId);
+            return;
+        }
+        
+        $almaApartmentId = $apartmentUnit['response']['id'];
+        // Logger::info('Found apartment in Alma', [
+        //     'apartment_id_bitrix' => $apartmentId,
+        //     'alma_apartment_id' => $almaApartmentId
+        // ], 'apartment', $apartmentId);
+        
+        $unitEntityTypeId = ProjectMapping::getUnitEntityTypeId($projectName);
+        $apartmentField = ProjectMapping::getUnitApartmentField($projectName);
+        
+        $selectFields = ['id', 'title', 'opportunity'];
+        $unitInternalAreaField = ProjectMapping::getUnitField('internal_area', $projectName);
+        $unitGoalRentCostField = ProjectMapping::getUnitField('goal_rent_cost', $projectName);
+        $unitGoalRentCostAltField = ProjectMapping::getUnitField('goal_rent_cost_alt', $projectName);
+        $unitNumberField = ProjectMapping::getUnitField('number', $projectName);
+        
+        if ($unitInternalAreaField) {
+            $selectFields[] = $unitInternalAreaField;
+        }
+        if ($unitGoalRentCostAltField) {
+            $selectFields[] = $unitGoalRentCostAltField;
+        }
+        if ($unitNumberField) {
+            $selectFields[] = $unitNumberField;
+        }
+        
+        $unitsResponse = $bitrix->call('crm.item.list', [
+            'entityTypeId' => $unitEntityTypeId,
+            'filter' => [$apartmentField => $apartmentId],
+            'select' => $selectFields
+        ]);
+        
+        // Logger::info('Units fetched from Bitrix', [
+        //     'apartment_id_bitrix' => $apartmentId,
+        //     'unit_entity_type_id' => $unitEntityTypeId,
+        //     'apartment_field' => $apartmentField,
+        //     'units_count' => isset($unitsResponse['result']['items']) ? count($unitsResponse['result']['items']) : 0
+        // ], 'apartment', $apartmentId);
+        
+        if (!isset($unitsResponse['result']['items'])) {
+            // Logger::info('No units found for apartment', [
+            //     'apartment_id_bitrix' => $apartmentId
+            // ], 'apartment', $apartmentId);
+            return;
+        }
+        
+        $unitApi = new UnitApi($this->apiKey, $this->apiUrl);
+        
+        // Logger::info('Starting to process units', [
+        //     'apartment_id_bitrix' => $apartmentId,
+        //     'units_count' => count($unitsResponse['result']['items'])
+        // ], 'apartment', $apartmentId);
+        
+        foreach ($unitsResponse['result']['items'] as $unitData) {
+            try {
+                $unitExternalId = $unitData['id'] ?? null;
+                if (!$unitExternalId) {
+                    // Logger::info('Skipping unit without ID', [
+                    //     'apartment_id_bitrix' => $apartmentId,
+                    //     'unit_data' => $unitData
+                    // ], 'apartment', $apartmentId);
+                    continue;
+                }
+                
+                // Logger::info('Processing unit', [
+                //     'apartment_id_bitrix' => $apartmentId,
+                //     'unit_id' => $unitExternalId
+                // ], 'apartment', $apartmentId);
+                
+                $name = $unitData['title'] ?? ('Room ' . $unitExternalId);
+                if ($name === '') {
+                    $name = 'Room ' . $unitExternalId;
+                }
+                
+                $internalArea = $unitInternalAreaField ? (float)($unitData[$unitInternalAreaField] ?? 0) : 0;
+                
+                if ($unitGoalRentCostField) {
+                    $goalRentCost = (float)($unitData[$unitGoalRentCostField] ?? 0);
+                    if ($unitGoalRentCostAltField && $goalRentCost == 0) {
+                        $goalRentCost = (float)($unitData[$unitGoalRentCostAltField] ?? 0);
+                    }
+                } else {
+                    $goalRentCost = 0;
+                }
+                
+                $number = '0';
+                if ($unitNumberField && isset($unitData[$unitNumberField])) {
+                    $numberValue = $unitData[$unitNumberField];
+                    if (is_array($numberValue)) {
+                        $numberValue = $numberValue[0] ?? null;
+                    }
+                    
+                    if ($numberValue !== null) {
+                        $numberMapping = ProjectMapping::getUnitNumberMapping($projectName);
+                        $number = $numberMapping[(string)$numberValue] ?? (string)$numberValue;
+                    }
+                }
+                if ($number === '') {
+                    $number = '0';
+                }
+                
+                $existingRoom = $unitApi->getRentalObject($unitExternalId);
+                if ($existingRoom['code'] === 200 && isset($existingRoom['response']['id'])) {
+                    // Logger::info('Room already exists, skipping', [
+                    //     'apartment_id_bitrix' => $apartmentId,
+                    //     'unit_id' => $unitExternalId,
+                    //     'existing_room_id' => $existingRoom['response']['id']
+                    // ], 'apartment', $apartmentId);
+                    continue;
+                }
+                
+                $roomData = [
+                    'external_id' => (string)$unitExternalId,
+                    'name' => $name,
+                    'header' => $unitData['title'] ?? $name,
+                    'goal_rent_cost' => $goalRentCost,
+                    'internal_area' => $internalArea,
+                    'photos' => [],
+                    'parent_unit' => $almaApartmentId,
+                    'property_type' => 'room',
+                    'number' => $number,
+                ];
+                
+                // Logger::info('Creating room', [
+                //     'apartment_id_bitrix' => $apartmentId,
+                //     'unit_id' => $unitExternalId,
+                //     'alma_apartment_id' => $almaApartmentId
+                // ], 'apartment', $apartmentId);
+                
+                $response = $unitApi->createRoom($roomData);
+                
+                if (!isset($response['response']['id']) && !(isset($response['code']) && $response['code'] >= 200 && $response['code'] < 300)) {
+                    Logger::error('Failed to create room', [
+                        'unit_id' => $unitExternalId,
+                        'apartment_id' => $apartmentId,
+                        'response' => $response
+                    ], 'room', $unitExternalId);
+                }
+                // else {
+                //     Logger::info('Room created successfully', [
+                //         'apartment_id_bitrix' => $apartmentId,
+                //         'unit_id' => $unitExternalId,
+                //         'room_id' => $response['response']['id'] ?? null
+                //     ], 'apartment', $apartmentId);
+                // }
+            } catch (Exception $e) {
+                Logger::error('Error syncing room: ' . $e->getMessage(), [
+                    'unit_id' => $unitData['id'] ?? 'unknown',
+                    'apartment_id' => $apartmentId
+                ], 'room', $unitData['id'] ?? 'unknown');
+            }
+        }
+    }
 }
 
 try {
@@ -380,7 +460,7 @@ try {
         if ($additionalExternalId === '') { $additionalExternalId = null; }
     }
 
-    $rentTypeField   = $fieldMapping['fields']['rent_type'] ?? null;
+    $rentTypeField   = ProjectMapping::getApartmentRentTypeField($projectName);
     $rentTypeValue   = null;
     $rentType        = 'unit';
     $useAdditionalExternalId = true;
@@ -390,6 +470,14 @@ try {
         $defaultRentTypeValue = ($projectName === 'HongKong') ? '1069' : '4598';
         $rentTypeValue = $apartmentData[$rentTypeField] ?? $defaultRentTypeValue;
         $rentType = $rentTypeMapping[$rentTypeValue] ?? 'unit';
+        
+        // Logger::info('Rent type determined', [
+        //     'apartment_id' => $apartmentId,
+        //     'rent_type_field' => $rentTypeField,
+        //     'rent_type_value' => $rentTypeValue,
+        //     'rent_type' => $rentType,
+        //     'mapping' => $rentTypeMapping
+        // ], 'apartment', $apartmentId);
         
         $useAdditionalExternalId = ($rentType === 'unit');
         
@@ -463,16 +551,27 @@ try {
 
     $response = $alma->createOrUpdateApartment($data, $externalId);
 
-    if (isset($response['response']['id']) || (isset($response['code']) && $response['code'] >= 200 && $response['code'] < 300)) {
+    $isSuccess = false;
+    if (isset($response['response']['id'])) {
+        $isSuccess = true;
+    } elseif (isset($response['code'])) {
+        $isSuccess = ($response['code'] >= 200 && $response['code'] < 300);
+    }
+
+    if ($isSuccess) {
         $almaId = $response['response']['id'] ?? $response['id'] ?? null;
         $method = $response['method'] ?? 'unknown';
         $message = $method === 'POST' 
             ? 'Apartment successfully created in Alma' 
             : 'Apartment successfully updated in Alma';
         
-        // if ($rentType === 'rooms' && $apartmentId) {
-        //     $alma->syncRoomsForApartment($apartmentId, $bitrix);
-        // }
+        if ($rentType === 'rooms' && $apartmentId) {
+            // Logger::info('Starting room sync for sharing apartment', [
+            //     'apartment_id' => $apartmentId,
+            //     'rent_type' => $rentType
+            // ], 'apartment', $apartmentId);
+            $alma->syncRoomsForApartment($apartmentId, $bitrix);
+        }
         
         echo json_encode([
             'success' => true,
@@ -483,7 +582,11 @@ try {
             'data' => $response['response'] ?? $response
         ]);
     } else {
-        Logger::error('Failed to process apartment', ['response' => $response], 'apartment', $apartmentId);
+        Logger::error('Failed to process apartment', [
+            'response' => $response,
+            'external_id' => $externalId,
+            'method' => $response['method'] ?? 'unknown'
+        ], 'apartment', $apartmentId);
         throw new RuntimeException('Failed to process apartment (Method: ' . ($response['method'] ?? 'unknown') . '): ' . json_encode($response));
     }
 

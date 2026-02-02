@@ -88,11 +88,17 @@ class ProjectMapping {
                 'property_type_mapping' => [
                     '52' => 'studio',
                     '54' => 'apartment',
-                    '56' => 'apartment', 
+                    '56' => 'apartment',
                     '58' => 'apartment',
                     '60' => 'apartment',
                     '62' => 'apartment',
-                    '64' => 'apartment'
+                    '64' => 'apartment',
+                    '10662' => 'apartment',
+                    '10664' => 'apartment',
+                    '10666' => 'apartment',
+                    '10668' => 'apartment',
+                    '10670' => 'apartment',
+                    '10672' => 'apartment'
                 ],
                 'bedrooms_mapping' => [
                     '52' => 1,
@@ -101,7 +107,13 @@ class ProjectMapping {
                     '58' => 3,
                     '60' => 4,
                     '62' => 5,
-                    '64' => 6
+                    '64' => 6,
+                    '10662' => 1,
+                    '10664' => 1,
+                    '10666' => 2,
+                    '10668' => 2,
+                    '10670' => 3,
+                    '10672' => 3
                 ],
                 'rent_type_mapping' => [
                     '4600' => 'rooms',
@@ -125,36 +137,36 @@ class ProjectMapping {
                     '1730' => 'TM 18%'
                 ],
                 'metro_mapping' => [
-                    66 => 'Rashidiya',
+                    66 => 'Centrepoint',
                     68 => 'Emirates',
                     70 => 'Airport Terminal 3',
                     72 => 'Airport Terminal 1',
-                    74 => 'GGICO',
+                    74 => 'Al Garhoud',
                     76 => 'Deira City Centre',
                     78 => 'Al Rigga',
                     80 => 'Union',
                     82 => 'Bur Juman',
                     84 => 'ADCB',
-                    86 => 'Al Jaffiliya',
+                    86 => 'Max',
                     88 => 'World Trade Centre',
                     90 => 'Emirates Towers',
                     92 => 'Financial Centre',
                     94 => 'Burj Khalifa / Dubai Mall',
                     96 => 'Business Bay',
                     98 => 'Noor Bank',
-                    100 => 'First Gulf Bank (FGB)',
+                    100 => 'Dubai Expo 2020',
                     102 => 'Mall of the Emirates',
                     104 => 'Sharaf DG',
                     106 => 'Dubai Internet City',
                     108 => 'Nakheel',
-                    110 => 'Damac Properties',
+                    110 => 'Sobha Realty',
                     112 => 'DMCC',
                     114 => 'Nakheel Harbor and Tower',
                     116 => 'Ibn Battuta',
                     118 => 'Energy',
                     120 => 'Danube',
-                    122 => 'UAE Exchange',
-                    124 => 'Etisalat',
+                    122 => 'Life Pharmacy',
+                    124 => 'Etisalat by e&',
                     126 => 'Al Qusais',
                     128 => 'Dubai Airport Free Zone',
                     130 => 'Al Nahda',
@@ -164,17 +176,23 @@ class ProjectMapping {
                     138 => 'Abu Baker Al Siddique',
                     140 => 'Salah Al Din',
                     142 => 'Baniyas Square',
-                    144 => 'Palm Deira',
+                    144 => 'Gold Souq',
                     146 => 'Al Ras',
                     148 => 'Al Ghubaiba',
-                    150 => 'Al Fahidi',
                     152 => 'Oud Metha',
                     154 => 'Dubai Healthcare City',
                     156 => 'Al Jadaf',
                     158 => 'Creek',
                     182 => 'Sobha realty',
                     184 => 'Al Furjan',
-                    254 => 'Centrepoint',
+                    10676 => 'Jumeirah Golf Estates Metro Station',
+                    10678 => 'The Gardens',
+                    10680 => 'Discovery Gardens',
+                    10682 => 'Al Fardan Exchange',
+                    10684 => 'Equity',
+                    10686 => 'Onpassive',
+                    10688 => 'National Paints',
+                    10690 => 'Insurance market',
                     2762 => null
                 ],
                 'failure_stage_id' => 'DT183_28:FAIL'
@@ -364,10 +382,8 @@ class ProjectMapping {
     }
     
     public static function getApartmentRentTypeField($projectName = 'Dubai') {
-        if ($projectName === 'HongKong') {
-            return null;
-        }
-        return 'ufCrm6_1736951470242';
+        $mapping = self::getFieldMapping($projectName);
+        return $mapping['fields']['rent_type'] ?? null;
     }
     
     public static function getUnitField($fieldName, $projectName = 'Dubai') {

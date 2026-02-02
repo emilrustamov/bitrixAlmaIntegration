@@ -19,6 +19,7 @@ alma_api_debug.log
 # IDE files
 .vscode/
 .idea/
+.cursorignore
 *.swp
 *.swo
 

@@ -13,10 +13,18 @@ $projectConfig = ProjectMapping::getProjectConfig($projectName);
 $fieldMapping  = ProjectMapping::getFieldMapping($projectName);
 Logger::setProject($projectName);
 
-define('WEBHOOK_URL',     $projectConfig['webhook_url']);
-define('ALMA_API_KEY',    Config::get('ALMA_API_KEY'));
-define('ALMA_API_URL',    Config::get('ALMA_API_URL'));
-define('PROJECT_ID',      $projectConfig['id']);
+if (!defined('WEBHOOK_URL')) {
+    define('WEBHOOK_URL', $projectConfig['webhook_url']);
+}
+if (!defined('ALMA_API_KEY')) {
+    define('ALMA_API_KEY', Config::get('ALMA_API_KEY'));
+}
+if (!defined('ALMA_API_URL')) {
+    define('ALMA_API_URL', Config::get('ALMA_API_URL'));
+}
+if (!defined('PROJECT_ID')) {
+    define('PROJECT_ID', $projectConfig['id']);
+}
 
 class UnitApi {
     private $apiKey;
