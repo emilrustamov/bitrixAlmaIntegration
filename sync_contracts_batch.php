@@ -30,9 +30,6 @@ echo "Project: $projectName\n";
 echo "Date range: $dateFrom to $dateTo\n";
 echo "Step: $step\n\n";
 
-$contractEntityTypeId = ProjectMapping::getContractEntityTypeId($projectName);
-$isDealBased = ProjectMapping::isDealBasedContract($projectName);
-
 $contractIds = [];
 $start = 0;
 $limit = 50;
@@ -42,62 +39,36 @@ echo "Fetching contracts from Bitrix24...\n";
 
 try {
     while ($hasMore) {
-        if ($isDealBased) {
-            $params = [
-                'start' => $start,
-                'limit' => $limit,
-                'filter' => [
-                    '>=DATE_CREATE' => $dateFrom . ' 00:00:00',
-                    '<=DATE_CREATE' => $dateTo . ' 23:59:59'
-                ],
-                'select' => ['ID']
-            ];
-            
-            $response = $bitrix->call('crm.deal.list', $params);
-        } else {
-            $params = [
-                'entityTypeId' => $contractEntityTypeId,
-                'start' => $start,
-                'limit' => $limit,
-                'filter' => [
-                    '>=createdTime' => $dateFrom . 'T00:00:00',
-                    '<=createdTime' => $dateTo . 'T23:59:59'
-                ],
-                'select' => ['id']
-            ];
-            
-            $response = $bitrix->call('crm.item.list', $params);
-        }
+        $contractEntityTypeId = ProjectMapping::getContractEntityTypeId($projectName);
+        $params = [
+            'entityTypeId' => $contractEntityTypeId,
+            'start' => $start,
+            'limit' => $limit,
+            'filter' => [
+                '>=createdTime' => $dateFrom . 'T00:00:00',
+                '<=createdTime' => $dateTo . 'T23:59:59'
+            ],
+            'select' => ['id']
+        ];
+        
+        $response = $bitrix->call('crm.item.list', $params);
         
         if (!isset($response['result'])) {
             echo "Error: No result in response\n";
             break;
         }
         
-        if ($isDealBased) {
-            $items = $response['result'] ?? [];
-            $itemsCount = count($items);
-            
-            foreach ($items as $item) {
-                if (isset($item['ID'])) {
-                    $contractIds[] = $item['ID'];
-                }
+        $items = $response['result']['items'] ?? [];
+        $itemsCount = count($items);
+        
+        foreach ($items as $item) {
+            if (isset($item['id'])) {
+                $contractIds[] = $item['id'];
             }
-            
-            $hasMore = ($itemsCount == $limit);
-        } else {
-            $items = $response['result']['items'] ?? [];
-            $itemsCount = count($items);
-            
-            foreach ($items as $item) {
-                if (isset($item['id'])) {
-                    $contractIds[] = $item['id'];
-                }
-            }
-            
-            $hasNext = $response['result']['hasNext'] ?? false;
-            $hasMore = $hasNext || ($itemsCount == $limit);
         }
+        
+        $hasNext = $response['result']['hasNext'] ?? false;
+        $hasMore = $hasNext || ($itemsCount == $limit);
         
         $start += $limit;
         echo "Found " . count($contractIds) . " contracts so far... (page items: $itemsCount)\n";

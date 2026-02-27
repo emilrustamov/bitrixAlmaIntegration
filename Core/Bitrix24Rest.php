@@ -19,22 +19,28 @@ class Bitrix24Rest
 
     public function call($method, $params = [])
     {
-        $url = $this->webhookUrl . $method;
         $query = http_build_query($params);
+        $useGet = ($method === 'lists.element.get' && $query !== '');
+        $url = $this->webhookUrl . $method . ($useGet ? '?' . $query : '');
         $curl = curl_init();
 
-        curl_setopt_array($curl, [
+        $opts = [
             CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_POST => true,
             CURLOPT_HEADER => false,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_URL => $url,
-            CURLOPT_POSTFIELDS => $query,
             CURLOPT_TIMEOUT => 30,
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 3,
-        ]);
+        ];
+        if ($useGet) {
+            $opts[CURLOPT_HTTPGET] = true;
+        } else {
+            $opts[CURLOPT_POST] = true;
+            $opts[CURLOPT_POSTFIELDS] = $query;
+        }
+        curl_setopt_array($curl, $opts);
 
         $result = curl_exec($curl);
         $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);

@@ -4,8 +4,8 @@ require_once __DIR__ . '/../Core/Bitrix24Rest.php';
 require_once __DIR__ . '/../Core/Logger.php';
 require_once __DIR__ . '/../Core/Config/Config.php';
 require_once __DIR__ . '/../Core/Config/ProjectMapping.php';
-require_once(__DIR__ . '/BaseApi.php');
-require_once(__DIR__ . '/UnitApi.php');
+require_once __DIR__ . '/BaseApi.php';
+require_once __DIR__ . '/UnitApi.php';
 
 Config::load();
 
@@ -19,31 +19,19 @@ define('ALMA_API_KEY',    Config::get('ALMA_API_KEY'));
 define('ALMA_API_URL',    Config::get('ALMA_API_URL'));
 define('PROJECT_ID',      $projectConfig['id']);
 
-/**
- * Alma API client for room synchronization.
- */
 class RoomApi {
     private $apiKey;
     private $apiUrl;
 
     public function __construct($apiKey, $apiUrl) {
         $this->apiKey = $apiKey;
-        $this->apiUrl = rtrim($apiUrl, '/');
+        $this->apiUrl = rtrim($apiUrl, '/') . '/';
     }
 
-    /**
-     * Получить юнит (апартамент) из Alma по external_id из Bitrix.
-     * Возвращает внутренний ID юнита из Alma.
-     */
     public function getUnitByExternalId($bitrixId) {
-        $realtyApiUrl = rtrim(Config::get('ALMA_REALTY_API_URL'), '/');
-        $url = $realtyApiUrl . '/units/external_id/' . rawurlencode($bitrixId) . '/';
-        return BaseApi::sendRequest($this->apiKey, 'GET', $url, null, false);
+        return BaseApi::fetchUnitByExternalId($this->apiKey, $this->apiUrl, (string)$bitrixId);
     }
 
-    /**
-     * Create or update Alma room using Bitrix payload.
-     */
     public function createOrUpdateRoom($data, $bitrixId) {
         $unitApi = new UnitApi($this->apiKey, $this->apiUrl);
         return $unitApi->createOrUpdateRoom($data, $bitrixId);
@@ -72,34 +60,55 @@ try {
     }
 
     $roomData = $bitrixRoom['result']['item'];
-
-    // Получаем ID апартамента из комнаты
-    $apartmentId = null;
-    if (isset($roomData[$apartmentField])) {
-        $apartmentFieldValue = $roomData[$apartmentField];
-        $apartmentId = is_array($apartmentFieldValue) ? ($apartmentFieldValue[0] ?? null) : $apartmentFieldValue;
+    $apartmentId = $roomData[$apartmentField] ?? null;
+    if (is_array($apartmentId)) {
+        $apartmentId = $apartmentId[0] ?? null;
+    }
+    if (empty($apartmentId)) {
+        throw new InvalidArgumentException('Apartment ID not found in room');
     }
 
-    if (!$apartmentId) {
-        throw new InvalidArgumentException('Apartment ID not found in room');
+    $apartmentEntityTypeIds = ProjectMapping::getApartmentEntityTypeIds($projectName);
+    $apartmentEntityTypeId = $apartmentEntityTypeIds[0] ?? null;
+    if ($apartmentEntityTypeId === null) {
+        throw new RuntimeException('Apartment entity type id is not configured for project ' . $projectName);
+    }
+    $apartmentRes = $bitrix->call('crm.item.get', [
+        'entityTypeId' => $apartmentEntityTypeId,
+        'id' => $apartmentId
+    ]);
+    if (!isset($apartmentRes['result']['item'])) {
+        throw new RuntimeException('Failed to get apartment data from Bitrix24 for room sync');
+    }
+    $apartmentData = $apartmentRes['result']['item'];
+    $rentTypeField = ProjectMapping::getApartmentRentTypeField($projectName);
+    $rentType = 'unit';
+    if ($rentTypeField !== null) {
+        $rentTypeMapping = $fieldMapping['rent_type_mapping'] ?? [];
+        $defaultRentTypeValue = ProjectMapping::getDefaultRentTypeValue($projectName);
+        $rentTypeValue = $apartmentData[$rentTypeField] ?? $defaultRentTypeValue;
+        if (is_array($rentTypeValue)) {
+            $rentTypeValue = $rentTypeValue[0] ?? $defaultRentTypeValue;
+        }
+        $rentType = $rentTypeMapping[(string)$rentTypeValue] ?? 'unit';
+    }
+    if ($rentType !== 'rooms') {
+        throw new InvalidArgumentException(
+            'Room synchronization is allowed only for apartments with rent type "rooms". ' .
+            'Current rent type: ' . $rentType
+        );
     }
 
     $unitApi = new UnitApi(ALMA_API_KEY, ALMA_API_URL);
     $existingRoom = $unitApi->getRentalObject($roomId);
-    $roomExists = ($existingRoom['code'] === 200 && isset($existingRoom['response']['id']));
-    
+    $roomExists = ($existingRoom['code'] ?? 0) === 200 && !empty($existingRoom['response']['id']);
+    $parentUnitId = null;
     if ($roomExists) {
-        $parentUnit = $existingRoom['response']['parent_unit'] ?? null;
-        if (is_array($parentUnit) && isset($parentUnit['id'])) {
-            $parentUnitId = $parentUnit['id'];
-        } elseif (is_numeric($parentUnit)) {
-            $parentUnitId = $parentUnit;
-        }
-    }
-    
-    if (!$roomExists) {
+        $p = $existingRoom['response']['parent_unit'] ?? null;
+        $parentUnitId = (is_array($p) && isset($p['id'])) ? $p['id'] : (is_numeric($p) ? $p : null);
+    } else {
         $apartmentUnit = $alma->getUnitByExternalId($apartmentId);
-        if ($apartmentUnit['code'] !== 200 || !isset($apartmentUnit['response']['id'])) {
+        if (($apartmentUnit['code'] ?? 0) !== 200 || empty($apartmentUnit['response']['id'])) {
             throw new RuntimeException("Apartment $apartmentId not found in Alma. Please sync apartment first.");
         }
         $parentUnitId = $apartmentUnit['response']['id'];
@@ -107,9 +116,6 @@ try {
 
     $externalId = $roomData['id'] ?? $roomId;
     $name = $roomData['title'] ?? ('Room ' . $externalId);
-    if (empty($name)) {
-        $name = 'Room ' . $externalId;
-    }
 
     $unitInternalAreaField = ProjectMapping::getUnitField('internal_area', $projectName);
     $unitGoalRentCostField = ProjectMapping::getUnitField('goal_rent_cost', $projectName);
@@ -154,56 +160,24 @@ try {
         'number' => $number,
     ];
     
-    if (isset($parentUnitId)) {
+    if ($parentUnitId !== null) {
         $data['parent_unit'] = $parentUnitId;
     }
 
     $response = $alma->createOrUpdateRoom($data, $externalId);
 
     if (isset($response['response']['id']) || (isset($response['code']) && $response['code'] >= 200 && $response['code'] < 300)) {
-        $almaId = $response['response']['id'] ?? $response['id'] ?? null;
-        $method = $response['method'] ?? 'unknown';
-        $message = $method === 'POST' 
-            ? 'Room successfully created in Alma' 
-            : 'Room successfully updated in Alma';
-        
-        echo json_encode([
-            'success' => true,
-            'message' => $message,
-            'alma_id' => $almaId,
-            'method' => $method,
-            'operation' => $method === 'POST' ? 'created' : 'updated',
-            'data' => $response['response'] ?? $response
+        BaseApi::sendSuccessResponse([
+            'code' => $response['code'] ?? 200,
+            'response' => $response['response'] ?? $response,
+            'method' => $response['method'] ?? 'unknown',
         ]);
     } else {
         Logger::error('Failed to process room', ['response' => $response], 'room', $roomId);
         throw new RuntimeException('Failed to process room (Method: ' . ($response['method'] ?? 'unknown') . '): ' . json_encode($response));
     }
 
-} catch (InvalidArgumentException $e) {
-    http_response_code(400);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Validation error: ' . $e->getMessage()
-    ]);
-} catch (RuntimeException $e) {
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'message' => 'API error: ' . $e->getMessage()
-    ]);
-} catch (Exception $e) {
-    Logger::error("Unexpected error in room synchronization: " . $e->getMessage(), [
-        'exception_type' => get_class($e),
-        'file' => $e->getFile(),
-        'line' => $e->getLine(),
-        'trace' => $e->getTraceAsString()
-    ], 'room', $_GET['id'] ?? 'unknown');
-    
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Unexpected error: Room synchronization failed'
-    ]);
+} catch (Throwable $e) {
+    BaseApi::sendErrorResponse($e, 'Unexpected error: Room synchronization failed', 'room', $_GET['id'] ?? null);
 }
 

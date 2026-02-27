@@ -20,17 +20,16 @@ class Config
         $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
         foreach ($lines as $line) {
-            if (strpos(trim($line), '#') === 0) {
+            if (str_starts_with(trim($line), '#')) {
                 continue;
             }
-
-            if (strpos($line, '=') !== false) {
+            if (str_contains($line, '=')) {
                 list($key, $value) = explode('=', $line, 2);
                 $key = trim($key);
                 $value = trim($value);
 
-                if ((substr($value, 0, 1) === '"' && substr($value, -1) === '"') ||
-                    (substr($value, 0, 1) === "'" && substr($value, -1) === "'")) {
+                if ((str_starts_with($value, '"') && str_ends_with($value, '"')) ||
+                    (str_starts_with($value, "'") && str_ends_with($value, "'"))) {
                     $value = substr($value, 1, -1);
                 }
 
@@ -46,7 +45,6 @@ class Config
         if (!self::$loaded) {
             self::load();
         }
-
         return self::$config[$key] ?? $default;
     }
 
@@ -55,7 +53,6 @@ class Config
         if (!self::$loaded) {
             self::load();
         }
-
         return self::$config;
     }
 
@@ -64,7 +61,6 @@ class Config
         if (!self::$loaded) {
             self::load();
         }
-
         return isset(self::$config[$key]);
     }
 }

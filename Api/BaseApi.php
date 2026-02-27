@@ -1,23 +1,9 @@
 <?php
 
-class BaseApi
-{
-    /**
-     * Базовый HTTP-клиент для запросов в Alma.
-     *
-     * @param string      $apiKey       Api-Key для Alma
-     * @param string      $method       HTTP-метод: GET|POST|PATCH
-     * @param string      $url          Полный URL
-     * @param array|null  $data         Тело запроса (для POST/PATCH)
-     * @param bool        $throwOnError Если true — выбрасывает RuntimeException при HTTP >= 400,
-     *                                  иначе возвращает ['code' => int, 'response' => mixed]
-     *
-     * @return mixed      Декодированный ответ (если $throwOnError = true)
-     *                    или ['code' => int, 'response' => mixed] (если false)
-     *
-     * @throws RuntimeException
-     */
-    public static function sendRequest(string $apiKey, string $method, string $url, ?array $data = null, bool $throwOnError = true)
+require_once __DIR__ . '/../Core/Logger.php';
+
+class BaseApi {
+    public static function sendRequest($apiKey, $method, $url, $data = null, $throwOnError = true)
     {
         $headers = [
             'Api-Key: ' . $apiKey,
@@ -55,26 +41,23 @@ class BaseApi
 
         curl_close($ch);
 
-        $decoded = null;
-        if ($response !== false && $response !== null && $response !== '') {
-            $decoded = json_decode($response, true);
-        }
+        $decoded = (is_string($response) && $response !== '') ? json_decode($response, true) : null;
 
         if ($throwOnError) {
             if ($httpCode >= 400) {
-                $errorMessage = "API request failed ($httpCode)";
-                if ($decoded !== null && json_last_error() === JSON_ERROR_NONE && isset($decoded['detail'])) {
-                    $errorMessage .= ': ' . $decoded['detail'];
-                } elseif ($response) {
-                    $errorMessage .= ': ' . substr($response, 0, 200);
+                $msg = "API request failed ($httpCode)";
+                if (is_array($decoded) && isset($decoded['detail'])) {
+                    $msg .= ': ' . (is_string($decoded['detail']) ? $decoded['detail'] : json_encode($decoded['detail']));
+                } elseif ($httpCode === 404) {
+                    $msg .= ': resource not found';
+                } elseif (is_string($response) && $response !== '' && !str_starts_with(trim($response), '<')) {
+                    $msg .= ': ' . substr($response, 0, 200);
                 }
-                throw new RuntimeException($errorMessage, $httpCode);
+                throw new RuntimeException($msg, $httpCode);
             }
-
-            if ($decoded === null && $response !== '' && json_last_error() !== JSON_ERROR_NONE) {
+            if ($decoded === null && is_string($response) && $response !== '') {
                 throw new RuntimeException("Invalid JSON response: " . substr($response, 0, 200));
             }
-
             return $decoded;
         }
 
@@ -82,6 +65,85 @@ class BaseApi
             'code'     => $httpCode,
             'response' => $decoded,
         ];
+    }
+
+    public static function sendErrorResponse($e, $msg, $entityType = 'api', $entityId = null, $extra = [])
+    {
+        if ($e instanceof InvalidArgumentException) {
+            $code = 400;
+            $message = 'Validation error: ' . $e->getMessage();
+        } elseif ($e instanceof RuntimeException) {
+            $code = 500;
+            $message = 'API error: ' . $e->getMessage();
+        } else {
+            Logger::error($msg . ': ' . $e->getMessage(), [
+                'exception_type' => get_class($e),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ], $entityType, $entityId ?? 'unknown');
+            $code = 500;
+            $message = $msg;
+        }
+        http_response_code($code);
+        header('Content-Type: application/json');
+        $response = array_merge(['message' => $message], $extra);
+        echo json_encode(['success' => false, 'code' => $code, 'response' => $response, 'method' => 'ERROR']);
+    }
+
+    public static function sendSuccessResponse($payload)
+    {
+        header('Content-Type: application/json');
+        echo json_encode(array_merge(['success' => true], $payload));
+    }
+
+    public static function formatDateForAlma($dateStr)
+    {
+        $trimmed = trim($dateStr);
+        if ($trimmed === '') {
+            throw new InvalidArgumentException('Date is required');
+        }
+        $date = DateTime::createFromFormat('Y-m-d', $trimmed) ?: date_create($trimmed);
+        if (!$date) {
+            throw new InvalidArgumentException("Invalid date: $dateStr");
+        }
+        return $date->format('Y-m-d\T00:00:00\Z');
+    }
+
+    public static function fetchUnitByExternalId($apiKey, $apiUrl, $externalId)
+    {
+        $url = rtrim($apiUrl, '/') . '/realty/units/external_id/' . rawurlencode($externalId) . '/';
+        return self::sendRequest($apiKey, 'GET', $url, null, false);
+    }
+
+    public static function getUnitIdByApartmentExternalId($apiKey, $apiUrl, $apartmentExternalId)
+    {
+        $result = self::fetchUnitByExternalId($apiKey, $apiUrl, $apartmentExternalId);
+        $code = $result['code'] ?? 0;
+        $response = $result['response'] ?? [];
+        if ($code === 404) {
+            throw new InvalidArgumentException("Apartment (Bitrix ID: $apartmentExternalId) not found in Alma. Sync the apartment or unit first.");
+        }
+        if ($code >= 400 || empty($response['id'])) {
+            $detail = is_array($response) && isset($response['detail']) ? (is_string($response['detail']) ? $response['detail'] : json_encode($response['detail'])) : 'Failed to get unit from Alma';
+            throw new RuntimeException($detail, $code ?: 500);
+        }
+        return (string) $response['id'];
+    }
+
+    public static function uploadImage($apiKey, $apiUrl, $fileUrl, $description = 'Document')
+    {
+        if (empty($fileUrl)) {
+            return null;
+        }
+        $uploadUrl = rtrim($apiUrl, '/') . '/external-image/';
+        $fileData = ['url' => $fileUrl, 'description' => $description];
+        try {
+            $response = self::sendRequest($apiKey, 'POST', $uploadUrl, $fileData, true);
+            return $response['id'] ?? null;
+        } catch (Throwable $e) {
+            return null;
+        }
     }
 }
 

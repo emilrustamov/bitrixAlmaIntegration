@@ -1,13 +1,28 @@
 <?php
 
 class ProjectMapping {
-    
+
     public static function getFieldMapping($projectName = 'Dubai') {
         $mappings = [
             'Dubai' => [
                 'entity_type_id' => 144,
+                'apartment_entity_type_ids' => [144, 1048],
                 'unit_entity_type_id' => 167,
                 'contract_entity_type_id' => 183,
+                'landlord_contract_entity_type_id' => 148,
+                'landlord_contract_fields' => [
+                    'start_date' => 'ufCrm10_1693823247516',
+                    'end_date' => 'ufCrm10_1693823282826',
+                    'work_model' => 'ufCrm10_1708955821',
+                    'apartment_id' => 'ufCrm10_1693823301',
+                    'contact_id' => 'contactId',
+                    'contract_scan' => 'ufCrm10_1709042143',
+                    'title_deed_scan' => 'ufCrm10_1694000636731',
+                    'pml_scan' => 'ufCrm10_1694000391518',
+                    'dtcm_scan' => 'ufCrm10_1694000558852',
+                    'pml_start_date' => 'ufCrm10_1708956056',
+                    'pml_end_date' => 'ufCrm10_1708955996',
+                ],
                 'contract_fields' => [
                     'unit_id' => 'ufCrm20_1693919019',
                     'apartment_id' => null,
@@ -46,6 +61,7 @@ class ProjectMapping {
                     'additional_external_id' => 'ufCrm6_1684425402',
                     'stage' => 'ufCrm6_1742486676',
                     'rent_type' => 'ufCrm6_1736951470242',
+                    'date_of_refused' => 'ufCrm6_1742377926',
                     'email' => 'UF_CRM_1727788747'
                 ],
                 'unit_fields' => [
@@ -53,6 +69,51 @@ class ProjectMapping {
                     'goal_rent_cost' => 'opportunity',
                     'number' => 'ufCrm8_1698838056004',
                 ],
+                'blocking_fields' => [
+                    'apartment' => [
+                        'blocking_start' => 'ufCrm6_1740652780',
+                        'blocking_end' => 'ufCrm6_1740652788',
+                        'blocking_reasons' => 'ufCrm6_1740667738',
+                        'blocking_canceling' => 'ufCrm6_1761994186',
+                    ],
+                    'unit' => [
+                        'blocking_start' => 'ufCrm8_1740652780',
+                        'blocking_end' => 'ufCrm8_1740652788',
+                        'blocking_reasons' => 'ufCrm8_1740667738',
+                        'blocking_canceling' => 'ufCrm8_1761994186',
+                    ],
+                ],
+                'blocking_reasons_enum' => [
+                    '5886' => 'Landlor lives in (проживает собственник)',
+                    '5888' => 'Repair (ремонт)',
+                    '5890' => "Landlord's friends live in (проживают друзья собственника)",
+                    '5892' => 'Another reason (другое)',
+                    '6868' => 'Invest',
+                    '6870' => 'Tenants of the landlord',
+                ],
+                'blocking_reason_alma_client_ids' => [
+                    '5886' => 15106,
+                    '5888' => 15107,
+                    '5890' => 15108,
+                    '5892' => 15109,
+                    '6868' => 15110,
+                    '6870' => 15111,
+                ],
+                'blocking_canceling_enum_id' => 9210,
+                'blocking_list_iblock_id' => 300,
+                'termination_list_event_type' => 'Расторжение',
+                'blocking_list_status_active' => '2244',
+                'blocking_list_status_finished' => '2246',
+                'blocking_list_status_canceled' => '2248',
+                'blocking_list_reason_alma_client_ids' => [
+                    'Landlor lives in (проживает собственник)' => 15106,
+                    'Repair (ремонт)' => 15107,
+                    "Landlord's friends live in (проживают друзья собственника)" => 15108,
+                    'Another reason (другое)' => 15109,
+                    'Invest' => 15110,
+                    'Tenants of the landlord' => 15111,
+                ],
+                'termination_alma_client_id' => 15135,
                 'unit_number_mapping' => [
                     '1294' => '1',
                     '1296' => '2',
@@ -119,14 +180,18 @@ class ProjectMapping {
                     '4600' => 'rooms',
                     '4598' => 'unit'
                 ],
+                'default_rent_type_value' => '4598',
                 'contract_type_mapping' => [
                     '882' => 'Airbnb',
                     '884' => 'Short term from 1 to 3 months',
-                    '886' => 'Long-term 3+ months', 
+                    '886' => 'Long-term 3+ months',
                     '1304' => 'Booking',
                     '1306' => 'Short contract up to 1 month',
-                    '6578' => 'Less than a month'
+                    '6578' => 'Less than a month',
+                    '0000' => 'Blocking',
+                    '0002' => 'Termination',
                 ],
+                'no_invitation_contract_type_ids' => ['882', '8672'],
                 'work_model_mapping' => [
                     '1696' => 'Rent to rent',
                     '1698' => 'TM 10%',
@@ -195,21 +260,34 @@ class ProjectMapping {
                     10690 => 'Insurance market',
                     2762 => null
                 ],
-                'failure_stage_id' => 'DT183_28:FAIL'
+                'failure_stage_id' => 'DT183_28:FAIL',
+                'stage_mapping' => [
+                    'DT144_10:NEW' => 'Repair/AC/GAS/Card',
+                    'DT144_10:PREPARATION' => 'For rent',
+                    'DT144_10:CLIENT' => 'Rented',
+                    'DT144_10:UC_W4YLY0' => 'ON HOLD',
+                    'DT144_10:UC_XH6370' => 'Termination process',
+                    'DT144_10:FAIL' => 'Ex-apartment',
+                    'DT144_10:SUCCESS' => 'Успех'
+                ],
+                'archive_stage_ids' => ['DT144_10:FAIL', 'DT144_10:UC_XH6370'],
+                'allowed_stage_ids' => ['DT144_10:PREPARATION', 'DT144_10:CLIENT', '5980']
             ],
             'HongKong' => [
                 'entity_type_id' => 1054,
+                'apartment_entity_type_ids' => [1054],
                 'unit_entity_type_id' => 1058,
-                'contract_entity_type_id' => 2,
-                'contract_stage_id' => 'UC_KSMIAX',
+                'landlord_contract_entity_type_id' => null,
+                'landlord_contract_fields' => [],
+                'contract_entity_type_id' => 1072,
                 'contract_fields' => [
-                    'unit_id' => 'UF_CRM_1764013723',
-                    'apartment_id' => 'UF_CRM_1764013747',
-                    'start_date' => 'UF_CRM_6745817E27230',
-                    'end_date' => 'UF_CRM_1733107462743',
-                    'contract_type' => 'UF_CRM_1758865148194',
-                    'history' => null,
-                    'contract_scan' => null,
+                    'unit_id' => 'ufCrm19Units',
+                    'apartment_id' => 'ufCrm19Apartments',
+                    'start_date' => 'ufCrm19CheckinDate',
+                    'end_date' => 'ufCrm19CheckoutDate',
+                    'contract_type' => 'ufCrm19ContractType',
+                    'history' => 'ufCrm19ContractHistory',
+                    'contract_scan' => 'ufCrm19Contract',
                 ],
                 'tenant_fields' => [
                     'email' => 'UF_CRM_1727788747',
@@ -292,6 +370,7 @@ class ProjectMapping {
                     '1069' => 'unit',
                     '1071' => 'rooms'
                 ],
+                'default_rent_type_value' => '1069',
                 'contract_type_mapping' => [
                     '983' => 'Short contract up to 1 month',
                     '985' => 'Airbnb',
@@ -301,14 +380,19 @@ class ProjectMapping {
                     '993' => 'Long-term 3+ months',
                     '995' => 'Ejari'
                 ],
+                'no_invitation_contract_type_ids' => ['985', '995'],
                 'work_model_mapping' => [],
                 'metro_mapping' => [],
                 'stage_mapping' => [
                     '1019' => 'Blocked',
                     '1021' => 'Available',
                     '1023' => 'Rented',
-                    '1025' => 'Ex'
-                ]
+                    '1025' => 'Ex',
+                    '1027' => 'Termination process',
+                    '1029' => 'Ex-apartments'
+                ],
+                'archive_stage_ids' => ['1025', '1027', '1029'],
+                'allowed_stage_ids' => ['1021', '1023']
             ]
         ];
         
@@ -350,16 +434,8 @@ class ProjectMapping {
         return self::getFieldMapping($projectName)['contract_entity_type_id'] ?? 183;
     }
     
-    public static function getContractStageId($projectName = 'Dubai') {
-        return self::getFieldMapping($projectName)['contract_stage_id'] ?? null;
-    }
-
     public static function getFailureStageId($projectName = 'Dubai') {
         return self::getFieldMapping($projectName)['failure_stage_id'] ?? null;
-    }
-    
-    public static function isDealBasedContract($projectName = 'Dubai') {
-        return $projectName === 'HongKong';
     }
     
     public static function getContractField($fieldName, $projectName = 'Dubai') {
@@ -393,7 +469,105 @@ class ProjectMapping {
     public static function getUnitNumberMapping($projectName = 'Dubai') {
         return self::getFieldMapping($projectName)['unit_number_mapping'] ?? [];
     }
-    
+
+    public static function getLandlordContractEntityTypeId($projectName = 'Dubai') {
+        return self::getFieldMapping($projectName)['landlord_contract_entity_type_id'] ?? 148;
+    }
+
+    public static function getLandlordContractField($fieldName, $projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        return $mapping['landlord_contract_fields'][$fieldName] ?? null;
+    }
+
+    public static function getApartmentField($fieldName, $projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        return $mapping['fields'][$fieldName] ?? null;
+    }
+
+    public static function getApartmentEntityTypeIds($projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        return $mapping['apartment_entity_type_ids'] ?? [self::getFieldMapping($projectName)['entity_type_id']];
+    }
+
+    public static function getArchiveStageIds($projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        $ids = $mapping['archive_stage_ids'] ?? [];
+        return array_map('strval', $ids);
+    }
+
+    public static function getAllowedStageIds($projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        $ids = $mapping['allowed_stage_ids'] ?? [];
+        return array_map('strval', $ids);
+    }
+
+    public static function getNoInvitationContractTypeIds($projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        $ids = $mapping['no_invitation_contract_type_ids'] ?? [];
+        return array_map('strval', $ids);
+    }
+
+    public static function getBlockingField($fieldName, $entityType, $projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        $blocking = $mapping['blocking_fields'][$entityType] ?? null;
+        return $blocking[$fieldName] ?? null;
+    }
+
+    public static function getBlockingReasonsEnum($projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        return $mapping['blocking_reasons_enum'] ?? [];
+    }
+
+    public static function getBlockingCancelingEnumId($projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        $id = $mapping['blocking_canceling_enum_id'] ?? null;
+        return $id !== null ? (int) $id : null;
+    }
+
+    public static function getBlockingReasonAlmaClientId($reasonId, $projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        $ids = $mapping['blocking_reason_alma_client_ids'] ?? [];
+        $id = $ids[(string) $reasonId] ?? null;
+        return $id !== null && (int) $id > 0 ? (int) $id : null;
+    }
+
+    public static function getDefaultRentTypeValue($projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        return (string) ($mapping['default_rent_type_value'] ?? '4598');
+    }
+
+    public static function getAirbnbContractTypeId($projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        $map = $mapping['contract_type_mapping'] ?? [];
+        foreach ($map as $id => $name) {
+            if ($name === 'Airbnb') {
+                return (string) $id;
+            }
+        }
+        return null;
+    }
+
+    public static function getTerminationContractTypeId($projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        $map = $mapping['contract_type_mapping'] ?? [];
+        foreach ($map as $id => $name) {
+            if ($name === 'Termination') {
+                return (string) $id;
+            }
+        }
+        return null;
+    }
+
+    public static function getTerminationAlmaClientId($projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        $id = $mapping['termination_alma_client_id'] ?? 0;
+        return $id !== null && (int) $id > 0 ? (int) $id : null;
+    }
+
+    public static function getTerminationListEventType($projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        return $mapping['termination_list_event_type'] ?? 'Расторжение';
+    }
 }
 
 

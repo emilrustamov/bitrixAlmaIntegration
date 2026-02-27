@@ -69,7 +69,7 @@ class Logger
     
     public static function logApiRequest($method, $url, $data = null, $response = null, $httpCode = null)
     {
-        if ($httpCode >= 400) {
+        if ($httpCode !== null && $httpCode >= 400) {
             self::error("API Error: $method " . basename($url) . " ($httpCode)", ['response' => $response, 'http_code' => $httpCode]);
         }
     }
@@ -125,7 +125,7 @@ abstract class ActionLogger
         }
     }
 
-    protected function logUpdateInternal($entityId, $entityName, $oldData, $newData, array $fieldsToCompare)
+    protected function logUpdateInternal($entityId, $entityName, $oldData, $newData, $fieldsToCompare)
     {
         $changes = [];
         foreach ($fieldsToCompare as $field) {

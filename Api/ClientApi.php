@@ -1,84 +1,53 @@
 <?php
+
 require_once __DIR__ . '/BaseApi.php';
 
 class ClientApi {
     private $apiKey;
     private $apiUrl;
 
-    public function __construct($apiKey = ALMA_API_KEY, $apiUrl = ALMA_API_URL) {
+    public function __construct($apiKey, $apiUrl) {
         $this->apiKey = $apiKey;
-        $this->apiUrl = $apiUrl;
-    }
-
-    public function ensureClientExists(array $clientData) {
-        if (empty($clientData['id'])) {
-            throw new InvalidArgumentException('Client external id is required');
-        }
-
-        try {
-            $url = $this->apiUrl . 'users/clients/external_id/' . $clientData['id'] . '/';
-            $client = BaseApi::sendRequest($this->apiKey, 'GET', $url);
-            return $client['id'];
-        } catch (Exception $e) {
-            $url = $this->apiUrl . 'users/clients/';
-
-            $payload = [
-                'external_id' => $clientData['id'],
-                'first_name'  => $clientData['first_name'] ?? '',
-                'last_name'   => $clientData['last_name'] ?? '',
-                'phone'       => $clientData['phone'] ?? '',
-                'country'     => $clientData['country'] ?? 4,
-                'birthday'    => '1999-06-03T00:00:00Z',
-            ];
-
-            if (!empty($clientData['email'])) {
-                $payload['email'] = $clientData['email'];
-            }
-
-            $newClient = BaseApi::sendRequest($this->apiKey, 'POST', $url, $payload);
-            return $newClient['id'];
-        }
+        $this->apiUrl = rtrim($apiUrl, '/') . '/';
     }
 
     public function updateClient(array $clientData) {
+        $id = $this->ensureClientExists($clientData, true);
+        $payload = array_intersect_key($clientData, array_flip(['first_name', 'last_name', 'phone', 'email']));
+        if ($payload !== []) {
+            BaseApi::sendRequest($this->apiKey, 'PATCH', $this->apiUrl . 'users/clients/' . $id . '/', $payload);
+        }
+        return $id;
+    }
+
+    public function ensureClientExists(array $clientData, $sendInvitation = true) {
         if (empty($clientData['id'])) {
             throw new InvalidArgumentException('Client external id is required');
         }
-
-        try {
-            $url = $this->apiUrl . 'users/clients/external_id/' . $clientData['id'] . '/';
-            $existingClient = BaseApi::sendRequest($this->apiKey, 'GET', $url, null, false);
-            
-            if ($existingClient['code'] !== 200 || !isset($existingClient['response']['id'])) {
-                return $this->ensureClientExists($clientData);
-            }
-
-            $almaClientId = $existingClient['response']['id'];
-            $updateUrl = $this->apiUrl . 'realty/clients/external_id/' . $clientData['id'] . '/';
-
-            $payload = [];
-            
-            if (isset($clientData['first_name'])) {
-                $payload['first_name'] = $clientData['first_name'];
-            }
-            if (isset($clientData['last_name'])) {
-                $payload['last_name'] = $clientData['last_name'];
-            }
-            if (isset($clientData['phone'])) {
-                $payload['phone'] = $clientData['phone'];
-            }
-            if (isset($clientData['email'])) {
-                $payload['email'] = $clientData['email'];
-            }
-
-            if (!empty($payload)) {
-                BaseApi::sendRequest($this->apiKey, 'PATCH', $updateUrl, $payload);
-            }
-
-            return $almaClientId;
-        } catch (Exception $e) {
-            return $this->ensureClientExists($clientData);
+        $getUrl = $this->apiUrl . 'users/clients/external_id/' . (string) $clientData['id'] . '/';
+        $res = BaseApi::sendRequest($this->apiKey, 'GET', $getUrl, null, false);
+        if (($res['code'] ?? 0) === 200 && isset($res['response']['id'])) {
+            return (string) $res['response']['id'];
         }
+        $payload = $this->buildCreateClientPayload($clientData, $sendInvitation);
+        $newClient = BaseApi::sendRequest($this->apiKey, 'POST', $this->apiUrl . 'users/clients/', $payload);
+        return (string) $newClient['id'];
+    }
+
+    private function buildCreateClientPayload(array $clientData, $sendInvitation) {
+        $payload = [
+            'external_id' => $clientData['id'],
+            'first_name'  => $clientData['first_name'] ?? '',
+            'last_name'   => $clientData['last_name'] ?? '',
+            'phone'       => $clientData['phone'] ?? '',
+            'country'     => $clientData['country'] ?? 4,
+            'birthday'    => '1999-06-03T00:00:00Z',
+            'is_send_password_when_creating' => $sendInvitation,
+        ];
+        if (!empty($clientData['email'])) {
+            $payload['email'] = $clientData['email'];
+        }
+        return $payload;
     }
 }
 

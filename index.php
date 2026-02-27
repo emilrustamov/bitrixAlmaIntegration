@@ -6,169 +6,199 @@ require_once __DIR__ . '/Core/Config/ProjectMapping.php';
 
 Config::load();
 
-$isWebhookRequest = (isset($_REQUEST['data']['FIELDS']['ID']) && 
+$isWebhookRequest = (isset($_REQUEST['data']['FIELDS']['ID']) &&
                    isset($_REQUEST['data']['FIELDS']['ENTITY_TYPE_ID'])) ||
                    isset($_REQUEST['event']);
 
 if ($isWebhookRequest) {
-    $event = $_REQUEST['event'] ?? null;
     $eventDealAdd = Config::get('BITRIX_EVENT_DEAL_ADD', 'ONCRMDEALADD');
     $eventDealUpdate = Config::get('BITRIX_EVENT_DEAL_UPDATE', 'ONCRMDEALUPDATE');
     $eventDynamicUpdate = Config::get('BITRIX_EVENT_DYNAMIC_UPDATE', 'ONCRMDYNAMICITEMUPDATE');
     $eventContactUpdate = Config::get('BITRIX_EVENT_CONTACT_UPDATE', 'ONCRMCONTACTUPDATE');
-    
-    if (isset($_REQUEST['event']) && ($_REQUEST['event'] == $eventDealAdd || $_REQUEST['event'] == $eventDealUpdate)) {
-        $idEl = $_REQUEST['data']['FIELDS']['ID'] ?? $_REQUEST['data']['ID'] ?? null;
-        $idItem = 2;
-    } elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == $eventDynamicUpdate) {
-        $idEl = $_REQUEST['data']['FIELDS']['ID'] ?? null;
-        $idItem = $_REQUEST['data']['FIELDS']['ENTITY_TYPE_ID'] ?? null;
-    } else {
-        $idEl = $_REQUEST['data']['FIELDS']['ID'];
-        $idItem = $_REQUEST['data']['FIELDS']['ENTITY_TYPE_ID'];
-    }
-    
-    if (!$idEl) {
+
+    $eventName = $_REQUEST['event'] ?? null;
+    [$id, $typeId] = match ($eventName) {
+        $eventDealAdd => [$_REQUEST['data']['FIELDS']['ID'] ?? $_REQUEST['data']['ID'] ?? null, 2],
+        $eventDealUpdate => [$_REQUEST['data']['FIELDS']['ID'] ?? $_REQUEST['data']['ID'] ?? null, 2],
+        $eventDynamicUpdate => [$_REQUEST['data']['FIELDS']['ID'] ?? null, $_REQUEST['data']['FIELDS']['ENTITY_TYPE_ID'] ?? null],
+        default => [$_REQUEST['data']['FIELDS']['ID'] ?? null, $_REQUEST['data']['FIELDS']['ENTITY_TYPE_ID'] ?? null]
+    };
+
+    if (!$id) {
+        Logger::warning('Webhook: missing entity ID', ['request' => array_diff_key($_REQUEST, ['data' => 1])], 'webhook', null);
         exit;
     }
 
-    $requestDomain = $_SERVER['HTTP_HOST'] ?? '';
-    $projectName = Config::get('PROJECT_DEFAULT_NAME', 'Dubai');
-    
-    $hongKongDomain = Config::get('PROJECT_HONGKONG_DOMAIN', 'colifepacific');
-    if ($hongKongDomain && strpos($requestDomain, $hongKongDomain) !== false) {
-        $projectName = Config::get('PROJECT_HONGKONG_NAME', 'HongKong');
-    }
-    
-    if (isset($_REQUEST['event']) && ($_REQUEST['event'] == $eventDealAdd || $_REQUEST['event'] == $eventDealUpdate) && $idItem == 2) {
-        $projectName = Config::get('PROJECT_HONGKONG_NAME', 'HongKong');
-    }
-    
-    Logger::setProject($projectName);
-    
-    $projectConfig = ProjectMapping::getProjectConfig($projectName);
-    $fieldMapping = ProjectMapping::getFieldMapping($projectName);
-    $webhookUrl = $projectConfig['webhook_url'];
-    $baseUrl = rtrim(Config::get('APP_BASE_URL'), '/') . '/';
+    $host = $_SERVER['HTTP_HOST'] ?? '';
+    $hkDomain = Config::get('PROJECT_HONGKONG_DOMAIN', 'colifepacific');
+    $isDealWithType2 = ($eventName === $eventDealAdd || $eventName === $eventDealUpdate) && (int)$typeId === 2;
+    $projectName = ($hkDomain && str_contains($host, $hkDomain)) || $isDealWithType2
+        ? Config::get('PROJECT_HONGKONG_NAME', 'HongKong')
+        : Config::get('PROJECT_DEFAULT_NAME', 'Dubai');
 
+    Logger::setProject($projectName);
+    $projectConfig = ProjectMapping::getProjectConfig($projectName);
+    $webhookUrl = $projectConfig['webhook_url'];
     $bitrix = new Bitrix24Rest($webhookUrl);
 
-    if ($idItem == $fieldMapping['entity_type_id'] || $idItem == 1048 || 
-        ($_REQUEST['event'] == $eventDynamicUpdate && $idItem == $fieldMapping['entity_type_id'])) {
-        $entityTypeId = ($idItem == 1048) ? 1048 : $fieldMapping['entity_type_id'];
-        
+    $aptTypeIds = ProjectMapping::getApartmentEntityTypeIds($projectName);
+    if (in_array((int)$typeId, $aptTypeIds, true)) {
         try {
-            $bitrixApartment = $bitrix->call('crm.item.get', [
-                'entityTypeId' => $entityTypeId,
-                'id' => $idEl
+            $bitrix->call('crm.item.get', [
+                'entityTypeId' => (int)$typeId,
+                'id' => $id
             ]);
         } catch (Exception $e) {
+            Logger::warning('Webhook: failed to get apartment from Bitrix', [
+                'entity_id' => $id,
+                'project' => $projectName,
+                'error' => $e->getMessage()
+            ], 'apartment', $id);
             exit;
         }
-
-        $shouldSync = true;
-        
-        if ($shouldSync) {
-            $url = $baseUrl . 'Api/AppartApi.php?id=' . urlencode($idEl) . '&project=' . urlencode($projectName);
-            file_get_contents($url);
-        }
-    } elseif (($projectName === 'HongKong' && $idItem == ProjectMapping::getUnitEntityTypeId($projectName)) ||
-              ($_REQUEST['event'] == $eventDynamicUpdate && $projectName === 'HongKong' && 
-               $idItem == ProjectMapping::getUnitEntityTypeId($projectName))) {
-        $url = $baseUrl . 'Api/UnitApi.php?id=' . urlencode($idEl) . '&project=' . urlencode($projectName);
-        file_get_contents($url);
-
-    } elseif ($idItem == 3 || $_REQUEST['event'] == $eventContactUpdate) {
+        require_once __DIR__ . '/Api/AppartApi.php';
         try {
-            $bitrixContact = $bitrix->call('crm.contact.get', [
-                'id' => $idEl
-            ]);
+            syncApartmentById($id, $projectName, (int)$typeId);
+        } catch (Throwable $e) {
+            Logger::error('Webhook: apartment sync failed', [
+                'entity_id' => $id,
+                'project' => $projectName,
+                'error' => $e->getMessage()
+            ], 'apartment', $id);
+        }
+        exit;
+    }
+
+    $unitTypeId = ProjectMapping::getUnitEntityTypeId($projectName);
+    if ($projectName === 'Dubai' && (int)$typeId === $unitTypeId) {
+        exit;
+    }
+    if ($projectName === 'HongKong' && (int)$typeId === $unitTypeId) {
+        require_once __DIR__ . '/Api/UnitApi.php';
+        try {
+            syncUnitById($id, $projectName);
+        } catch (Throwable $e) {
+            Logger::error('Webhook: unit sync failed', [
+                'entity_id' => $id,
+                'project' => $projectName,
+                'error' => $e->getMessage()
+            ], 'room', $id);
+        }
+        exit;
+    }
+
+    if ((int)$typeId === 3 || $eventName === $eventContactUpdate) {
+        try {
+            $res = $bitrix->call('crm.contact.get', ['id' => $id]);
         } catch (Exception $e) {
+            Logger::warning('Webhook: failed to get contact from Bitrix', [
+                'entity_id' => $id,
+                'project' => $projectName,
+                'error' => $e->getMessage()
+            ], 'contact', $id);
             exit;
         }
-
-        if (isset($bitrixContact['result'])) {
-            $contactData = $bitrixContact['result'];
-            $contactType = $contactData['TYPE_ID'] ?? '';
-            $isTenant = ($contactType === 'TENANT' || $contactType === 'CLIENT');
-            $isLandlord = ($contactType === 'LANDLORD' || $contactType === '1');
-            
+        if (isset($res['result'])) {
+            $contact = $res['result'];
+            $typeIdContact = $contact['TYPE_ID'] ?? '';
+            $isTenant = ($typeIdContact === 'TENANT' || $typeIdContact === 'CLIENT');
+            $isLandlord = ($typeIdContact === 'LANDLORD' || $typeIdContact === '1');
             if (!$isTenant && !$isLandlord) {
                 try {
-                    $llContracts = $bitrix->call('crm.item.list', [
-                        'entityTypeId' => 148,
-                        'filter' => [
-                            'contactId' => $idEl
-                        ],
-                        'select' => ['id']
-                    ]);
-                    
-                    if (isset($llContracts['result']['items']) && !empty($llContracts['result']['items'])) {
-                        $isLandlord = true;
+                    $llTypeId = ProjectMapping::getLandlordContractEntityTypeId($projectName);
+                    if ($llTypeId) {
+                        $contracts = $bitrix->call('crm.item.list', [
+                            'entityTypeId' => $llTypeId,
+                            'filter' => ['contactId' => $id],
+                            'select' => ['id']
+                        ]);
+                        if (!empty($contracts['result']['items'] ?? [])) {
+                            $isLandlord = true;
+                        }
                     }
                 } catch (Exception $e) {
+                    Logger::warning('Webhook: failed to check landlord contracts', [
+                        'contact_id' => $id,
+                        'error' => $e->getMessage()
+                    ], 'contact', $id);
                 }
             }
-            
-            if ($isTenant) {
-                file_get_contents($baseUrl . 'Api/TenantApi.php?id=' . urlencode($idEl) . '&project=' . urlencode($projectName));
-            } elseif ($isLandlord) {
-                file_get_contents($baseUrl . 'Api/LandlordApi.php?id=' . urlencode($idEl) . '&project=' . urlencode($projectName));
+            if ($isTenant || $isLandlord) {
+                require_once __DIR__ . '/Api/ContactSync.php';
+                try {
+                    syncContactById($id, $projectName, $isTenant ? 'tenant' : 'landlord');
+                } catch (Throwable $e) {
+                    Logger::error('Webhook: contact sync failed', [
+                        'entity_id' => $id,
+                        'project' => $projectName,
+                        'type' => $isTenant ? 'tenant' : 'landlord',
+                        'error' => $e->getMessage()
+                    ], 'contact', $id);
+                }
             }
         }
-    } elseif ($idItem == 183 || ($projectName === 'HongKong' && $idItem == 2)) {
-        $contractEntityTypeId = ProjectMapping::getContractEntityTypeId($projectName);
-        $isDealBased = ProjectMapping::isDealBasedContract($projectName);
-        $contractStageId = ProjectMapping::getContractStageId($projectName);
-        
+        exit;
+    }
+
+    $contractTypeId = ProjectMapping::getContractEntityTypeId($projectName);
+    if ((int)$typeId === (int)$contractTypeId) {
         try {
-            if ($isDealBased) {
-                $bitrixDeal = $bitrix->call('crm.deal.get', [
-                    'id' => $idEl
-                ]);
-                
-                if (isset($bitrixDeal['result'])) {
-                    $dealData = $bitrixDeal['result'];
-                    
-                    if ($contractStageId !== null && $dealData['STAGE_ID'] !== $contractStageId) {
-                        exit;
-                    }
-                    
-                    file_get_contents($baseUrl . 'Api/TenantContractApi.php?id=' . urlencode($idEl) . '&project=' . urlencode($projectName));
-                } else {
-                    Logger::warning('Contract webhook: Bitrix deal returned no result', ['contract_id' => $idEl, 'project' => $projectName], 'contract', $idEl);
+            $contract = $bitrix->call('crm.item.get', [
+                'entityTypeId' => $contractTypeId,
+                'id' => $id
+            ]);
+            if (isset($contract['result'])) {
+                require_once __DIR__ . '/Api/TenantContractApi.php';
+                try {
+                    syncTenantContractById($id, $projectName);
+                } catch (Throwable $e) {
+                    Logger::error('Webhook: tenant contract sync failed', [
+                        'entity_id' => $id,
+                        'project' => $projectName,
+                        'error' => $e->getMessage()
+                    ], 'contract', $id);
                 }
             } else {
-                $bitrixTenantContract = $bitrix->call('crm.item.get', [
-                    'entityTypeId' => $contractEntityTypeId,
-                    'id' => $idEl
-                ]);
-
-                if (isset($bitrixTenantContract['result'])) {
-                    file_get_contents($baseUrl . 'Api/TenantContractApi.php?id=' . urlencode($idEl) . '&project=' . urlencode($projectName));
-                } else {
-                    Logger::warning('Contract webhook: Bitrix returned no result', ['contract_id' => $idEl, 'project' => $projectName], 'contract', $idEl);
-                }
+                Logger::warning('Webhook: Bitrix returned no result for contract', ['contract_id' => $id, 'project' => $projectName], 'contract', $id);
             }
         } catch (Exception $e) {
-            Logger::error('Contract webhook failed before sync', [
-                'contract_id' => $idEl,
+            Logger::error('Webhook: contract failed before sync', [
+                'contract_id' => $id,
                 'project' => $projectName,
                 'error' => $e->getMessage(),
                 'exception' => get_class($e)
-            ], 'contract', $idEl);
+            ], 'contract', $id);
         }
-    } elseif ($idItem == 148) {
-        try {
-            $bitrixLandlordContract = $bitrix->call('crm.item.get', [
-                'entityTypeId' => 148,
-                'id' => $idEl
-            ]);
+        exit;
+    }
 
-            if (isset($bitrixLandlordContract['result'])) {
-                file_get_contents($baseUrl . 'Api/LandlordContractApi.php?id=' . urlencode($idEl) . '&project=' . urlencode($projectName));
+    $llTypeId = ProjectMapping::getLandlordContractEntityTypeId($projectName);
+    if ($llTypeId && (int)$typeId === (int)$llTypeId) {
+        try {
+            $contract = $bitrix->call('crm.item.get', [
+                'entityTypeId' => $llTypeId,
+                'id' => $id
+            ]);
+            if (isset($contract['result'])) {
+                require_once __DIR__ . '/Api/LandlordContractApi.php';
+                try {
+                    syncLandlordContractById($id, $projectName);
+                } catch (Throwable $e) {
+                    Logger::error('Webhook: landlord contract sync failed', [
+                        'entity_id' => $id,
+                        'project' => $projectName,
+                        'error' => $e->getMessage()
+                    ], 'landlord_contract', $id);
+                }
             }
         } catch (Exception $e) {
+            Logger::warning('Webhook: failed to get landlord contract from Bitrix', [
+                'entity_id' => $id,
+                'project' => $projectName,
+                'error' => $e->getMessage()
+            ], 'landlord_contract', $id);
         }
+        exit;
     }
 }
+

@@ -1,4 +1,5 @@
 <?php
+
 set_time_limit(60);
 ini_set('max_execution_time', 60);
 
@@ -7,37 +8,32 @@ require_once __DIR__ . '/../Core/Logger.php';
 require_once __DIR__ . '/../Core/Config/Config.php';
 require_once __DIR__ . '/../Core/Config/ProjectMapping.php';
 require_once __DIR__ . '/ClientApi.php';
-require_once(__DIR__ . '/BaseApi.php');
+require_once __DIR__ . '/BaseApi.php';
 
 Config::load();
-
-$projectName = $_GET['project'] ?? 'Dubai';
-$projectConfig = ProjectMapping::getProjectConfig($projectName);
-Logger::setProject($projectName);
-
-define('ALMA_API_KEY', Config::get('ALMA_API_KEY'));
-define('ALMA_API_URL', Config::get('ALMA_API_URL'));
-define('PROJECT_ID', $projectConfig['id']);
-define('WEBHOOK_URL', $projectConfig['webhook_url']);
 
 class LandlordContractApi {
     private $apiKey;
     private $apiUrl;
+    private $projectName;
     private $actionLogger;
     private $bitrix;
     private $clientApi;
 
-    public function __construct($apiKey = ALMA_API_KEY, $apiUrl = ALMA_API_URL) {
+    public function __construct($apiKey, $apiUrl, $projectName, $webhookUrl) {
         $this->apiKey = $apiKey;
-        $this->apiUrl = $apiUrl;
+        $this->apiUrl = rtrim($apiUrl, '/') . '/';
+        $this->projectName = $projectName;
         $this->actionLogger = new LandlordContractActionLogger();
-        $this->bitrix = new Bitrix24Rest(WEBHOOK_URL);
+        $this->bitrix = new Bitrix24Rest($webhookUrl);
         $this->clientApi = new ClientApi($apiKey, $apiUrl);
     }
 
     public function syncContract(array $bitrixData) {
+        $apartmentIdField = ProjectMapping::getLandlordContractField('apartment_id', $this->projectName);
+        $apartmentBitrixId = $apartmentIdField ? ($bitrixData[$apartmentIdField] ?? '') : '';
         $landlordId = $this->ensureLandlordExists($bitrixData['landlord_data']);
-        $apartmentId = $this->findApartmentInAlma($bitrixData['apartment_id']);
+        $apartmentId = BaseApi::getUnitIdByApartmentExternalId($this->apiKey, $this->apiUrl, $apartmentBitrixId);
         
         $contractData = $this->prepareContractData($bitrixData, $landlordId, $apartmentId);
         
@@ -99,22 +95,29 @@ class LandlordContractApi {
 
 
     public function ensureLandlordExists(array $landlordData) {
-        return $this->clientApi->ensureClientExists($landlordData);
-    }
-
-    private function formatDate($dateStr) {
-        if (empty($dateStr)) {
-            throw new InvalidArgumentException("Date is required");
-        }
-        
-        $date = DateTime::createFromFormat('Y-m-d', $dateStr) ?: new DateTime($dateStr);
-        return $date->format('Y-m-d\T00:00:00\Z');
+        $this->clientApi->ensureClientExists($landlordData, false);
+        return $this->clientApi->updateClient($landlordData);
     }
 
     private function prepareContractData(array $bitrixData, $landlordId, $apartmentId) {
-        $startDate = $this->formatDate($bitrixData['ufCrm10_1693823247516']);
-        $endDate = $this->formatDate($bitrixData['ufCrm10_1693823282826']);
-        
+        $startDateField = ProjectMapping::getLandlordContractField('start_date', $this->projectName);
+        $endDateField = ProjectMapping::getLandlordContractField('end_date', $this->projectName);
+        $workModelField = ProjectMapping::getLandlordContractField('work_model', $this->projectName);
+        $contractScanField = ProjectMapping::getLandlordContractField('contract_scan', $this->projectName);
+        $titleDeedField = ProjectMapping::getLandlordContractField('title_deed_scan', $this->projectName);
+        $pmlScanField = ProjectMapping::getLandlordContractField('pml_scan', $this->projectName);
+        $dtcmScanField = ProjectMapping::getLandlordContractField('dtcm_scan', $this->projectName);
+        $pmlStartField = ProjectMapping::getLandlordContractField('pml_start_date', $this->projectName);
+        $pmlEndField = ProjectMapping::getLandlordContractField('pml_end_date', $this->projectName);
+
+        $startRaw = $startDateField ? ($bitrixData[$startDateField] ?? '') : '';
+        $endRaw = $endDateField ? ($bitrixData[$endDateField] ?? '') : '';
+        if (empty($startRaw) || empty($endRaw)) {
+            throw new InvalidArgumentException('Landlord contract start_date and end_date are required');
+        }
+        $startDate = BaseApi::formatDateForAlma($startRaw);
+        $endDate = BaseApi::formatDateForAlma($endRaw);
+
         $contractData = [
             'external_id' => $bitrixData['id'],
             'unit_id' => $apartmentId,
@@ -122,70 +125,41 @@ class LandlordContractApi {
             'name' => $bitrixData['title'],
             'start_date' => $startDate,
             'end_date' => $endDate,
-            'work_model' => $this->mapWorkModel($bitrixData['ufCrm10_1708955821'] ?? ''),
+            'work_model' => $this->mapWorkModel($workModelField ? ($bitrixData[$workModelField] ?? '') : ''),
         ];
 
-        $contractScan = $this->uploadFile($bitrixData['ufCrm10_1709042143']['urlMachine'] ?? null);
-        if ($contractScan) {
-            $contractData['contract_with_client_scan'] = $contractScan;
+        $scanFields = [
+            $contractScanField => 'contract_with_client_scan',
+            $titleDeedField => 'property_title_deed_scan',
+            $pmlScanField => 'property_management_letter_scan',
+            $dtcmScanField => 'dtcm_permit_scan',
+        ];
+        foreach ($scanFields as $field => $almaKey) {
+            if (!$field) {
+                continue;
+            }
+            $url = is_array($bitrixData[$field] ?? null) ? ($bitrixData[$field]['urlMachine'] ?? null) : ($bitrixData[$field] ?? null);
+            $scanId = BaseApi::uploadImage($this->apiKey, $this->apiUrl, $url, 'Landlord contract document');
+            if ($scanId) {
+                $contractData[$almaKey] = $scanId;
+            }
         }
-
-        $titleDeedScan = $this->uploadFile($bitrixData['ufCrm10_1694000636731']['urlMachine'] ?? null);
-        if ($titleDeedScan) {
-            $contractData['property_title_deed_scan'] = $titleDeedScan;
+        if ($pmlStartField && !empty($bitrixData[$pmlStartField])) {
+            $contractData['pml_start_date'] = BaseApi::formatDateForAlma($bitrixData[$pmlStartField]);
         }
-
-        $pmlScan = $this->uploadFile($bitrixData['ufCrm10_1694000391518']['urlMachine'] ?? null);
-        if ($pmlScan) {
-            $contractData['property_management_letter_scan'] = $pmlScan;
-        }
-
-        $dtcmScan = $this->uploadFile($bitrixData['ufCrm10_1694000558852']['urlMachine'] ?? null);
-        if ($dtcmScan) {
-            $contractData['dtcm_permit_scan'] = $dtcmScan;
-        }
-
-        if (!empty($bitrixData['ufCrm10_1708956056'])) {
-            $contractData['pml_start_date'] = $this->formatDate($bitrixData['ufCrm10_1708956056']);
-        }
-        if (!empty($bitrixData['ufCrm10_1708955996'])) {
-            $contractData['pml_end_date'] = $this->formatDate($bitrixData['ufCrm10_1708955996']);
+        if ($pmlEndField && !empty($bitrixData[$pmlEndField])) {
+            $contractData['pml_end_date'] = BaseApi::formatDateForAlma($bitrixData[$pmlEndField]);
         }
 
         return $contractData;
     }
 
     private function mapWorkModel($bitrixType) {
-        $mappedType = ProjectMapping::mapWorkModel($bitrixType, $GLOBALS['projectName']);
+        $mappedType = ProjectMapping::mapWorkModel($bitrixType, $this->projectName);
         if ($mappedType === null) {
             throw new InvalidArgumentException("Unknown work model type: $bitrixType");
         }
         return $mappedType;
-    }
-
-    private function findApartmentInAlma($apartmentBitrixId) {
-        $url = $this->apiUrl . 'realty/units/external_id/' . $apartmentBitrixId . '/';
-        $response = $this->sendRequest('GET', $url);
-        return $response['id'];
-    }
-
-    private function uploadFile($fileUrl) {
-        if (empty($fileUrl)) {
-            return null;
-        }
-
-        $uploadUrl = $this->apiUrl . 'external-image/';
-        $fileData = [
-            'url' => $fileUrl,
-            'description' => 'Landlord contract document'
-        ];
-
-        try {
-            $response = $this->sendRequest('POST', $uploadUrl, $fileData);
-            return $response['id'] ?? null;
-        } catch (Exception $e) {
-            return null;
-        }
     }
 
     private function sendRequest($method, $url, $data = null) {
@@ -194,84 +168,71 @@ class LandlordContractApi {
     
 }
 
-try {
-    $almaApi = new LandlordContractApi();
-    $bitrix = new Bitrix24Rest(WEBHOOK_URL);
-    $GLOBALS['projectName'] = $projectName;
-
+function syncLandlordContractById($id, $projectName) {
+    Config::load();
+    Logger::setProject($projectName);
+    $projectConfig = ProjectMapping::getProjectConfig($projectName);
+    $webhookUrl = $projectConfig['webhook_url'];
+    $entityTypeId = ProjectMapping::getLandlordContractEntityTypeId($projectName);
+    if (!$entityTypeId) {
+        throw new InvalidArgumentException("Landlord contracts not supported for project: $projectName");
+    }
+    $bitrix = new Bitrix24Rest($webhookUrl);
+    $almaApi = new LandlordContractApi(
+        Config::get('ALMA_API_KEY'),
+        Config::get('ALMA_API_URL'),
+        $projectName,
+        $webhookUrl
+    );
     $contractResponse = $bitrix->call('crm.item.get', [
-        'entityTypeId' => 148,
-        'id' => $_GET['id'],
+        'entityTypeId' => $entityTypeId,
+        'id' => $id,
     ]);
-    $contractData = $contractResponse['result']['item'];
-
-    $contactResponse = $bitrix->call('crm.contact.get', ['id' => $contractData['contactId']]);
-    $contact = $contactResponse['result'];
-
-    $syncData = [
-        'id' => $contractData['id'],
-        'title' => $contractData['title'],
-        'apartment_id' => $contractData['ufCrm10_1693823301'] ?? '',
+    $contractData = $contractResponse['result']['item'] ?? null;
+    if (!$contractData) {
+        throw new RuntimeException('Failed to get landlord contract from Bitrix24');
+    }
+    $contactIdField = ProjectMapping::getLandlordContractField('contact_id', $projectName);
+    $contactId = $contractData[$contactIdField] ?? $contractData['contactId'] ?? null;
+    if (!$contactId) {
+        throw new InvalidArgumentException('Contact ID not found in landlord contract');
+    }
+    $contactResponse = $bitrix->call('crm.contact.get', ['id' => $contactId]);
+    $contact = $contactResponse['result'] ?? null;
+    if (!$contact) {
+        throw new RuntimeException('Failed to get contact from Bitrix24');
+    }
+    $emailField = ProjectMapping::getLandlordField('email', $projectName);
+    $syncData = array_merge($contractData, [
         'landlord_data' => [
             'id' => $contact['ID'],
             'first_name' => $contact['NAME'],
             'last_name' => $contact['LAST_NAME'],
-            'email' => $contact['UF_CRM_1727788747'] ?? '',
+            'email' => $contact[$emailField] ?? (is_array($contact['EMAIL'] ?? null) ? ($contact['EMAIL'][0]['VALUE'] ?? '') : ''),
             'phone' => $contact['PHONE'][0]['VALUE'] ?? '',
         ],
-        'ufCrm10_1693823247516' => $contractData['ufCrm10_1693823247516'] ?? '',
-        'ufCrm10_1693823282826' => $contractData['ufCrm10_1693823282826'] ?? '',
-        'ufCrm10_1694000435068' => $contractData['ufCrm10_1694000435068'] ?? null,
-        'ufCrm10_1694000558852' => $contractData['ufCrm10_1694000558852'] ?? null,
-        'ufCrm10_1694000391518' => $contractData['ufCrm10_1694000391518'] ?? null,
-        'ufCrm10_1694000636731' => $contractData['ufCrm10_1694000636731'] ?? null,
-        'ufCrm10_1709042143' => $contractData['ufCrm10_1709042143'] ?? null,
-        'ufCrm10_1708955821' => $contractData['ufCrm10_1708955821'] ?? '',
-        'ufCrm10_1708956056' => $contractData['ufCrm10_1708956056'] ?? '',
-        'ufCrm10_1708955996' => $contractData['ufCrm10_1708955996'] ?? '',
-    ];
-
+    ]);
     $result = $almaApi->syncContract($syncData);
-    $almaId = $result['response']['id'] ?? null;
-    $method = $result['method'] ?? 'unknown';
-    
     Logger::info('Landlord contract sync succeeded', [
-        'contract_id' => $_GET['id'],
-        'alma_id' => $almaId,
-        'method' => $method
-    ], 'landlord_contract', $_GET['id']);
-    
-    echo json_encode([
-        'success' => true,
-        'alma_id' => $almaId,
-        'method' => $method,
-        'operation' => $method === 'POST' ? 'created' : 'updated',
-        'data' => $result['response'] ?? $result
-    ]);
-
-} catch (InvalidArgumentException $e) {
-    http_response_code(400);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Validation error: ' . $e->getMessage()
-    ]);
-} catch (RuntimeException $e) {
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'message' => 'API error: ' . $e->getMessage()
-    ]);
-} catch (Exception $e) {
-    Logger::error("Unexpected error in landlord contract synchronization: " . $e->getMessage(), [
-        'exception_type' => get_class($e),
-        'file' => $e->getFile(),
-        'line' => $e->getLine(),
-        'trace' => $e->getTraceAsString()
-    ], 'landlord_contract', $_GET['id'] ?? 'unknown');
-    
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Unexpected error: Landlord contract synchronization failed'
-    ]);
+        'contract_id' => $id,
+        'alma_id' => $result['response']['id'] ?? null,
+        'method' => $result['method'] ?? 'unknown'
+    ], 'landlord_contract', $id);
+    return [
+        'code' => $result['code'],
+        'response' => $result['response'] ?? $result,
+        'method' => $result['method'] ?? 'unknown'
+    ];
 }
+
+if (isset($_GET['id'])) {
+    header('Content-Type: application/json');
+    $projectName = $_GET['project'] ?? 'Dubai';
+    try {
+        BaseApi::sendSuccessResponse(syncLandlordContractById($_GET['id'], $projectName));
+    } catch (Throwable $e) {
+        BaseApi::sendErrorResponse($e, 'Unexpected error: Landlord contract synchronization failed', 'landlord_contract', $_GET['id'] ?? null);
+    }
+    exit;
+}
+
