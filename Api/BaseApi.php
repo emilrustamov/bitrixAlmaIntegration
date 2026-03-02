@@ -43,28 +43,31 @@ class BaseApi {
 
         $decoded = (is_string($response) && $response !== '') ? json_decode($response, true) : null;
 
-        if ($throwOnError) {
-            if ($httpCode >= 400) {
-                $msg = "API request failed ($httpCode)";
-                if (is_array($decoded) && isset($decoded['detail'])) {
-                    $msg .= ': ' . (is_string($decoded['detail']) ? $decoded['detail'] : json_encode($decoded['detail']));
-                } elseif ($httpCode === 404) {
-                    $msg .= ': resource not found';
-                } elseif (is_string($response) && $response !== '' && !str_starts_with(trim($response), '<')) {
-                    $msg .= ': ' . substr($response, 0, 200);
-                }
-                throw new RuntimeException($msg, $httpCode);
-            }
-            if ($decoded === null && is_string($response) && $response !== '') {
-                throw new RuntimeException("Invalid JSON response: " . substr($response, 0, 200));
-            }
-            return $decoded;
+        if (!$throwOnError) {
+            return [
+                'code'     => $httpCode,
+                'response' => $decoded,
+            ];
         }
 
-        return [
-            'code'     => $httpCode,
-            'response' => $decoded,
-        ];
+        if ($httpCode >= 400) {
+            $msg = "API request failed ($httpCode)";
+            if (is_array($decoded) && isset($decoded['detail'])) {
+                $detail = $decoded['detail'];
+                $msg .= ': ' . (is_string($detail) ? $detail : json_encode($detail));
+            } elseif ($httpCode === 404) {
+                $msg .= ': resource not found';
+            } elseif (is_string($response) && $response !== '' && !str_starts_with(trim($response), '<')) {
+                $msg .= ': ' . substr($response, 0, 200);
+            }
+            throw new RuntimeException($msg, $httpCode);
+        }
+
+        if ($decoded === null && is_string($response) && $response !== '') {
+            throw new RuntimeException('Invalid JSON response: ' . substr($response, 0, 200));
+        }
+
+        return $decoded;
     }
 
     public static function sendErrorResponse($e, $msg, $entityType = 'api', $entityId = null, $extra = [])

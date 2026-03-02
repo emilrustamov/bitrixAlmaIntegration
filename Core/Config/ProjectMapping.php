@@ -1,4 +1,4 @@
-<?php
+составь<?php
 
 class ProjectMapping {
 
@@ -6,7 +6,7 @@ class ProjectMapping {
         $mappings = [
             'Dubai' => [
                 'entity_type_id' => 144,
-                'apartment_entity_type_ids' => [144, 1048],
+                'apartment_entity_type_ids' => [144],
                 'unit_entity_type_id' => 167,
                 'contract_entity_type_id' => 183,
                 'landlord_contract_entity_type_id' => 148,
@@ -271,7 +271,7 @@ class ProjectMapping {
                     'DT144_10:SUCCESS' => 'Успех'
                 ],
                 'archive_stage_ids' => ['DT144_10:FAIL', 'DT144_10:UC_XH6370'],
-                'allowed_stage_ids' => ['DT144_10:PREPARATION', 'DT144_10:CLIENT', '5980']
+                'allowed_stage_ids' => ['DT144_10:PREPARATION', 'DT144_10:CLIENT', '5980', '5974', 'Available']
             ],
             'HongKong' => [
                 'entity_type_id' => 1054,
@@ -378,7 +378,9 @@ class ProjectMapping {
                     '989' => 'Less than a month',
                     '991' => 'Short term from 1 to 3 months',
                     '993' => 'Long-term 3+ months',
-                    '995' => 'Ejari'
+                    '995' => 'Ejari',
+                    '1277' => 'Less than 1 month contract',
+                    '1279' => '1+ months',
                 ],
                 'no_invitation_contract_type_ids' => ['985', '995'],
                 'work_model_mapping' => [],

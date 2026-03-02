@@ -29,7 +29,7 @@ class RoomApi {
     }
 
     public function getUnitByExternalId($bitrixId) {
-        return BaseApi::fetchUnitByExternalId($this->apiKey, $this->apiUrl, (string)$bitrixId);
+        return BaseApi::fetchUnitByExternalId($this->apiKey, $this->apiUrl, (string) $bitrixId);
     }
 
     public function createOrUpdateRoom($data, $bitrixId) {
