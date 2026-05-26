@@ -7,14 +7,12 @@ require_once __DIR__ . '/../Core/Config/ProjectMapping.php';
 require_once __DIR__ . '/ClientApi.php';
 require_once __DIR__ . '/BaseApi.php';
 
-function syncContactById($id, $projectName, $contactType = 'tenant') {
+function syncContact($id, $projectName, $contactType = 'tenant') {
     Config::load();
     Logger::setProject($projectName);
-    $projectConfig = ProjectMapping::getProjectConfig($projectName);
-    $webhookUrl = $projectConfig['webhook_url'];
     $apiKey = Config::get('ALMA_API_KEY');
     $apiUrl = Config::get('ALMA_API_URL');
-    $bitrix = new Bitrix24Rest($webhookUrl);
+    $bitrix = new Bitrix24Rest(ProjectMapping::getProjectConfig($projectName)['webhook_url']);
     $clientApi = new ClientApi($apiKey, $apiUrl);
     $res = $bitrix->call('crm.contact.get', ['id' => $id]);
     if (!isset($res['result'])) {
@@ -46,12 +44,10 @@ if (isset($_GET['id'])) {
     header('Content-Type: application/json');
     $projectName = $_GET['project'] ?? 'Dubai';
     $type = $_GET['type'] ?? 'tenant';
-    if (!in_array($type, ['tenant', 'landlord'], true)) {
-        $type = 'tenant';
-    }
+    $type = in_array($type, ['tenant', 'landlord'], true) ? $type : 'tenant';
     $typeLabel = $type === 'landlord' ? 'Landlord' : 'Tenant';
     try {
-        BaseApi::sendSuccessResponse(syncContactById($_GET['id'], $projectName, $type));
+        BaseApi::sendSuccessResponse(syncContact($_GET['id'], $projectName, $type));
     } catch (Throwable $e) {
         BaseApi::sendErrorResponse($e, "Unexpected error: {$typeLabel} contact synchronization failed", 'contact', $_GET['id'] ?? null);
     }

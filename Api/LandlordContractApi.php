@@ -17,15 +17,13 @@ class LandlordContractApi {
     private $apiUrl;
     private $projectName;
     private $actionLogger;
-    private $bitrix;
     private $clientApi;
 
-    public function __construct($apiKey, $apiUrl, $projectName, $webhookUrl) {
+    public function __construct($apiKey, $apiUrl, $projectName) {
         $this->apiKey = $apiKey;
         $this->apiUrl = rtrim($apiUrl, '/') . '/';
         $this->projectName = $projectName;
         $this->actionLogger = new LandlordContractActionLogger();
-        $this->bitrix = new Bitrix24Rest($webhookUrl);
         $this->clientApi = new ClientApi($apiKey, $apiUrl);
     }
 
@@ -33,9 +31,9 @@ class LandlordContractApi {
         $apartmentIdField = ProjectMapping::getLandlordContractField('apartment_id', $this->projectName);
         $apartmentBitrixId = $apartmentIdField ? ($bitrixData[$apartmentIdField] ?? '') : '';
         $landlordId = $this->ensureLandlordExists($bitrixData['landlord_data']);
-        $apartmentId = BaseApi::getUnitIdByApartmentExternalId($this->apiKey, $this->apiUrl, $apartmentBitrixId);
+        $apartmentId = BaseApi::getUnitIdByAptExternalId($this->apiKey, $this->apiUrl, $apartmentBitrixId);
         
-        $contractData = $this->prepareContractData($bitrixData, $landlordId, $apartmentId);
+        $contractData = $this->buildContractData($bitrixData, $landlordId, $apartmentId);
         
         $existingContract = $this->getContractByExternalId($contractData['external_id']);
         
@@ -48,7 +46,7 @@ class LandlordContractApi {
 
     public function createContract(array $contractData) {
         $url = $this->apiUrl . 'realty/contracts/owner_contracts/';
-        $response = $this->sendRequest('POST', $url, $contractData);
+        $response = $this->request('POST', $url, $contractData);
         
         $this->actionLogger->logContractCreation(
             $response['id'],
@@ -72,7 +70,7 @@ class LandlordContractApi {
         unset($patchData['client_id']);
         
         $url = $this->apiUrl . 'realty/contracts/owner_contracts/' . $contractId . '/';
-        $response = $this->sendRequest('PATCH', $url, $patchData);
+        $response = $this->request('PATCH', $url, $patchData);
         
         $this->actionLogger->logUpdate(
             $contractId,
@@ -87,7 +85,7 @@ class LandlordContractApi {
     public function getContractByExternalId($externalId) {
         try {
             $url = $this->apiUrl . 'realty/contracts/owner_contracts/external_id/' . $externalId . '/';
-            return $this->sendRequest('GET', $url);
+            return $this->request('GET', $url);
         } catch (Exception $e) {
             return null;
         }
@@ -99,7 +97,7 @@ class LandlordContractApi {
         return $this->clientApi->updateClient($landlordData);
     }
 
-    private function prepareContractData(array $bitrixData, $landlordId, $apartmentId) {
+    private function buildContractData(array $bitrixData, $landlordId, $apartmentId) {
         $startDateField = ProjectMapping::getLandlordContractField('start_date', $this->projectName);
         $endDateField = ProjectMapping::getLandlordContractField('end_date', $this->projectName);
         $workModelField = ProjectMapping::getLandlordContractField('work_model', $this->projectName);
@@ -125,7 +123,7 @@ class LandlordContractApi {
             'name' => $bitrixData['title'],
             'start_date' => $startDate,
             'end_date' => $endDate,
-            'work_model' => $this->mapWorkModel($workModelField ? ($bitrixData[$workModelField] ?? '') : ''),
+            'work_model' => $this->mapWork($workModelField ? ($bitrixData[$workModelField] ?? '') : ''),
         ];
 
         $scanFields = [
@@ -154,7 +152,7 @@ class LandlordContractApi {
         return $contractData;
     }
 
-    private function mapWorkModel($bitrixType) {
+    private function mapWork($bitrixType) {
         $mappedType = ProjectMapping::mapWorkModel($bitrixType, $this->projectName);
         if ($mappedType === null) {
             throw new InvalidArgumentException("Unknown work model type: $bitrixType");
@@ -162,13 +160,13 @@ class LandlordContractApi {
         return $mappedType;
     }
 
-    private function sendRequest($method, $url, $data = null) {
+    private function request($method, $url, $data = null) {
         return BaseApi::sendRequest($this->apiKey, $method, $url, $data, true);
     }
     
 }
 
-function syncLandlordContractById($id, $projectName) {
+function syncLandlordContract($id, $projectName) {
     Config::load();
     Logger::setProject($projectName);
     $projectConfig = ProjectMapping::getProjectConfig($projectName);
@@ -181,8 +179,7 @@ function syncLandlordContractById($id, $projectName) {
     $almaApi = new LandlordContractApi(
         Config::get('ALMA_API_KEY'),
         Config::get('ALMA_API_URL'),
-        $projectName,
-        $webhookUrl
+        $projectName
     );
     $contractResponse = $bitrix->call('crm.item.get', [
         'entityTypeId' => $entityTypeId,
@@ -229,7 +226,7 @@ if (isset($_GET['id'])) {
     header('Content-Type: application/json');
     $projectName = $_GET['project'] ?? 'Dubai';
     try {
-        BaseApi::sendSuccessResponse(syncLandlordContractById($_GET['id'], $projectName));
+        BaseApi::sendSuccessResponse(syncLandlordContract($_GET['id'], $projectName));
     } catch (Throwable $e) {
         BaseApi::sendErrorResponse($e, 'Unexpected error: Landlord contract synchronization failed', 'landlord_contract', $_GET['id'] ?? null);
     }

@@ -5,6 +5,7 @@ require_once __DIR__ . '/../Core/Config/Config.php';
 require_once __DIR__ . '/../Core/Config/ProjectMapping.php';
 require_once __DIR__ . '/../Core/Bitrix24Rest.php';
 require_once __DIR__ . '/BaseApi.php';
+require_once __DIR__ . '/ListSyncHelpers.php';
 define('SKIP_TENANT_CONTRACT_ENTRY', true);
 require_once __DIR__ . '/TenantContractApi.php';
 
@@ -13,27 +14,7 @@ Config::load();
 const TERMINATION_LIST_ENTITY_ID = 'PROPERTY_1626';
 const TERMINATION_LIST_STATUS = 'PROPERTY_1628';
 
-function normalizeBitrixEntityId($value) {
-    if ($value === null || $value === '') {
-        return null;
-    }
-    $s = trim((string) $value);
-    if (preg_match('/^T\d+_(\d+)$/', $s, $m)) {
-        return (int) $m[1];
-    }
-    return is_numeric($s) ? (int) $s : null;
-}
-
-function firstListPropValue(array $element, $key) {
-    $prop = $element[$key] ?? null;
-    if (!is_array($prop) || $prop === []) {
-        return null;
-    }
-    $v = reset($prop);
-    return $v === false ? null : (string) $v;
-}
-
-function syncTerminationForApartment($projectName, $apartmentBitrixId, array $apartmentData) {
+function syncTerminationForApt($projectName, $apartmentBitrixId, array $apartmentData) {
     $dateField = ProjectMapping::getApartmentField('date_of_refused', $projectName);
     if ($dateField === null) {
         return;
@@ -67,7 +48,7 @@ function syncTerminationForApartment($projectName, $apartmentBitrixId, array $ap
         return;
     }
     try {
-        $almaUnitId = BaseApi::getUnitIdByApartmentExternalId(Config::get('ALMA_API_KEY'), Config::get('ALMA_API_URL'), $apartmentBitrixId);
+        $almaUnitId = BaseApi::getUnitIdByAptExternalId(Config::get('ALMA_API_KEY'), Config::get('ALMA_API_URL'), $apartmentBitrixId);
     } catch (Throwable $e) {
         Logger::warning('Termination sync skipped: apartment not in Alma', ['apartment_id' => $apartmentBitrixId, 'error' => $e->getMessage()], 'termination', $apartmentBitrixId);
         return;
@@ -97,11 +78,11 @@ function syncTerminationForApartment($projectName, $apartmentBitrixId, array $ap
         $projectName,
         $projectConfig['webhook_url']
     );
-    $api->createOrUpdateBlockingContract($syncData);
+    $api->upsertBlockingContract($syncData);
     Logger::info('Termination contract synced', ['apartment_id' => $apartmentBitrixId, 'start_date' => $startDate, 'end_date' => $endDate], 'termination', $apartmentBitrixId);
 }
 
-function syncTerminationByListElement($projectName, array $element) {
+function syncTerminationElement($projectName, array $element) {
     $elementId = (string) ($element['ID'] ?? '');
     $eventType = trim((string) firstListPropValue($element, TERMINATION_LIST_STATUS));
     $expectedEventType = ProjectMapping::getTerminationListEventType($projectName);
@@ -130,11 +111,11 @@ function syncTerminationByListElement($projectName, array $element) {
     if ($apartmentData === null) {
         throw new RuntimeException('Apartment not found: ' . $apartmentBitrixId);
     }
-    syncTerminationForApartment($projectName, (string) $apartmentIdForApi, $apartmentData);
+    syncTerminationForApt($projectName, (string) $apartmentIdForApi, $apartmentData);
     return ['code' => 200, 'response' => [], 'method' => 'NONE'];
 }
 
-function syncTerminationById($listElementId, $projectName) {
+function syncTermination($listElementId, $projectName) {
     Config::load();
     Logger::setProject($projectName);
     $listElementId = trim($listElementId);
@@ -158,14 +139,14 @@ function syncTerminationById($listElementId, $projectName) {
     if (empty($element)) {
         throw new RuntimeException('List element not found');
     }
-    return syncTerminationByListElement($projectName, $element);
+    return syncTerminationElement($projectName, $element);
 }
 
 if (isset($_REQUEST['id']) && !defined('TERMINATION_SKIP_ENTRY')) {
     header('Content-Type: application/json');
     $projectName = $_REQUEST['project'] ?? 'Dubai';
     try {
-        $result = syncTerminationById(trim((string) $_REQUEST['id']), $projectName);
+        $result = syncTermination(trim((string) $_REQUEST['id']), $projectName);
         BaseApi::sendSuccessResponse($result);
     } catch (Throwable $e) {
         BaseApi::sendErrorResponse($e, 'Termination sync failed', 'termination', $_REQUEST['id'] ?? null);

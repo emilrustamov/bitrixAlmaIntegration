@@ -11,8 +11,8 @@ class ClientApi {
         $this->apiUrl = rtrim($apiUrl, '/') . '/';
     }
 
-    public function updateClient(array $clientData) {
-        $id = $this->ensureClientExists($clientData, true);
+    public function updateClient(array $clientData, $sendInvitation = true) {
+        $id = $this->ensureClientExists($clientData, $sendInvitation);
         $payload = array_intersect_key($clientData, array_flip(['first_name', 'last_name', 'phone', 'email']));
         if ($payload !== []) {
             BaseApi::sendRequest($this->apiKey, 'PATCH', $this->apiUrl . 'users/clients/' . $id . '/', $payload);

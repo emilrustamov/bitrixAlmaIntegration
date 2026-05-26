@@ -5,6 +5,7 @@ require_once __DIR__ . '/../Core/Config/Config.php';
 require_once __DIR__ . '/../Core/Config/ProjectMapping.php';
 require_once __DIR__ . '/../Core/Bitrix24Rest.php';
 require_once __DIR__ . '/BaseApi.php';
+require_once __DIR__ . '/ListSyncHelpers.php';
 define('SKIP_TENANT_CONTRACT_ENTRY', true);
 require_once __DIR__ . '/TenantContractApi.php';
 
@@ -19,26 +20,6 @@ const BLOCKING_LIST_REASON = 'PROPERTY_1636';
 const BLOCKING_LIST_STATUS = 'PROPERTY_1628';
 const BLOCKING_LIST_EVENT_TYPE_BLOCKING = 'Блокировка';
 
-function normalizeBitrixEntityId($value) {
-    if ($value === null || $value === '') {
-        return null;
-    }
-    $s = trim((string) $value);
-    if (preg_match('/^T\d+_(\d+)$/', $s, $m)) {
-        return (int) $m[1];
-    }
-    return is_numeric($s) ? (int) $s : null;
-}
-
-function firstListPropValue(array $element, $key) {
-    $prop = $element[$key] ?? null;
-    if (!is_array($prop) || $prop === []) {
-        return null;
-    }
-    $v = reset($prop);
-    return $v === false ? null : (string) $v;
-}
-
 function normalizeListDate($value) {
     if ($value === null || trim($value) === '') {
         return null;
@@ -47,11 +28,10 @@ function normalizeListDate($value) {
     return $dt ? $dt->format('Y-m-d') : null;
 }
 
-function syncBlockingByListElement($projectName, array $element, array &$debugPayload, $debugOnly = false) {
+function syncBlockingByListElement($projectName, array $element, $debugOnly = false) {
     $mapping = ProjectMapping::getFieldMapping($projectName);
     $elementId = (string) ($element['ID'] ?? '');
     $typeOfSmart = firstListPropValue($element, BLOCKING_LIST_TYPE);
-    $entityId = firstListPropValue($element, BLOCKING_LIST_ENTITY_ID);
     $startDate = normalizeListDate(firstListPropValue($element, BLOCKING_LIST_START));
     $status = firstListPropValue($element, BLOCKING_LIST_STATUS);
     $statusCanceled = $mapping['blocking_list_status_canceled'] ?? null;
@@ -107,7 +87,7 @@ function syncBlockingByListElement($projectName, array $element, array &$debugPa
         Logger::warning('Blocking sync skipped: no apartment in list element', ['list_id' => $elementId], 'blocking', $elementId);
         return ['code' => 400, 'response' => ['skipped' => true], 'method' => 'NONE'];
     }
-    $unitId = $tenantContractApi->findAlmaUnitIdByApartmentExternalId($entityId);
+    $unitId = $tenantContractApi->findUnitIdByAptExternalId($entityId);
     $syncData = [
         'id' => $externalId,
         'title' => 'Blocking',
@@ -120,7 +100,6 @@ function syncBlockingByListElement($projectName, array $element, array &$debugPa
     ];
 
     Logger::info('Blocking sync payload', ['external_id' => $externalId, 'entity_id' => $entityId], 'blocking', $elementId);
-    $debugPayload = $syncData;
     if ($debugOnly) {
         return ['code' => 200, 'response' => $syncData, 'method' => 'DEBUG'];
     }
@@ -137,7 +116,7 @@ function syncBlockingByListElement($projectName, array $element, array &$debugPa
                 'contract_type' => '0000 → mapContractType → Blocking',
             ],
         ];
-        $result = $tenantContractApi->createOrUpdateBlockingContract($syncData);
+        $result = $tenantContractApi->upsertBlockingContract($syncData);
         Logger::info('Blocking contract synced', ['external_id' => $externalId], 'blocking', $elementId);
         return $result;
     } catch (Throwable $e) {
@@ -146,7 +125,7 @@ function syncBlockingByListElement($projectName, array $element, array &$debugPa
     }
 }
 
-function syncBlockingById($listElementId, $projectName, $debugOnly = false) {
+function syncBlocking($listElementId, $projectName, $debugOnly = false) {
     Config::load();
     Logger::setProject($projectName);
     $listElementId = trim($listElementId);
@@ -170,8 +149,7 @@ function syncBlockingById($listElementId, $projectName, $debugOnly = false) {
     if (empty($element)) {
         throw new RuntimeException('List element not found');
     }
-    $debugPayload = [];
-    return syncBlockingByListElement($projectName, $element, $debugPayload, $debugOnly);
+    return syncBlockingByListElement($projectName, $element, $debugOnly);
 }
 
 if (isset($_REQUEST['id'])) {
@@ -179,7 +157,7 @@ if (isset($_REQUEST['id'])) {
     $projectName = $_REQUEST['project'] ?? 'Dubai';
     $debugOnly = isset($_REQUEST['debug']);
     try {
-        BaseApi::sendSuccessResponse(syncBlockingById(trim((string) $_REQUEST['id']), $projectName, $debugOnly));
+        BaseApi::sendSuccessResponse(syncBlocking(trim((string) $_REQUEST['id']), $projectName, $debugOnly));
     } catch (Throwable $e) {
         $extra = [];
         if (isset($GLOBALS['_blocking_last_sync_payload'])) {

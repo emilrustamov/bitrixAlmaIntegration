@@ -17,25 +17,15 @@ class UnitApi {
         $this->apiUrl = rtrim($apiUrl, '/') . '/';
     }
     
-    public function getRentalObject($bitrixId) {
+    public function getRoomByExternalId($bitrixId) {
         $url = rtrim($this->apiUrl, '/') . '/realty/rooms/external_id/' . rawurlencode((string)$bitrixId) . '/';
         return BaseApi::sendRequest($this->apiKey, 'GET', $url, null, false);
     }
     
-    public function createRoom($data) {
-        $endpoint = 'rooms/';
-        $response = $this->call('POST', $endpoint, $data, true);
-        $response['method'] = 'POST';
-        return $response;
-    }
-    
-    public function createOrUpdateRoom($data, $bitrixId) {
-        $rentalObject = $this->getRentalObject($bitrixId);
+    public function upsertRoom($data, $bitrixId) {
+        $rentalObject = $this->getRoomByExternalId($bitrixId);
         
         if (($rentalObject['code'] ?? 0) === 200 && !empty($rentalObject['response']['id'])) {
-            $targetId = $rentalObject['response']['id'];
-            $endpoint = 'rooms/' . $targetId . '/';
-            
             $patchData = $data;
             if (isset($patchData['parent_unit']) && is_array($patchData['parent_unit'])) {
                 $patchData['parent_unit'] = $patchData['parent_unit']['id'] ?? null;
@@ -47,13 +37,12 @@ class UnitApi {
                 $patchData['name'] = $data['name'] ?? ('Room ' . $bitrixId);
             }
             
-            $response = $this->call('PATCH', $endpoint, $patchData, true);
+            $response = $this->call('PATCH', 'rooms/' . $rentalObject['response']['id'] . '/', $patchData, true);
             $response['method'] = 'PATCH';
             return $response;
         }
         
-        $endpoint = 'rooms/';
-        $response = $this->call('POST', $endpoint, $data, true);
+        $response = $this->call('POST', 'rooms/', $data, true);
         $response['method'] = 'POST';
         
         return $response;

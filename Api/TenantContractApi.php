@@ -31,23 +31,23 @@ class TenantContractApi {
     }
 
     public function syncContract(array $bitrixData) {
-        if ($this->shouldArchiveContract($bitrixData, $this->projectName)) {
+        if ($this->shouldArchive($bitrixData, $this->projectName)) {
             return $this->archiveContractByExternalId(
                 $bitrixData['id'] ?? $bitrixData['external_id'] ?? $bitrixData['ID'] ?? null
             );
         }
         
-        $contractType = $this->validateContractType($bitrixData, $this->projectName);
+        $contractType = $this->requireContractType($bitrixData, $this->projectName);
         $clientId = isset($bitrixData['client_id'])
             ? (string) $bitrixData['client_id']
             : $this->ensureClientExists($bitrixData['client_data'], $contractType);
         $unitId = $this->findAlmaObjectById($bitrixData['unit_external_id']);
         
-        $contractData = $this->prepareContractData($bitrixData, $clientId, $unitId);
+        $contractData = $this->buildContractData($bitrixData, $clientId, $unitId);
         
         $unitBitrixId = $bitrixData['unit_external_id'] ?? null;
         if ($unitBitrixId !== null && $unitBitrixId !== '') {
-            $terminationDate = $this->getApartmentTerminationDate((string) $unitBitrixId);
+            $terminationDate = $this->getTerminationDate((string) $unitBitrixId);
             if ($terminationDate !== null) {
                 $contractEnd = substr($contractData['end_date'], 0, 10);
                 if ($contractEnd > $terminationDate) {
@@ -58,34 +58,33 @@ class TenantContractApi {
             }
         }
         
-        $existingContract = $this->getContractByExternalId($contractData['external_id']);
+        $existing = $this->getContractByExternalId($contractData['external_id']);
         
-        if ($existingContract && !($existingContract['unit_usage']['is_archived'] ?? false)) {
-            return $this->updateContract($existingContract['id'], $contractData);
-        } else {
-            return $this->createContract($contractData);
+        if ($existing && !($existing['unit_usage']['is_archived'] ?? false)) {
+            return $this->updateContract($existing['id'], $contractData);
         }
-    }
-
-    public function createContractOnly(array $bitrixData) {
-        $contractType = $this->validateContractType($bitrixData, $this->projectName);
-        $clientId = isset($bitrixData['client_id'])
-            ? (string) $bitrixData['client_id']
-            : $this->ensureClientExists($bitrixData['client_data'], $contractType);
-        $unitId = $this->resolveUnitIdFromSyncData($bitrixData);
-        $contractData = $this->prepareContractData($bitrixData, $clientId, $unitId);
         return $this->createContract($contractData);
     }
 
-    public function createOrUpdateBlockingContract(array $syncData) {
+    public function createContractOnly(array $bitrixData) {
+        $contractType = $this->requireContractType($bitrixData, $this->projectName);
+        $clientId = isset($bitrixData['client_id'])
+            ? (string) $bitrixData['client_id']
+            : $this->ensureClientExists($bitrixData['client_data'], $contractType);
+        $unitId = $this->resolveUnitId($bitrixData);
+        $contractData = $this->buildContractData($bitrixData, $clientId, $unitId);
+        return $this->createContract($contractData);
+    }
+
+    public function upsertBlockingContract(array $syncData) {
         $externalId = $syncData['id'] ?? null;
         if ($externalId === null || $externalId === '') {
             return $this->createContractOnly($syncData);
         }
         $existing = $this->getContractByExternalId($externalId);
         if ($existing && !($existing['unit_usage']['is_archived'] ?? false)) {
-            $unitId = $this->resolveUnitIdFromSyncData($syncData);
-            $contractData = $this->prepareContractData($syncData, (string) $syncData['client_id'], $unitId);
+            $unitId = $this->resolveUnitId($syncData);
+            $contractData = $this->buildContractData($syncData, (string) $syncData['client_id'], $unitId);
             return $this->updateContract($existing['id'], $contractData);
         }
         return $this->createContractOnly($syncData);
@@ -95,7 +94,8 @@ class TenantContractApi {
         $url = $this->apiUrl . 'realty/contracts/tenant_contracts/';
         
         try {
-            $response = $this->sendRequest('POST', $url, $contractData);
+            $response = $this->request('POST', $url, $contractData);
+            $response['paying_party'] = $contractData['paying_party'] ?? '';
             $this->actionLogger->logContractCreation(
                 $response['id'],
                 $contractData['name'] ?? '',
@@ -111,13 +111,13 @@ class TenantContractApi {
             return ['code' => 201, 'response' => $response, 'method' => 'POST'];
         } catch (RuntimeException $e) {
             if (str_contains($e->getMessage(), 'intersection')) {
-                $existingContract = $this->getContractByExternalId($contractData['external_id']);
-                if ($existingContract) {
+                $existing = $this->getContractByExternalId($contractData['external_id']);
+                if ($existing) {
                     Logger::info('Contract already exists, updating instead of creating', [
                         'external_id' => $contractData['external_id'],
-                        'alma_id' => $existingContract['id'] ?? null
+                        'alma_id' => $existing['id'] ?? null
                     ], 'contract', $contractData['external_id']);
-                    return $this->updateContract($existingContract['id'], $contractData);
+                    return $this->updateContract($existing['id'], $contractData);
                 }
             }
             throw $e;
@@ -131,8 +131,8 @@ class TenantContractApi {
         unset($patchData['client_id']);
         
         $url = $this->apiUrl . 'realty/contracts/tenant_contracts/' . $contractId . '/';
-        $response = $this->sendRequest('PATCH', $url, $patchData);
-        
+        $response = $this->request('PATCH', $url, $patchData);
+        $response['paying_party'] = $contractData['paying_party'] ?? '';
         $this->actionLogger->logUpdate(
             $contractId,
             $contractData['name'] ?? '',
@@ -146,7 +146,7 @@ class TenantContractApi {
     public function getContractByExternalId($externalId) {
         try {
             $url = $this->apiUrl . 'realty/contracts/tenant_contracts/external_id/' . $externalId . '/';
-            return $this->sendRequest('GET', $url);
+            return $this->request('GET', $url);
         } catch (Exception $e) {
             return null;
         }
@@ -156,7 +156,7 @@ class TenantContractApi {
         $isAirbnb = ProjectMapping::getAirbnbContractTypeId($this->projectName) === (string) $contractType;
         
         if (empty($clientData['email']) && $isAirbnb) {
-            $clientData['email'] = $this->generateAirbnbEmail($clientData['first_name'] ?? '', $clientData['last_name'] ?? '');
+            $clientData['email'] = $this->buildAirbnbEmail($clientData['first_name'] ?? '', $clientData['last_name'] ?? '');
         }
         
         if ($isAirbnb && !empty($clientData['last_name'])) {
@@ -173,19 +173,20 @@ class TenantContractApi {
         return $this->clientApi->updateClient($clientData);
     }
 
-    private function prepareContractData(array $bitrixData, $clientId, $unitId) {
-        $projectName = $this->projectName;
-        $startDateField = ProjectMapping::getContractField('start_date', $projectName);
-        $endDateField = ProjectMapping::getContractField('end_date', $projectName);
-        $contractTypeField = ProjectMapping::getContractField('contract_type', $projectName);
-        $historyField = ProjectMapping::getContractField('history', $projectName);
-        $contractScanField = ProjectMapping::getContractField('contract_scan', $projectName);
-        
+    private function buildContractData(array $bitrixData, $clientId, $unitId) {
+        $startDateField = ProjectMapping::getContractField('start_date', $this->projectName);
+        $endDateField = ProjectMapping::getContractField('end_date', $this->projectName);
+        $contractTypeField = ProjectMapping::getContractField('contract_type', $this->projectName);
+        $historyField = ProjectMapping::getContractField('history', $this->projectName);
+        $contractScanField = ProjectMapping::getContractField('contract_scan', $this->projectName);
+        $payingPartyField = ProjectMapping::getContractField('paying_party', $this->projectName);
+
         $startDate = BaseApi::formatDateForAlma($bitrixData[$startDateField] ?? '');
         $endDate = BaseApi::formatDateForAlma($bitrixData[$endDateField] ?? '');
         
         $contractType = $bitrixData[$contractTypeField] ?? '';
-        $isAirbnb = ProjectMapping::getAirbnbContractTypeId($projectName) === (string)$contractType;
+        $typeContract = ProjectMapping::mapContractType($contractType, $this->projectName);
+        $isAirbnb = ProjectMapping::getAirbnbContractTypeId($this->projectName) === (string)$contractType;
         $rawPrice = $bitrixData['opportunity'] ?? 0;
         $numericPrice = is_numeric($rawPrice) ? (float)$rawPrice : 0.0;
         $price = $isAirbnb ? '0.00' : number_format($numericPrice, 2, '.', '');
@@ -198,7 +199,8 @@ class TenantContractApi {
             'start_date' => $startDate,
             'end_date' => $endDate,
             'price' => $price,
-            'type_contract' => ProjectMapping::mapContractType($contractType, $projectName),
+            'type_contract' => $typeContract,
+            'rent_type' => $typeContract === 'Ejari' ? 'long_term' : 'short_term',
         ];
 
         if ($historyField && !empty($bitrixData[$historyField])) {
@@ -218,11 +220,15 @@ class TenantContractApi {
             }
         }
 
+        if ($payingPartyField) {
+            $contractData['paying_party'] = trim((string)($bitrixData[$payingPartyField] ?? ''));
+        }
+
         return $contractData;
     }
 
 
-    private function generateAirbnbEmail($firstName, $lastName) {
+    private function buildAirbnbEmail($firstName, $lastName) {
         $first = mb_strtolower(trim($firstName));
         $last = mb_strtolower(trim($lastName));
         
@@ -242,22 +248,20 @@ class TenantContractApi {
         return "{$username}@airbnb.colife";
     }
 
-    private function sendRequest($method, $url, $data = null) {
+    private function request($method, $url, $data = null) {
         return BaseApi::sendRequest($this->apiKey, $method, $url, $data, true);
     }
 
-    private function validateContractType(array $bitrixData, $projectName) {
+    private function requireContractType(array $bitrixData, $projectName) {
         $contractTypeField = ProjectMapping::getContractField('contract_type', $projectName);
         $contractType = $bitrixData[$contractTypeField] ?? '';
         if (ProjectMapping::mapContractType($contractType, $projectName) === null) {
-            throw new InvalidArgumentException((string)$contractType === '8672'
-                ? "Ejari contracts are not synchronized to Alma"
-                : "Unknown contract type: $contractType");
+            throw new InvalidArgumentException("Unknown contract type: $contractType");
         }
         return $contractType;
     }
 
-    private function resolveUnitIdFromSyncData(array $syncData) {
+    private function resolveUnitId(array $syncData) {
         $unitId = $syncData['unit_id'] ?? null;
         if ($unitId !== null && $unitId !== '') {
             return (string) $unitId;
@@ -278,11 +282,11 @@ class TenantContractApi {
         return $result['response']['id'];
     }
 
-    public function findAlmaUnitIdByApartmentExternalId($apartmentExternalId) {
-        return BaseApi::getUnitIdByApartmentExternalId($this->apiKey, $this->apiUrl, $apartmentExternalId);
+    public function findUnitIdByAptExternalId($apartmentExternalId) {
+        return BaseApi::getUnitIdByAptExternalId($this->apiKey, $this->apiUrl, $apartmentExternalId);
     }
 
-    public function getApartmentTerminationDate($unitOrApartmentBitrixId) {
+    public function getTerminationDate($unitOrApartmentBitrixId) {
         $projectName = $this->projectName;
         $unitEntityTypeId = ProjectMapping::getUnitEntityTypeId($projectName);
         $apartmentTypeIds = ProjectMapping::getApartmentEntityTypeIds($projectName);
@@ -341,12 +345,16 @@ class TenantContractApi {
         return $dt ? $dt->format('Y-m-d') : null;
     }
 
-    private function shouldArchiveContract(array $bitrixData, $projectName) {
+    private function shouldArchive(array $bitrixData, $projectName) {
         if ($projectName !== 'Dubai') {
             return false;
         }
-        $failureStage = ProjectMapping::getFailureStageId($projectName);
-        return $failureStage && (($bitrixData['stageId'] ?? null) === $failureStage);
+        $stageIds = ProjectMapping::getTenantContractArchiveStageIds($projectName);
+        if ($stageIds === []) {
+            return false;
+        }
+        $current = $bitrixData['stageId'] ?? null;
+        return $current !== null && in_array((string) $current, $stageIds, true);
     }
     
     public function archiveContractByExternalId($externalId) {
@@ -354,7 +362,7 @@ class TenantContractApi {
             throw new InvalidArgumentException('Contract external id is required for archiving');
         }
         
-        $response = $this->sendRequest(
+        $response = $this->request(
             'PATCH',
             $this->apiUrl . 'realty/contracts/tenant_contracts/external_id/' . $externalId . '/archive/',
             ['is_archived' => true]
@@ -368,7 +376,7 @@ class TenantContractApi {
 }
 
 
-function syncTenantContractById($id, $projectName) {
+function syncTenantContract($id, $projectName) {
     Config::load();
     Logger::setProject($projectName);
     $projectConfig = ProjectMapping::getProjectConfig($projectName);
@@ -380,26 +388,28 @@ function syncTenantContractById($id, $projectName) {
         $webhookUrl
     );
     $bitrix = new Bitrix24Rest($webhookUrl);
-    $contractEntityTypeId = ProjectMapping::getContractEntityTypeId($projectName);
+    $contractTypeId = ProjectMapping::getContractEntityTypeId($projectName);
 
-    $contractResponse = $bitrix->call('crm.item.get', [
-        'entityTypeId' => $contractEntityTypeId,
+    $contractRes = $bitrix->call('crm.item.get', [
+        'entityTypeId' => $contractTypeId,
         'id' => $id,
     ]);
-    $contractData = $contractResponse['result']['item'];
+    $contractData = $contractRes['result']['item'];
 
     $contactId = $contractData['contactId'] ?? $contractData['CONTACT_ID'] ?? null;
-    $contactResponse = $bitrix->call('crm.contact.get', ['id' => $contactId]);
-    $contact = $contactResponse['result'];
+    $contactRes = $bitrix->call('crm.contact.get', ['id' => $contactId]);
+    $contact = $contactRes['result'];
 
     $startDateField = ProjectMapping::getContractField('start_date', $projectName);
     $endDateField = ProjectMapping::getContractField('end_date', $projectName);
     $historyField = ProjectMapping::getContractField('history', $projectName);
-    $contractTypeField = ProjectMapping::getContractField('contract_type', $projectName);
-    $contractScanField = ProjectMapping::getContractField('contract_scan', $projectName);
-    
-    $email = is_array($contact['EMAIL']) ? ($contact['EMAIL'][0]['VALUE'] ?? '') : '';
-    
+    $typeField = ProjectMapping::getContractField('contract_type', $projectName);
+    $scanField = ProjectMapping::getContractField('contract_scan', $projectName);
+    $payerField = ProjectMapping::getContractField('paying_party', $projectName);
+
+    $emailRaw = $contact['EMAIL'] ?? null;
+    $email = is_array($emailRaw) ? ($emailRaw[0]['VALUE'] ?? '') : '';
+
     $syncData = [
         'id' => $contractData['id'] ?? $id,
         'title' => $contractData['title'],
@@ -410,7 +420,7 @@ function syncTenantContractById($id, $projectName) {
             'first_name' => $contact['NAME'],
             'last_name' => $contact['LAST_NAME'],
             'email' => $email,
-            'phone' => $contact['PHONE'][0]['VALUE'] ?? '',
+            'phone' => (is_array($contact['PHONE'] ?? null) ? ($contact['PHONE'][0]['VALUE'] ?? '') : ''),
         ],
         'opportunity' => $contractData['opportunity'] ?? 0,
     ];
@@ -418,8 +428,9 @@ function syncTenantContractById($id, $projectName) {
     if ($startDateField) $syncData[$startDateField] = $contractData[$startDateField] ?? '';
     if ($endDateField) $syncData[$endDateField] = $contractData[$endDateField] ?? '';
     if ($historyField) $syncData[$historyField] = $contractData[$historyField] ?? '';
-    if ($contractTypeField) $syncData[$contractTypeField] = $contractData[$contractTypeField] ?? '';
-    if ($contractScanField) $syncData[$contractScanField] = $contractData[$contractScanField] ?? null;
+    if ($typeField) $syncData[$typeField] = $contractData[$typeField] ?? '';
+    if ($scanField) $syncData[$scanField] = $contractData[$scanField] ?? null;
+    if ($payerField) $syncData[$payerField] = $contractData[$payerField] ?? '';
 
     $result = $almaApi->syncContract($syncData);
     Logger::info('Contract sync succeeded', [
@@ -438,7 +449,7 @@ if (!defined('SKIP_TENANT_CONTRACT_ENTRY') && isset($_GET['id'])) {
     header('Content-Type: application/json');
     $projectName = $_GET['project'] ?? 'Dubai';
     try {
-        BaseApi::sendSuccessResponse(syncTenantContractById($_GET['id'], $projectName));
+        BaseApi::sendSuccessResponse(syncTenantContract($_GET['id'], $projectName));
     } catch (Throwable $e) {
         BaseApi::sendErrorResponse($e, 'Unexpected error: Contract synchronization failed', 'contract', $_GET['id'] ?? null);
     }

@@ -30,12 +30,7 @@ class AppartApi {
         return BaseApi::sendRequest($this->apiKey, $method, $url, $isPost ? $data : null, false);
     }
 
-    public function getRentalObject($bitrixId) {
-        $url = rtrim($this->apiUrl, '/') . '/realty/rental_object/' . rawurlencode((string)$bitrixId) . '/';
-        return BaseApi::sendRequest($this->apiKey, 'GET', $url, null, false);
-    }
-
-    public function createOrUpdateApartment($data, $bitrixId) {
+    public function upsertApartment($data, $bitrixId) {
         if (isset($data['building']) && is_array($data['building'])) {
             $data['building'] = $data['building']['id'];
         }
@@ -56,12 +51,11 @@ class AppartApi {
                 $oldData = $unit;
             }
         }
-        if ($targetId) {
+        if ($targetId !== null) {
             $patchData = $data;
             if (!isset($patchData['name']) || (string)$patchData['name'] === '') {
                 $patchData['name'] = $data['name'] ?? ('Apartment ' . $bitrixId);
             }
-            $patchData['building'] = $patchData['building'] ?? $data['building'];
             if (array_key_exists('is_used_additional_external_id', $data)) {
                 $patchData['is_used_additional_external_id'] = $data['is_used_additional_external_id'];
             }
@@ -111,7 +105,7 @@ class AppartApi {
     }
 
 
-    public function createOrGetBuilding($buildingName) {
+    public function getOrCreateBuilding($buildingName) {
         $response = $this->call('GET', 'buildings/', [], false);
 
         if ($response['code'] === 200 && !empty($response['response'])) {
@@ -130,10 +124,6 @@ class AppartApi {
         }
 
         throw new RuntimeException('Failed to create building: ' . json_encode($response));
-    }
-
-    public function getActionLogger() {
-        return $this->actionLogger;
     }
 
     public function getUnitByExternalId($bitrixId) {
@@ -155,14 +145,14 @@ class AppartApi {
         return (($response['code'] ?? 0) === 200) ? ($response['response'] ?? null) : null;
     }
 
-    public function tryArchiveBuildingIfAllUnitsArchived($buildingId) {
+    public function archiveBuildingIfEmpty($buildingId) {
         $building = $this->getBuilding($buildingId);
         if ($building !== null && (int)($building['number_of_units'] ?? -1) === 0) {
             $this->setBuildingArchived($buildingId, true);
         }
     }
 
-    public function syncRoomsForApartment($apartmentId, $bitrix, $projectName = 'Dubai') {
+    public function syncRooms($apartmentId, $bitrix, $projectName = 'Dubai') {
         $apartmentUnit = $this->getUnitByExternalId($apartmentId);
         if ($apartmentUnit['code'] !== 200 || !isset($apartmentUnit['response']['id'])) {
             Logger::error('Apartment not found in Alma for room sync', [
@@ -173,34 +163,68 @@ class AppartApi {
         }
         $almaApartmentId = $apartmentUnit['response']['id'];
         $unitEntityTypeId = ProjectMapping::getUnitEntityTypeId($projectName);
-        $apartmentField = ProjectMapping::getUnitApartmentField($projectName);
-        
-        $selectFields = ['id', 'title', 'opportunity'];
         $unitInternalAreaField = ProjectMapping::getUnitField('internal_area', $projectName);
         $unitGoalRentCostField = ProjectMapping::getUnitField('goal_rent_cost', $projectName);
         $unitGoalRentCostAltField = ProjectMapping::getUnitField('goal_rent_cost_alt', $projectName);
         $unitNumberField = ProjectMapping::getUnitField('number', $projectName);
-        
-        if ($unitInternalAreaField) {
-            $selectFields[] = $unitInternalAreaField;
+
+        $units = [];
+        if ($projectName === 'HongKong') {
+            $apartmentEntityTypeIds = ProjectMapping::getApartmentEntityTypeIds($projectName);
+            $apartmentEntityTypeId = $apartmentEntityTypeIds[0] ?? null;
+            if ($apartmentEntityTypeId === null) {
+                return;
+            }
+
+            $apartmentResponse = $bitrix->call('crm.item.get', [
+                'entityTypeId' => $apartmentEntityTypeId,
+                'id' => $apartmentId
+            ]);
+            if (!isset($apartmentResponse['result']['item'])) {
+                return;
+            }
+
+            $unitsField = ProjectMapping::getApartmentField('additional_external_id', $projectName);
+            $unitIds = $apartmentResponse['result']['item'][$unitsField] ?? [];
+            if (!is_array($unitIds)) {
+                $unitIds = ($unitIds === null || $unitIds === '') ? [] : [$unitIds];
+            }
+
+            foreach ($unitIds as $unitId) {
+                $unitResponse = $bitrix->call('crm.item.get', [
+                    'entityTypeId' => $unitEntityTypeId,
+                    'id' => $unitId
+                ]);
+                if (isset($unitResponse['result']['item'])) {
+                    $units[] = $unitResponse['result']['item'];
+                }
+            }
+        } else {
+            $apartmentField = ProjectMapping::getUnitApartmentField($projectName);
+            $selectFields = ['id', 'title', 'opportunity'];
+            if ($unitInternalAreaField) {
+                $selectFields[] = $unitInternalAreaField;
+            }
+            if ($unitGoalRentCostAltField) {
+                $selectFields[] = $unitGoalRentCostAltField;
+            }
+            if ($unitNumberField) {
+                $selectFields[] = $unitNumberField;
+            }
+
+            $unitsResponse = $bitrix->call('crm.item.list', [
+                'entityTypeId' => $unitEntityTypeId,
+                'filter' => [$apartmentField => $apartmentId],
+                'select' => $selectFields
+            ]);
+            if (!isset($unitsResponse['result']['items'])) {
+                return;
+            }
+            $units = $unitsResponse['result']['items'];
         }
-        if ($unitGoalRentCostAltField) {
-            $selectFields[] = $unitGoalRentCostAltField;
-        }
-        if ($unitNumberField) {
-            $selectFields[] = $unitNumberField;
-        }
-        
-        $unitsResponse = $bitrix->call('crm.item.list', [
-            'entityTypeId' => $unitEntityTypeId,
-            'filter' => [$apartmentField => $apartmentId],
-            'select' => $selectFields
-        ]);
-        if (!isset($unitsResponse['result']['items'])) {
-            return;
-        }
+
         $unitApi = new UnitApi($this->apiKey, $this->apiUrl);
-        foreach ($unitsResponse['result']['items'] as $unitData) {
+        foreach ($units as $unitData) {
             try {
                 $unitExternalId = $unitData['id'] ?? null;
                 if (!$unitExternalId) {
@@ -233,11 +257,6 @@ class AppartApi {
                 if ($number === '') {
                     $number = '0';
                 }
-                
-                $existingRoom = $unitApi->getRentalObject($unitExternalId);
-                if ($existingRoom['code'] === 200 && isset($existingRoom['response']['id'])) {
-                    continue;
-                }
                 $roomData = [
                     'external_id' => (string)$unitExternalId,
                     'name' => $name,
@@ -249,7 +268,7 @@ class AppartApi {
                     'property_type' => 'room',
                     'number' => $number,
                 ];
-                $response = $unitApi->createRoom($roomData);
+                $response = $unitApi->upsertRoom($roomData, $unitExternalId);
                 
                 if (!isset($response['response']['id']) && !(isset($response['code']) && $response['code'] >= 200 && $response['code'] < 300)) {
                     Logger::error('Failed to create room', [
@@ -268,12 +287,12 @@ class AppartApi {
     }
 }
 
-function syncApartmentById($id, $projectName, $entityTypeId = null) {
+function syncApartment($id, $projectName, $entityTypeId = null) {
     Config::load();
     Logger::setProject($projectName);
     $projectConfig = ProjectMapping::getProjectConfig($projectName);
-    $fieldMapping = ProjectMapping::getFieldMapping($projectName);
-    $METRO = $fieldMapping['metro_mapping'] ?? [];
+    $map = ProjectMapping::getFieldMapping($projectName);
+    $metroMap = $map['metro_mapping'] ?? [];
     if (!defined('WEBHOOK_URL')) {
         define('WEBHOOK_URL', $projectConfig['webhook_url']);
     }
@@ -289,19 +308,19 @@ function syncApartmentById($id, $projectName, $entityTypeId = null) {
     $entityTypeId = $entityTypeId ?? ProjectMapping::getApartmentEntityTypeIds($projectName)[0];
     $bitrix = new Bitrix24Rest(WEBHOOK_URL);
     $alma = new AppartApi(ALMA_API_KEY, ALMA_API_URL);
-    $bitrixApartment = $bitrix->call('crm.item.get', [
+    $aptRes = $bitrix->call('crm.item.get', [
         'entityTypeId' => $entityTypeId,
         'id' => $id
     ]);
-    if (!isset($bitrixApartment['result']['item'])) {
+    if (!isset($aptRes['result']['item'])) {
         throw new RuntimeException('Failed to get apartment data from Bitrix24');
     }
-    $apartmentData = $bitrixApartment['result']['item'];
-    $stageField = $fieldMapping['fields']['stage'];
-    $stageRawValue = (string)($apartmentData[$stageField] ?? '');
+    $apt = $aptRes['result']['item'];
+    $stageField = $map['fields']['stage'];
+    $stageId = (string)($apt[$stageField] ?? '');
     $archiveStageIds = ProjectMapping::getArchiveStageIds($projectName);
     $allowedStageIds = ProjectMapping::getAllowedStageIds($projectName);
-    $isArchiveStage = $archiveStageIds !== [] && in_array($stageRawValue, $archiveStageIds, true);
+    $isArchiveStage = $archiveStageIds !== [] && in_array($stageId, $archiveStageIds, true);
 
     if ($isArchiveStage) {
         $unitResp = $alma->getUnitByExternalId($id);
@@ -310,7 +329,7 @@ function syncApartmentById($id, $projectName, $entityTypeId = null) {
             $building = $unitResp['response']['building'] ?? null;
             $buildingId = is_array($building) ? ($building['id'] ?? null) : $building;
             if ($buildingId !== null) {
-                $alma->tryArchiveBuildingIfAllUnitsArchived((int)$buildingId);
+                $alma->archiveBuildingIfEmpty((int)$buildingId);
             }
         }
         return [
@@ -320,25 +339,25 @@ function syncApartmentById($id, $projectName, $entityTypeId = null) {
         ];
     }
 
-    if ($allowedStageIds !== [] && !in_array($stageRawValue, $allowedStageIds, true)) {
+    if ($allowedStageIds !== [] && !in_array($stageId, $allowedStageIds, true)) {
         return [
             'code' => 400,
             'response' => [
-                'message' => 'Apartment stage not allowed for sync. Current stage_id: ' . $stageRawValue,
-                'stage_id' => $stageRawValue,
+                'message' => 'Apartment stage not allowed for sync. Current stage_id: ' . $stageId,
+                'stage_id' => $stageId,
                 'allowed_stage_ids' => $allowedStageIds
             ],
             'method' => 'NONE'
         ];
     }
 
-    $buildingNameField = $fieldMapping['fields']['building_name'];
-    $buildingName = trim($apartmentData[$buildingNameField] ?? 'Default Building');
+    $buildingNameField = $map['fields']['building_name'];
+    $buildingName = trim($apt[$buildingNameField] ?? 'Default Building');
     if ($buildingName === '') {
         $buildingName = 'Default Building';
     }
     try {
-        $buildingId = $alma->createOrGetBuilding($buildingName);
+        $buildingId = $alma->getOrCreateBuilding($buildingName);
     } catch (Exception $e) {
         Logger::error("Failed to get building", ['building_name' => $buildingName, 'error' => $e->getMessage()], 'apartment', $id);
         throw new RuntimeException("Failed to get building '$buildingName': " . $e->getMessage());
@@ -349,37 +368,36 @@ function syncApartmentById($id, $projectName, $entityTypeId = null) {
         $alma->setBuildingArchived((int)$buildingId, false);
     }
 
-    $propertyTypeMap = $fieldMapping['property_type_mapping'];
-    $bedroomsMap     = $fieldMapping['bedrooms_mapping'];
-    $propertyTypeField = $fieldMapping['fields']['property_type'];
-    $apartmentType     = $apartmentData[$propertyTypeField] ?? '52';
+    $propertyTypeMap = $map['property_type_mapping'];
+    $bedroomsMap     = $map['bedrooms_mapping'];
+    $propertyTypeField = $map['fields']['property_type'];
+    $apartmentType     = $apt[$propertyTypeField] ?? '52';
     $propertyType      = $propertyTypeMap[$apartmentType] ?? 'apartment';
     $numberOfBedrooms  = $bedroomsMap[$apartmentType]     ?? 1;
 
-    $externalId = $apartmentData['id'] ?? $id;
+    $externalId = $apt['id'] ?? $id;
     if (empty($externalId)) {
         throw new InvalidArgumentException('External ID is required');
     }
 
-    $name = $apartmentData['title'] ?? ('Apartment ' . $externalId);
+    $name = $apt['title'] ?? ('Apartment ' . $externalId);
 
-    $additionalExternalIdField = $fieldMapping['fields']['additional_external_id'];
+    $additionalExternalIdField = $map['fields']['additional_external_id'];
     $additionalExternalId = null;
-    if (array_key_exists($additionalExternalIdField, $apartmentData)) {
-        $val = $apartmentData[$additionalExternalIdField];
+    if (array_key_exists($additionalExternalIdField, $apt)) {
+        $val = $apt[$additionalExternalIdField];
         $additionalExternalId = is_array($val) ? ($val[0] ?? null) : $val;
         if ($additionalExternalId === '') { $additionalExternalId = null; }
     }
 
     $rentTypeField   = ProjectMapping::getApartmentRentTypeField($projectName);
-    $rentTypeValue   = null;
     $rentType        = 'unit';
     $useAdditionalExternalId = true;
     
     if ($rentTypeField !== null) {
-        $rentTypeMapping = $fieldMapping['rent_type_mapping'] ?? [];
+        $rentTypeMapping = $map['rent_type_mapping'] ?? [];
         $defaultRentTypeValue = ProjectMapping::getDefaultRentTypeValue($projectName);
-        $rentTypeValue = $apartmentData[$rentTypeField] ?? $defaultRentTypeValue;
+        $rentTypeValue = $apt[$rentTypeField] ?? $defaultRentTypeValue;
         $rentType = $rentTypeMapping[$rentTypeValue] ?? 'unit';
         $useAdditionalExternalId = ($rentType === 'unit');
         
@@ -388,51 +406,51 @@ function syncApartmentById($id, $projectName, $entityTypeId = null) {
         }
     }
 
-    $numberField         = $fieldMapping['fields']['apartment_number'];
-    $internalAreaField   = $fieldMapping['fields']['internal_area'];
-    $goalRentCostField   = $fieldMapping['fields']['goal_rent_cost'];
-    $addressField        = $fieldMapping['fields']['address'];
-    $bathsField          = $fieldMapping['fields']['number_of_baths'];
-    $floorField          = $fieldMapping['fields']['floor'];
-    $internetLoginField  = $fieldMapping['fields']['internet_login'];
-    $internetPassField   = $fieldMapping['fields']['internet_password'];
-    $subwayField         = $fieldMapping['fields']['subway_station'] ?? null;
-    $parkingNumberField  = $fieldMapping['fields']['parking_number'];
-    $keyboxField         = $fieldMapping['fields']['keybox_code'];
-    $elLockField         = $fieldMapping['fields']['electronic_lock_password'];
-    $isPoolField         = $fieldMapping['fields']['is_swimming_pool'];
+    $numberField         = $map['fields']['apartment_number'];
+    $internalAreaField   = $map['fields']['internal_area'];
+    $goalRentCostField   = $map['fields']['goal_rent_cost'];
+    $addressField        = $map['fields']['address'];
+    $bathsField          = $map['fields']['number_of_baths'];
+    $floorField          = $map['fields']['floor'];
+    $internetLoginField  = $map['fields']['internet_login'];
+    $internetPassField   = $map['fields']['internet_password'];
+    $subwayField         = $map['fields']['subway_station'] ?? null;
+    $parkingNumberField  = $map['fields']['parking_number'];
+    $keyboxField         = $map['fields']['keybox_code'];
+    $elLockField         = $map['fields']['electronic_lock_password'];
+    $isPoolField         = $map['fields']['is_swimming_pool'];
 
     $subwayValue = '';
     if ($subwayField !== null) {
-        $subwayKey = $apartmentData[$subwayField] ?? '';
-        $subwayValue = $METRO[$subwayKey] ?? '';
+        $subwayKey = $apt[$subwayField] ?? '';
+        $subwayValue = $metroMap[$subwayKey] ?? '';
     }
 
     $data = [
         'external_id'                    => (string)$externalId,
         'is_used_additional_external_id' => $useAdditionalExternalId,
         'name'                           => $name,
-        'header'                         => $apartmentData['title'] ?? $name,
+        'header'                         => $apt['title'] ?? $name,
         'building'                       => $buildingId,
         'property_type'                  => $propertyType,
-        'number'                         => ($apartmentData[$numberField] ?? '0') ?: '0',
-        'internal_area'                  => (float)($apartmentData[$internalAreaField] ?? 0),
+        'number'                         => ($apt[$numberField] ?? '0') ?: '0',
+        'internal_area'                  => (float)($apt[$internalAreaField] ?? 0),
         'photos'                         => [],
-        'goal_rent_cost'                 => (float)($apartmentData[$goalRentCostField] ?? 0),
-        'address'                        => $apartmentData[$addressField] ?? '',
+        'goal_rent_cost'                 => (float)($apt[$goalRentCostField] ?? 0),
+        'address'                        => $apt[$addressField] ?? '',
         'number_of_bedrooms'             => (int)$numberOfBedrooms,
-        'number_of_baths'                => (int)($apartmentData[$bathsField] ?? 0),
+        'number_of_baths'                => (int)($apt[$bathsField] ?? 0),
         'is_roof_garden'                 => false,
         'parking'                        => 'not_applicable',
-        'is_swimming_pool'               => (($apartmentData[$isPoolField] ?? 'N') === 'Y'),
-        'total_buildable_area'           => (float)($apartmentData[$internalAreaField] ?? 0),
-        'floor'                          => $apartmentData[$floorField] ?? null,
-        'internet_login'                 => $apartmentData[$internetLoginField] ?? '',
-        'internet_password'              => $apartmentData[$internetPassField] ?? '',
+        'is_swimming_pool'               => (($apt[$isPoolField] ?? 'N') === 'Y'),
+        'total_buildable_area'           => (float)($apt[$internalAreaField] ?? 0),
+        'floor'                          => $apt[$floorField] ?? null,
+        'internet_login'                 => $apt[$internetLoginField] ?? '',
+        'internet_password'              => $apt[$internetPassField] ?? '',
         'subway_station'                 => $subwayValue,
-        'parking_number'                 => $apartmentData[$parkingNumberField] ?? '',
-        'keybox_code'                    => !empty($apartmentData[$keyboxField]) ? substr($apartmentData[$keyboxField], 0, 50) : null,
-        'electronic_lock_password'       => !empty($apartmentData[$elLockField]) ? substr($apartmentData[$elLockField], 0, 8) : null,
+        'parking_number'                 => $apt[$parkingNumberField] ?? '',
+        'keybox_code'                    => !empty($apt[$keyboxField]) ? mb_substr((string)$apt[$keyboxField], 0, 50, 'UTF-8') : null,
+        'electronic_lock_password'       => !empty($apt[$elLockField]) ? mb_substr((string)$apt[$elLockField], 0, 8, 'UTF-8') : null,
     ];
 
     if ($rentType === 'rooms') {
@@ -441,19 +459,19 @@ function syncApartmentById($id, $projectName, $entityTypeId = null) {
         $data['additional_external_id'] = $additionalExternalId;
     }
     
-    $response = $alma->createOrUpdateApartment($data, $externalId);
+    $response = $alma->upsertApartment($data, $externalId);
     $code = $response['code'] ?? 0;
     $isSuccess = isset($response['response']['id']) || ($code >= 200 && $code < 300);
     if ($isSuccess) {
         if ($rentType === 'rooms' && $id) {
-            $alma->syncRoomsForApartment($id, $bitrix, $projectName);
+            $alma->syncRooms($id, $bitrix, $projectName);
         }
         if (ProjectMapping::getApartmentField('date_of_refused', $projectName) !== null) {
             if (!defined('TERMINATION_SKIP_ENTRY')) {
                 define('TERMINATION_SKIP_ENTRY', true);
             }
             require_once __DIR__ . '/TerminationAppartApi.php';
-            syncTerminationForApartment($projectName, (string) $id, $apartmentData);
+            syncTerminationForApt($projectName, (string) $id, $apt);
         }
         return [
             'code' => $response['code'],
@@ -473,7 +491,7 @@ if (isset($_GET['id'])) {
     header('Content-Type: application/json');
     $projectName = $_GET['project'] ?? 'Dubai';
     try {
-        BaseApi::sendSuccessResponse(syncApartmentById($_GET['id'], $projectName, isset($_GET['entity_type_id']) ? (int)$_GET['entity_type_id'] : null));
+        BaseApi::sendSuccessResponse(syncApartment($_GET['id'], $projectName, isset($_GET['entity_type_id']) ? (int)$_GET['entity_type_id'] : null));
     } catch (Throwable $e) {
         BaseApi::sendErrorResponse($e, 'Unexpected error: Apartment synchronization failed', 'apartment', $_GET['id'] ?? null);
     }

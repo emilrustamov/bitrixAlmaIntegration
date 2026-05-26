@@ -27,7 +27,15 @@ class BaseApi {
         }
 
         if ($data !== null && $upperMethod !== 'GET') {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            $jsonFlags = JSON_UNESCAPED_UNICODE;
+            if (defined('JSON_INVALID_UTF8_SUBSTITUTE')) {
+                $jsonFlags |= JSON_INVALID_UTF8_SUBSTITUTE;
+            }
+            $payload = json_encode($data, $jsonFlags);
+            if ($payload === false) {
+                throw new RuntimeException('Failed to encode request JSON: ' . json_last_error_msg());
+            }
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
         }
 
         $response = curl_exec($ch);
@@ -119,7 +127,7 @@ class BaseApi {
         return self::sendRequest($apiKey, 'GET', $url, null, false);
     }
 
-    public static function getUnitIdByApartmentExternalId($apiKey, $apiUrl, $apartmentExternalId)
+    public static function getUnitIdByAptExternalId($apiKey, $apiUrl, $apartmentExternalId)
     {
         $result = self::fetchUnitByExternalId($apiKey, $apiUrl, $apartmentExternalId);
         $code = $result['code'] ?? 0;
@@ -140,14 +148,11 @@ class BaseApi {
             return null;
         }
         $uploadUrl = rtrim($apiUrl, '/') . '/external-image/';
-        $fileData = ['url' => $fileUrl, 'description' => $description];
         try {
-            $response = self::sendRequest($apiKey, 'POST', $uploadUrl, $fileData, true);
+            $response = self::sendRequest($apiKey, 'POST', $uploadUrl, ['url' => $fileUrl, 'description' => $description], true);
             return $response['id'] ?? null;
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             return null;
         }
     }
 }
-
-

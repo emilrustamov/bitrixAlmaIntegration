@@ -1,4 +1,4 @@
-составь<?php
+<?php
 
 class ProjectMapping {
 
@@ -31,6 +31,7 @@ class ProjectMapping {
                     'contract_type' => 'ufCrm20_1693561495',
                     'history' => 'ufCrm20ContractHistory',
                     'contract_scan' => 'ufCrm20Contract',
+                    'paying_party' => 'ufCrm20PayerNameOrCompanyName',
                 ],
                 'tenant_fields' => [
                     'email' => 'UF_CRM_1727788747',
@@ -183,6 +184,7 @@ class ProjectMapping {
                 'default_rent_type_value' => '4598',
                 'contract_type_mapping' => [
                     '882' => 'Airbnb',
+                    '8672' => 'Ejari',
                     '884' => 'Short term from 1 to 3 months',
                     '886' => 'Long-term 3+ months',
                     '1304' => 'Booking',
@@ -261,6 +263,10 @@ class ProjectMapping {
                     2762 => null
                 ],
                 'failure_stage_id' => 'DT183_28:FAIL',
+                'tenant_contract_archive_stage_ids' => [
+                    'DT183_28:FAIL',
+                    'DT183_28:SUCCESS',
+                ],
                 'stage_mapping' => [
                     'DT144_10:NEW' => 'Repair/AC/GAS/Card',
                     'DT144_10:PREPARATION' => 'For rent',
@@ -270,8 +276,15 @@ class ProjectMapping {
                     'DT144_10:FAIL' => 'Ex-apartment',
                     'DT144_10:SUCCESS' => 'Успех'
                 ],
-                'archive_stage_ids' => ['DT144_10:FAIL', 'DT144_10:UC_XH6370'],
-                'allowed_stage_ids' => ['DT144_10:PREPARATION', 'DT144_10:CLIENT', '5980', '5974', 'Available']
+                'archive_stage_ids' => [
+                    'DT144_10:FAIL',
+                    'DT144_10:UC_XH6370',
+                    'Ex-Apartments',
+                    'Ex-Apartment',
+                    'Ex-apartment',
+                    'Termination process',
+                ],
+                'allowed_stage_ids' => ['DT144_10:PREPARATION', 'DT144_10:CLIENT', '5980', '5974', 'Available', 'Rented']
             ],
             'HongKong' => [
                 'entity_type_id' => 1054,
@@ -363,8 +376,13 @@ class ProjectMapping {
                     '813' => 'apartment',
                 ],
                 'bedrooms_mapping' => [
-                    '809' => 2,
-                    '813' => 2,
+                    '803' => 1,
+                    '805' => 1,
+                    '807' => 2,
+                    '809' => 3,
+                    '811' => 4,
+                    '813' => 5,
+                    '815' => 6,
                 ],
                 'rent_type_mapping' => [
                     '1069' => 'unit',
@@ -378,11 +396,10 @@ class ProjectMapping {
                     '989' => 'Less than a month',
                     '991' => 'Short term from 1 to 3 months',
                     '993' => 'Long-term 3+ months',
-                    '995' => 'Ejari',
                     '1277' => 'Less than 1 month contract',
                     '1279' => '1+ months',
                 ],
-                'no_invitation_contract_type_ids' => ['985', '995'],
+                'no_invitation_contract_type_ids' => ['985'],
                 'work_model_mapping' => [],
                 'metro_mapping' => [],
                 'stage_mapping' => [
@@ -439,13 +456,19 @@ class ProjectMapping {
     public static function getFailureStageId($projectName = 'Dubai') {
         return self::getFieldMapping($projectName)['failure_stage_id'] ?? null;
     }
+
+    public static function getTenantContractArchiveStageIds($projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        $ids = $mapping['tenant_contract_archive_stage_ids'] ?? null;
+        if (is_array($ids) && $ids !== []) {
+            return array_map('strval', $ids);
+        }
+        $single = $mapping['failure_stage_id'] ?? null;
+        return ($single !== null && $single !== '') ? [(string) $single] : [];
+    }
     
     public static function getContractField($fieldName, $projectName = 'Dubai') {
         return self::getFieldMapping($projectName)['contract_fields'][$fieldName] ?? null;
-    }
-    
-    public static function getTenantField($fieldName, $projectName = 'Dubai') {
-        return self::getFieldMapping($projectName)['tenant_fields'][$fieldName] ?? null;
     }
     
     public static function getLandlordField($fieldName, $projectName = 'Dubai') {
@@ -507,30 +530,6 @@ class ProjectMapping {
         $mapping = self::getFieldMapping($projectName);
         $ids = $mapping['no_invitation_contract_type_ids'] ?? [];
         return array_map('strval', $ids);
-    }
-
-    public static function getBlockingField($fieldName, $entityType, $projectName = 'Dubai') {
-        $mapping = self::getFieldMapping($projectName);
-        $blocking = $mapping['blocking_fields'][$entityType] ?? null;
-        return $blocking[$fieldName] ?? null;
-    }
-
-    public static function getBlockingReasonsEnum($projectName = 'Dubai') {
-        $mapping = self::getFieldMapping($projectName);
-        return $mapping['blocking_reasons_enum'] ?? [];
-    }
-
-    public static function getBlockingCancelingEnumId($projectName = 'Dubai') {
-        $mapping = self::getFieldMapping($projectName);
-        $id = $mapping['blocking_canceling_enum_id'] ?? null;
-        return $id !== null ? (int) $id : null;
-    }
-
-    public static function getBlockingReasonAlmaClientId($reasonId, $projectName = 'Dubai') {
-        $mapping = self::getFieldMapping($projectName);
-        $ids = $mapping['blocking_reason_alma_client_ids'] ?? [];
-        $id = $ids[(string) $reasonId] ?? null;
-        return $id !== null && (int) $id > 0 ? (int) $id : null;
     }
 
     public static function getDefaultRentTypeValue($projectName = 'Dubai') {

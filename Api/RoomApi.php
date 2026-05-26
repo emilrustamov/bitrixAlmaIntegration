@@ -17,7 +17,6 @@ Logger::setProject($projectName);
 define('WEBHOOK_URL',     $projectConfig['webhook_url']);
 define('ALMA_API_KEY',    Config::get('ALMA_API_KEY'));
 define('ALMA_API_URL',    Config::get('ALMA_API_URL'));
-define('PROJECT_ID',      $projectConfig['id']);
 
 class RoomApi {
     private $apiKey;
@@ -32,9 +31,9 @@ class RoomApi {
         return BaseApi::fetchUnitByExternalId($this->apiKey, $this->apiUrl, (string) $bitrixId);
     }
 
-    public function createOrUpdateRoom($data, $bitrixId) {
+    public function upsertRoom($data, $bitrixId) {
         $unitApi = new UnitApi($this->apiKey, $this->apiUrl);
-        return $unitApi->createOrUpdateRoom($data, $bitrixId);
+        return $unitApi->upsertRoom($data, $bitrixId);
     }
 }
 
@@ -100,10 +99,9 @@ try {
     }
 
     $unitApi = new UnitApi(ALMA_API_KEY, ALMA_API_URL);
-    $existingRoom = $unitApi->getRentalObject($roomId);
-    $roomExists = ($existingRoom['code'] ?? 0) === 200 && !empty($existingRoom['response']['id']);
+    $existingRoom = $unitApi->getRoomByExternalId($roomId);
     $parentUnitId = null;
-    if ($roomExists) {
+    if (($existingRoom['code'] ?? 0) === 200 && !empty($existingRoom['response']['id'])) {
         $p = $existingRoom['response']['parent_unit'] ?? null;
         $parentUnitId = (is_array($p) && isset($p['id'])) ? $p['id'] : (is_numeric($p) ? $p : null);
     } else {
@@ -164,7 +162,7 @@ try {
         $data['parent_unit'] = $parentUnitId;
     }
 
-    $response = $alma->createOrUpdateRoom($data, $externalId);
+    $response = $alma->upsertRoom($data, $externalId);
 
     if (isset($response['response']['id']) || (isset($response['code']) && $response['code'] >= 200 && $response['code'] < 300)) {
         BaseApi::sendSuccessResponse([

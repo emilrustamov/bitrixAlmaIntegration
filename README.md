@@ -148,7 +148,7 @@ https://your-domain.com/Api/RoomApi.php?id={=Document:ID}&project=Dubai
   - `Accept: application/json`
 - формат тела: JSON.
 
-Пример данных, отправляемых при синхронизации комнаты (`RoomApi.php` → `UnitApi::createOrUpdateRoom`):
+Пример данных, отправляемых при синхронизации комнаты (`RoomApi.php` → `UnitApi::upsertRoom`):
 
 ```json
 {
@@ -278,3 +278,142 @@ Host: your-domain.com
 - проверьте, что URL веб‑хука Bitrix24 и `ALMA_API_URL` корректны и доступны с сервера.
 
 ---
+
+## 10. Соглашение по неймингу
+
+Чтобы код оставался единообразным и коротким, используем следующие правила:
+
+- Для методов создания/обновления используем префикс `upsert*`:
+  - `upsertApartment`, `upsertRoom`, `upsertBlockingContract`.
+- Для паттерна «получить или создать» используем `getOrCreate*`:
+  - `getOrCreateBuilding`.
+- Для переменных с ответами API используем короткий формат:
+  - `aptRes`, `contractRes`, `contactRes`.
+- Для часто используемых сущностей применяем согласованные сокращения:
+  - `apt` (apartment), `map` (field mapping), `typeId` (entity/contract type id).
+- Избегаем длинных имен с `ById` в entry-функциях, если контекст уже однозначен:
+  - `syncApartment`, `syncTenantContract`, `syncLandlordContract`, `syncContact`, `syncBlocking`, `syncTermination`.
+
+Эти правила применяются к новым изменениям и рефакторингу без изменения бизнес-логики.
+
+### 10.1. Актуальные имена методов (после рефакторинга)
+
+Ниже зафиксированы рабочие имена, которые должны использоваться в коде и документации:
+
+- `UnitApi::upsertRoom` (вместо старого `createOrUpdateRoom`)
+- `AppartApi::upsertApartment` (вместо `createOrUpdateApartment`)
+- `AppartApi::getOrCreateBuilding` (вместо `createOrGetBuilding`)
+- `AppartApi::archiveBuildingIfEmpty` (вместо `tryArchiveBuildingIfAllUnitsArchived`)
+- `TenantContractApi::upsertBlockingContract` (вместо `createOrUpdateBlockingContract`)
+- `BaseApi::getUnitIdByAptExternalId` (вместо `getUnitIdByApartmentExternalId`)
+- entry-функции:
+  - `syncApartment`, `syncTenantContract`, `syncLandlordContract`
+  - `syncContact`, `syncBlocking`, `syncTermination`
+
+---
+
+## 11. Точки входа (эндпоинты)
+
+Все эндпоинты отдают JSON через `BaseApi::sendSuccessResponse`/`sendErrorResponse`.
+
+- `POST /index.php`  
+  Главный webhook-роутер Bitrix24. Принимает событие в `$_REQUEST`, определяет сущность и проект, дальше вызывает нужный сценарий (`syncApartment`, `syncContact`, `syncTenantContract`, `syncLandlordContract`).
+
+- `GET /Api/AppartApi.php?id=<ID>&project=<Dubai|HongKong>&entity_type_id=<optional>`  
+  Синхронизация апартамента в Alma.
+  - `id` (обязательно): ID апартамента в Bitrix24
+  - `project` (опционально): проект, по умолчанию `Dubai`
+  - `entity_type_id` (опционально): переопределение `entityTypeId`
+
+- `GET /Api/RoomApi.php?id=<ID>&project=<Dubai|HongKong>`  
+  Синхронизация комнаты/юнита.
+  - `id` (обязательно): ID юнита в Bitrix24
+  - `project` (опционально): проект, по умолчанию `Dubai`
+
+- `GET /Api/TenantContractApi.php?id=<ID>&project=<Dubai|HongKong>`  
+  Синхронизация договора арендатора.
+  - `id` (обязательно): ID контракта в Bitrix24
+  - `project` (опционально): проект, по умолчанию `Dubai`
+
+- `GET /Api/LandlordContractApi.php?id=<ID>&project=<Dubai|HongKong>`  
+  Синхронизация договора собственника.
+  - `id` (обязательно): ID контракта в Bitrix24
+  - `project` (опционально): проект, по умолчанию `Dubai`
+
+- `GET /Api/ContactSync.php?id=<ID>&project=<Dubai|HongKong>&type=<tenant|landlord>`  
+  Синхронизация контакта в Alma.
+  - `id` (обязательно): ID контакта в Bitrix24
+  - `project` (опционально): проект, по умолчанию `Dubai`
+  - `type` (опционально): `tenant` или `landlord`, по умолчанию `tenant`
+
+- `GET /Api/BlockingAppartApi.php?id=<LIST_ELEMENT_ID>&project=<Dubai|HongKong>&debug=1`  
+  Синхронизация блокировки из элемента списка Bitrix24.
+  - `id` (обязательно): ID элемента списка
+  - `project` (опционально): проект, по умолчанию `Dubai`
+  - `debug` (опционально): если передан, отдает payload без записи контракта
+
+- `GET /Api/TerminationAppartApi.php?id=<LIST_ELEMENT_ID>&project=<Dubai|HongKong>`  
+  Синхронизация расторжения из элемента списка Bitrix24.
+  - `id` (обязательно): ID элемента списка
+  - `project` (опционально): проект, по умолчанию `Dubai`
+
+---
+
+## 12. Порядок синхронизации и зависимости
+
+Рекомендуемый порядок для стабильной интеграции:
+
+1. **Апартаменты**: `syncApartment`  
+   Создает/обновляет апартамент в Alma и здание (`getOrCreateBuilding`).
+
+2. **Комнаты/юниты**: `syncRooms` или `RoomApi.php`  
+   Зависят от уже синхронизированного апартамента в Alma (нужен `parent_unit`).
+
+3. **Контакты**: `syncContact`  
+   Желательно синхронизировать до контрактов, чтобы клиент в Alma уже существовал.
+
+4. **Контракты арендаторов**: `syncTenantContract`  
+   Зависят от:
+   - существующего юнита/апартамента в Alma;
+   - существующего клиента в Alma (или возможности создать/обновить его).
+
+5. **Контракты собственников**: `syncLandlordContract`  
+   Зависят от апартамента/юнита в Alma и существующего контакта собственника.
+
+6. **Служебные контракты**:
+   - `syncBlocking` — блокировки из списка Bitrix24;
+   - `syncTermination`/`syncTerminationForApt` — расторжения.
+   Оба сценария зависят от корректных маппингов в `ProjectMapping` и от существования объекта в Alma.
+
+---
+
+## 13. Быстрая диагностика
+
+Минимальный чек-лист при проблемах:
+
+- Проверка синтаксиса измененных файлов:
+  ```bash
+  php -l Api/AppartApi.php
+  php -l Api/TenantContractApi.php
+  php -l Api/LandlordContractApi.php
+  ```
+
+- Быстрая проверка, что старые имена не остались:
+  ```bash
+  rg "createOrUpdate|createOrGet|sync[A-Za-z]+ById|getUnitIdByApartmentExternalId" .
+  ```
+
+- Просмотр логов:
+  - Основной путь: `logs/`
+  - Смотри лог за нужный проект и дату, затем фильтруй по ID сущности (apartment/unit/contract/contact).
+
+- Проверка доступности конфигурации:
+  - `config.env` содержит валидные `ALMA_API_KEY`, `ALMA_API_URL`, `PROJECT_*_WEBHOOK_URL`
+  - Маппинги в `Core/Config/ProjectMapping.php` соответствуют реальным полям Bitrix24.
+
+Частые причины падений:
+
+- Не передан обязательный `id` в endpoint.
+- Не найден связанный объект в Alma (например, юнит/апартамент еще не синхронизирован).
+- Неверный `project` или устаревшие ID/поля в `ProjectMapping`.
+- Конфликт бизнес-правил Alma (пересечение контрактов, дубли email, обязательные поля контакта).

@@ -90,16 +90,15 @@
 
 ### ⚠️ Важные ограничения
 
-**Контракты НЕ синхронизируются для следующих типов:**
-- **Airbnb** (тип: 882) - исключены из синхронизации
-- **Ejari** (тип: 8672) - исключены из синхронизации
-
-**Синхронизируются только контракты типов:**
+**Синхронизируемые типы контрактов (пример Dubai):**
+- **882** - Airbnb
+- **8672** - Ejari
 - **884** - Short term from 1 to 3 months
 - **886** - Long-term 3+ months
 - **1304** - Booking
 - **1306** - Short contract up to 1 month
 - **6578** - Less than a month
+- **0000** - Blocking, **0002** - Termination
 
 ---
 
@@ -135,8 +134,7 @@ GET: external_api/realty/rental_object/{{bitrix_id}}/
 
 1. **Проверка типа контракта:**
    - Контракт содержит поле `ufCrm20_1693561495` = тип контракта
-   - **Airbnb (882) и Ejari (8672) исключаются** - возвращается ошибка
-   - Остальные типы проходят валидацию
+   - Тип должен быть в `contract_type_mapping` (неизвестный тип — ошибка)
 
 2. **Получение данных из Bitrix24:**
    - Контракт содержит поле `ufCrm20_1693919019` = ID юнита из Bitrix24
@@ -187,7 +185,7 @@ GET /realty/rental_object/62/
 
 ### Ключевые поля для поиска:
 
-- **ufCrm20_1693561495** (в контракте) = тип контракта (882/8672 исключены)
+- **ufCrm20_1693561495** (в контракте) = тип контракта
 - **ufCrm20_1693919019** (в контракте) = unit_id из Bitrix24
 - **ufCrm8_1684429208** (в юните) = apartment_id из Bitrix24  
 - **ufCrm6_1736951470242** (в апартаменте) = rent_type (4600/4598)
@@ -198,13 +196,16 @@ GET /realty/rental_object/62/
 
 ### Синхронизация контракта:
 ```bash
-cd /var/www/alma && php -r '$_GET["id"] = "КОНТРАКТ_ID"; include "TenantContractApi.php";'
+cd /var/www/alma && php -r '$_GET["id"] = "КОНТРАКТ_ID"; include "Api/TenantContractApi.php";'
 ```
+
+### Создание/привязка юнита (Alma API):
+Через `ALMA_API_KEY` / `ALMA_API_URL`: если юнит апартамента уже есть — `PATCH realty/units/external_id/{apartment_bitrix_id}/` с `additional_external_id` и `is_used_additional_external_id: true`; если нет — `POST realty/units/` (нужен `building`).
 
 ### Примеры:
 ```bash
-# Любой контракт
-cd /var/www/alma && php -r '$_GET["id"] = "НОМЕР_КОНТРАКТА"; include "TenantContractApi.php";'
+# Контракт
+cd /var/www/alma && php -r '$_GET["id"] = "НОМЕР_КОНТРАКТА"; include "Api/TenantContractApi.php";'
 ```
 
 ---
@@ -294,7 +295,7 @@ curl -s "https://colifeae.bitrix24.eu/rest/4/iy4qd3t503yjho46//crm.item.get?enti
 
 | Что нужно | Команда |
 |-----------|---------|
-| Синхронизировать контракт | `cd /var/www/alma && php -r '$_GET["id"] = "ID"; include "TenantContractApi.php";'` |
+| Синхронизировать контракт | `cd /var/www/alma && php -r '$_GET["id"] = "ID"; include "Api/TenantContractApi.php";'` |
 | Проверить контракт в Alma | `curl -s "https://colife.argo.properties:1337/external_api/realty/contracts/tenant_contracts/external_id/ID/" -H "Api-Key: 3ae0539d134e9b7320e6d3ff28a11bde"` |
 | Проверить контракт в Bitrix24 | `curl -s "https://colifeae.bitrix24.eu/rest/4/iy4qd3t503yjho46//crm.item.get?entityTypeId=183&id=ID"` |
 | **Получить список контрактов в Bitrix24** | `curl -s "https://colifeae.bitrix24.eu/rest/4/iy4qd3t503yjho46//crm.item.list?entityTypeId=183&start=0&limit=50"` |
