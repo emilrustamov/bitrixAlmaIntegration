@@ -36,12 +36,12 @@ class ProjectMapping {
                 'tenant_fields' => [
                     'email' => 'UF_CRM_1727788747',
                     'passport_number' => 'UF_CRM_20_1696523391',
-                    'passport_scan' => 'UF_CRM_20_1696615939',
+                    'id_scan' => 'UF_CRM_20_1696615939',
                 ],
                 'landlord_fields' => [
                     'email' => 'UF_CRM_1727788747',
                     'passport_number' => 'UF_CRM_10_1740556751168',
-                    'passport_scan' => 'UF_CRM_10_1694000435068',
+                    'id_scan' => 'UF_CRM_10_1694000435068',
                 ],
                 'fields' => [
                     'building_name' => 'ufCrm6_1682232363193',
@@ -310,7 +310,7 @@ class ProjectMapping {
                 'landlord_fields' => [
                     'email' => 'UF_CRM_1727788747',
                     'passport_number' => 'UF_CRM_10_1740556751168',
-                    'passport_scan' => 'UF_CRM_10_1694000435068',
+                    'id_scan' => 'UF_CRM_10_1694000435068',
                 ],
                 'fields' => [
                     'building_name' => 'ufCrm11Building',
@@ -473,6 +473,36 @@ class ProjectMapping {
     
     public static function getLandlordField($fieldName, $projectName = 'Dubai') {
         return self::getFieldMapping($projectName)['landlord_fields'][$fieldName] ?? null;
+    }
+
+    public static function getTenantField($fieldName, $projectName = 'Dubai') {
+        return self::getFieldMapping($projectName)['tenant_fields'][$fieldName] ?? null;
+    }
+
+    public static function getBitrixItemValue(array $item, ?string $fieldCode)
+    {
+        if ($fieldCode === null || $fieldCode === '') {
+            return null;
+        }
+        if (array_key_exists($fieldCode, $item)) {
+            return $item[$fieldCode];
+        }
+        $camelCase = self::bitrixFieldToCamelCase($fieldCode);
+        if ($camelCase !== $fieldCode && array_key_exists($camelCase, $item)) {
+            return $item[$camelCase];
+        }
+        return null;
+    }
+
+    private static function bitrixFieldToCamelCase(string $fieldCode): string
+    {
+        if (preg_match('/^UF_CRM_(\d+)_(.+)$/', $fieldCode, $matches)) {
+            return 'ufCrm' . $matches[1] . '_' . $matches[2];
+        }
+        if (preg_match('/^UF_CRM_(\d+)$/', $fieldCode, $matches)) {
+            return 'ufCrm' . $matches[1];
+        }
+        return $fieldCode;
     }
     
     public static function getUnitApartmentField($projectName = 'Dubai') {

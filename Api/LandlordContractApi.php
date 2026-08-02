@@ -94,7 +94,7 @@ class LandlordContractApi {
 
     public function ensureLandlordExists(array $landlordData) {
         $this->clientApi->ensureClientExists($landlordData, false);
-        return $this->clientApi->updateClient($landlordData);
+        return $this->clientApi->updateClient($landlordData, false);
     }
 
     private function buildContractData(array $bitrixData, $landlordId, $apartmentId) {
@@ -200,14 +200,35 @@ function syncLandlordContract($id, $projectName) {
         throw new RuntimeException('Failed to get contact from Bitrix24');
     }
     $emailField = ProjectMapping::getLandlordField('email', $projectName);
+    $landlordData = [
+        'id' => $contact['ID'],
+        'first_name' => $contact['NAME'],
+        'last_name' => $contact['LAST_NAME'],
+        'email' => $contact[$emailField] ?? (is_array($contact['EMAIL'] ?? null) ? ($contact['EMAIL'][0]['VALUE'] ?? '') : ''),
+        'phone' => $contact['PHONE'][0]['VALUE'] ?? '',
+    ];
+
+    if ($projectName === 'Dubai') {
+        $passport = ProjectMapping::getBitrixItemValue(
+            $contractData,
+            ProjectMapping::getLandlordField('passport_number', $projectName)
+        );
+        if ($passport !== null && trim((string) $passport) !== '') {
+            $landlordData['passport'] = trim((string) $passport);
+        }
+        $scanId = BaseApi::uploadImage(
+            Config::get('ALMA_API_KEY'),
+            Config::get('ALMA_API_URL'),
+            ProjectMapping::getBitrixItemValue($contractData, ProjectMapping::getLandlordField('id_scan', $projectName)),
+            'ID scan'
+        );
+        if ($scanId) {
+            $landlordData['id_scan'] = $scanId;
+        }
+    }
+
     $syncData = array_merge($contractData, [
-        'landlord_data' => [
-            'id' => $contact['ID'],
-            'first_name' => $contact['NAME'],
-            'last_name' => $contact['LAST_NAME'],
-            'email' => $contact[$emailField] ?? (is_array($contact['EMAIL'] ?? null) ? ($contact['EMAIL'][0]['VALUE'] ?? '') : ''),
-            'phone' => $contact['PHONE'][0]['VALUE'] ?? '',
-        ],
+        'landlord_data' => $landlordData,
     ]);
     $result = $almaApi->syncContract($syncData);
     Logger::info('Landlord contract sync succeeded', [

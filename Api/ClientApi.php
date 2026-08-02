@@ -13,11 +13,34 @@ class ClientApi {
 
     public function updateClient(array $clientData, $sendInvitation = true) {
         $id = $this->ensureClientExists($clientData, $sendInvitation);
-        $payload = array_intersect_key($clientData, array_flip(['first_name', 'last_name', 'phone', 'email']));
+        $payload = array_intersect_key($clientData, array_flip([
+            'first_name', 'last_name', 'phone', 'email', 'passport', 'passport_scan', 'id_scan',
+        ]));
         if ($payload !== []) {
-            BaseApi::sendRequest($this->apiKey, 'PATCH', $this->apiUrl . 'users/clients/' . $id . '/', $payload);
+            BaseApi::sendRequest(
+                $this->apiKey,
+                'PATCH',
+                $this->apiUrl . 'users/clients/' . $id . '/',
+                $payload
+            );
         }
         return $id;
+    }
+
+    public function getClientByExternalId($externalId): ?array
+    {
+        $externalId = (string) $externalId;
+        $realtyUrl = $this->apiUrl . 'realty/clients/external_id/' . rawurlencode($externalId) . '/';
+        $realtyRes = BaseApi::sendRequest($this->apiKey, 'GET', $realtyUrl, null, false);
+        if (($realtyRes['code'] ?? 0) === 200 && is_array($realtyRes['response'] ?? null)) {
+            return $realtyRes['response'];
+        }
+        $usersUrl = $this->apiUrl . 'users/clients/external_id/' . rawurlencode($externalId) . '/';
+        $usersRes = BaseApi::sendRequest($this->apiKey, 'GET', $usersUrl, null, false);
+        if (($usersRes['code'] ?? 0) === 200 && is_array($usersRes['response'] ?? null)) {
+            return $usersRes['response'];
+        }
+        return null;
     }
 
     public function ensureClientExists(array $clientData, $sendInvitation = true) {
@@ -46,6 +69,15 @@ class ClientApi {
         ];
         if (!empty($clientData['email'])) {
             $payload['email'] = $clientData['email'];
+        }
+        if (!empty($clientData['passport'])) {
+            $payload['passport'] = $clientData['passport'];
+        }
+        if (!empty($clientData['passport_scan'])) {
+            $payload['passport_scan'] = $clientData['passport_scan'];
+        }
+        if (!empty($clientData['id_scan'])) {
+            $payload['id_scan'] = $clientData['id_scan'];
         }
         return $payload;
     }

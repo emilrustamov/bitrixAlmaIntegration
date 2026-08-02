@@ -76,55 +76,6 @@ if ($isWebhookRequest) {
     }
 
     if ((int)$typeId === 3 || $eventName === $eventContactUpdate) {
-        try {
-            $res = $bitrix->call('crm.contact.get', ['id' => $id]);
-        } catch (Exception $e) {
-            Logger::warning('Webhook: failed to get contact from Bitrix', [
-                'entity_id' => $id,
-                'project' => $projectName,
-                'error' => $e->getMessage()
-            ], 'contact', $id);
-            exit;
-        }
-        if (isset($res['result'])) {
-            $contact = $res['result'];
-            $typeIdContact = $contact['TYPE_ID'] ?? '';
-            $isTenant = ($typeIdContact === 'TENANT' || $typeIdContact === 'CLIENT');
-            $isLandlord = ($typeIdContact === 'LANDLORD' || $typeIdContact === '1');
-            if (!$isTenant && !$isLandlord) {
-                try {
-                    $llTypeId = ProjectMapping::getLandlordContractEntityTypeId($projectName);
-                    if ($llTypeId) {
-                        $contracts = $bitrix->call('crm.item.list', [
-                            'entityTypeId' => $llTypeId,
-                            'filter' => ['contactId' => $id],
-                            'select' => ['id']
-                        ]);
-                        if (!empty($contracts['result']['items'] ?? [])) {
-                            $isLandlord = true;
-                        }
-                    }
-                } catch (Exception $e) {
-                    Logger::warning('Webhook: failed to check landlord contracts', [
-                        'contact_id' => $id,
-                        'error' => $e->getMessage()
-                    ], 'contact', $id);
-                }
-            }
-            if ($isTenant || $isLandlord) {
-                require_once __DIR__ . '/Api/ContactSync.php';
-                try {
-                    syncContact($id, $projectName, $isTenant ? 'tenant' : 'landlord');
-                } catch (Throwable $e) {
-                    Logger::error('Webhook: contact sync failed', [
-                        'entity_id' => $id,
-                        'project' => $projectName,
-                        'type' => $isTenant ? 'tenant' : 'landlord',
-                        'error' => $e->getMessage()
-                    ], 'contact', $id);
-                }
-            }
-        }
         exit;
     }
 

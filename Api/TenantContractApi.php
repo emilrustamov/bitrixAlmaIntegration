@@ -170,7 +170,7 @@ class TenantContractApi {
         $noInvitationIds = ProjectMapping::getNoInvitationContractTypeIds($this->projectName);
         $sendInvitation = !in_array((string) $contractType, $noInvitationIds, true);
         $this->clientApi->ensureClientExists($clientData, $sendInvitation);
-        return $this->clientApi->updateClient($clientData);
+        return $this->clientApi->updateClient($clientData, $sendInvitation);
     }
 
     private function buildContractData(array $bitrixData, $clientId, $unitId) {
@@ -212,9 +212,12 @@ class TenantContractApi {
         }
 
         if ($contractScanField && !empty($bitrixData[$contractScanField])) {
-            $scanData = $bitrixData[$contractScanField];
-            $scanUrl = is_array($scanData) ? ($scanData['urlMachine'] ?? null) : $scanData;
-            $contractScan = BaseApi::uploadImage($this->apiKey, $this->apiUrl, $scanUrl, 'Contract document');
+            $contractScan = BaseApi::uploadImage(
+                $this->apiKey,
+                $this->apiUrl,
+                $bitrixData[$contractScanField],
+                'Contract document'
+            );
             if ($contractScan) {
                 $contractData['contract_scan'] = $contractScan;
             }
@@ -373,6 +376,46 @@ class TenantContractApi {
         return ['code' => 200, 'response' => $response, 'method' => 'ARCHIVE'];
     }
 
+    public function enrichClientData(array $clientData, array $contractData): array
+    {
+        if ($this->projectName !== 'Dubai') {
+            return $clientData;
+        }
+
+        $passportNumberField = ProjectMapping::getTenantField('passport_number', $this->projectName);
+        $idScanField = ProjectMapping::getTenantField('id_scan', $this->projectName);
+
+        $passportNumber = ProjectMapping::getBitrixItemValue($contractData, $passportNumberField);
+        if ($passportNumber !== null && trim((string) $passportNumber) !== '') {
+            $clientData['passport'] = trim((string) $passportNumber);
+        }
+
+        $idScanData = ProjectMapping::getBitrixItemValue($contractData, $idScanField);
+        $clientScanFields = ['id_scan', 'passport_scan'];
+        foreach (BaseApi::extractBitrixFileUrls($idScanData) as $index => $fileUrl) {
+            $almaField = $clientScanFields[$index] ?? null;
+            if ($almaField === null) {
+                break;
+            }
+            $scanId = BaseApi::uploadImage(
+                $this->apiKey,
+                $this->apiUrl,
+                $fileUrl,
+                $index === 0 ? 'ID scan' : 'Passport scan'
+            );
+            if ($scanId) {
+                $clientData[$almaField] = $scanId;
+            }
+        }
+
+        return $clientData;
+    }
+
+    public function getClientProfile($contactExternalId): ?array
+    {
+        return $this->clientApi->getClientByExternalId($contactExternalId);
+    }
+
 }
 
 
@@ -432,7 +475,19 @@ function syncTenantContract($id, $projectName) {
     if ($scanField) $syncData[$scanField] = $contractData[$scanField] ?? null;
     if ($payerField) $syncData[$payerField] = $contractData[$payerField] ?? '';
 
+    $syncData['client_data'] = $almaApi->enrichClientData($syncData['client_data'], $contractData);
+
     $result = $almaApi->syncContract($syncData);
+
+    $clientProfile = $almaApi->getClientProfile($syncData['client_data']['id']);
+    if (is_array($result['response'] ?? null) && $clientProfile !== null) {
+        $result['response']['client'] = [
+            'id' => $clientProfile['id'] ?? null,
+            'passport' => $clientProfile['passport'] ?? '',
+            'passport_scan' => $clientProfile['passport_scan'] ?? null,
+            'id_scan' => $clientProfile['id_scan'] ?? null,
+        ];
+    }
     Logger::info('Contract sync succeeded', [
         'contract_id' => $id,
         'alma_id' => $result['response']['id'] ?? null,

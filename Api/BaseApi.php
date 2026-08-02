@@ -142,17 +142,163 @@ class BaseApi {
         return (string) $response['id'];
     }
 
-    public static function uploadImage($apiKey, $apiUrl, $fileUrl, $description = 'Document')
+    public static function uploadImage($apiKey, $apiUrl, $fileData, $description = 'Document')
     {
+        $fileUrl = self::extractBitrixFileUrl($fileData);
         if (empty($fileUrl)) {
             return null;
         }
-        $uploadUrl = rtrim($apiUrl, '/') . '/external-image/';
-        try {
-            $response = self::sendRequest($apiKey, 'POST', $uploadUrl, ['url' => $fileUrl, 'description' => $description], true);
-            return $response['id'] ?? null;
-        } catch (Throwable) {
+
+        $downloaded = self::downloadRemoteFile($fileUrl);
+        if ($downloaded === null) {
+            Logger::warning('File download failed', ['url' => $fileUrl, 'description' => $description]);
             return null;
         }
+
+        $uploadUrl = rtrim($apiUrl, '/') . '/external-image/';
+        try {
+            return self::uploadMultipartImage(
+                $apiKey,
+                $uploadUrl,
+                $downloaded['path'],
+                $downloaded['mime'],
+                $downloaded['filename'],
+                $description
+            );
+        } finally {
+            @unlink($downloaded['path']);
+        }
+    }
+
+    private static function downloadRemoteFile(string $url): ?array
+    {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_TIMEOUT => 120,
+            CURLOPT_CONNECTTIMEOUT => 15,
+        ]);
+        $body = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE) ?: 'application/octet-stream';
+        if (curl_errno($ch)) {
+            curl_close($ch);
+            return null;
+        }
+        curl_close($ch);
+        if ($httpCode >= 400 || !is_string($body) || $body === '') {
+            return null;
+        }
+
+        $mime = trim(explode(';', $contentType)[0]);
+        $extension = self::mimeToExtension($mime);
+        $path = tempnam(sys_get_temp_dir(), 'alma_upload_') . '.' . $extension;
+        if (file_put_contents($path, $body) === false) {
+            return null;
+        }
+
+        return [
+            'path' => $path,
+            'mime' => $mime,
+            'filename' => 'document.' . $extension,
+        ];
+    }
+
+    private static function uploadMultipartImage(
+        string $apiKey,
+        string $uploadUrl,
+        string $filePath,
+        string $mime,
+        string $filename,
+        string $description
+    ): ?int {
+        $ch = curl_init($uploadUrl);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_TIMEOUT => 120,
+            CURLOPT_CONNECTTIMEOUT => 15,
+            CURLOPT_HTTPHEADER => [
+                'Api-Key: ' . $apiKey,
+                'Accept: application/json',
+            ],
+            CURLOPT_POSTFIELDS => [
+                'image' => new CURLFile($filePath, $mime, $filename),
+                'description' => $description,
+            ],
+        ]);
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if (curl_errno($ch)) {
+            $error = curl_error($ch);
+            curl_close($ch);
+            Logger::warning('File upload failed', [
+                'description' => $description,
+                'error' => $error,
+            ]);
+            return null;
+        }
+        curl_close($ch);
+
+        $decoded = is_string($response) && $response !== '' ? json_decode($response, true) : null;
+        if ($httpCode >= 400) {
+            Logger::warning('File upload failed', [
+                'description' => $description,
+                'http_code' => $httpCode,
+                'response' => $decoded ?? $response,
+            ]);
+            return null;
+        }
+
+        return isset($decoded['id']) ? (int) $decoded['id'] : null;
+    }
+
+    private static function mimeToExtension(string $mime): string
+    {
+        return match (true) {
+            str_contains($mime, 'jpeg'), str_contains($mime, 'jpg') => 'jpg',
+            str_contains($mime, 'png') => 'png',
+            str_contains($mime, 'gif') => 'gif',
+            str_contains($mime, 'webp') => 'webp',
+            str_contains($mime, 'pdf') => 'pdf',
+            default => 'bin',
+        };
+    }
+
+    public static function extractBitrixFileUrl($fileData): ?string
+    {
+        $urls = self::extractBitrixFileUrls($fileData);
+        return $urls[0] ?? null;
+    }
+
+    public static function extractBitrixFileUrls($fileData): array
+    {
+        if ($fileData === null || $fileData === '' || $fileData === []) {
+            return [];
+        }
+        if (is_string($fileData)) {
+            $trimmed = trim($fileData);
+            return $trimmed !== '' ? [$trimmed] : [];
+        }
+        if (!is_array($fileData)) {
+            return [];
+        }
+        if (!empty($fileData['urlMachine']) && is_string($fileData['urlMachine'])) {
+            return [$fileData['urlMachine']];
+        }
+        $urls = [];
+        foreach ($fileData as $item) {
+            if (is_string($item) && trim($item) !== '') {
+                $urls[] = $item;
+                continue;
+            }
+            if (is_array($item) && !empty($item['urlMachine']) && is_string($item['urlMachine'])) {
+                $urls[] = $item['urlMachine'];
+            }
+        }
+        return $urls;
     }
 }
