@@ -5,6 +5,10 @@ class Config
     private static $config = [];
     private static $loaded = false;
 
+    /**
+     * @param string|null $envFile
+     * @return void
+     */
     public static function load($envFile = null)
     {
         if (self::$loaded) {
@@ -40,6 +44,11 @@ class Config
         self::$loaded = true;
     }
 
+    /**
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
     public static function get($key, $default = null)
     {
         if (!self::$loaded) {
@@ -47,22 +56,4 @@ class Config
         }
         return self::$config[$key] ?? $default;
     }
-
-    public static function getAll()
-    {
-        if (!self::$loaded) {
-            self::load();
-        }
-        return self::$config;
-    }
-
-    public static function has($key)
-    {
-        if (!self::$loaded) {
-            self::load();
-        }
-        return isset(self::$config[$key]);
-    }
 }
-
-

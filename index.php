@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/Core/Bitrix24Rest.php';
 require_once __DIR__ . '/Core/Logger.php';
 require_once __DIR__ . '/Core/Config/Config.php';
 require_once __DIR__ . '/Core/Config/ProjectMapping.php';
@@ -32,15 +31,18 @@ if ($isWebhookRequest) {
     $host = $_SERVER['HTTP_HOST'] ?? '';
     $hkDomain = Config::get('PROJECT_HONGKONG_DOMAIN', 'colifepacific');
     $isDealWithType2 = ($eventName === $eventDealAdd || $eventName === $eventDealUpdate) && (int)$typeId === 2;
-    $hkTypeIds = [1054, 1058, 1072];
+    $hkTypeIds = array_merge(
+        ProjectMapping::getApartmentEntityTypeIds('HongKong'),
+        [
+            ProjectMapping::getUnitEntityTypeId('HongKong'),
+            ProjectMapping::getContractEntityTypeId('HongKong'),
+        ]
+    );
     $projectName = ($hkDomain && str_contains($host, $hkDomain)) || $isDealWithType2 || in_array((int)$typeId, $hkTypeIds, true)
         ? Config::get('PROJECT_HONGKONG_NAME', 'HongKong')
         : Config::get('PROJECT_DEFAULT_NAME', 'Dubai');
 
     Logger::setProject($projectName);
-    $projectConfig = ProjectMapping::getProjectConfig($projectName);
-    $webhookUrl = $projectConfig['webhook_url'];
-    $bitrix = new Bitrix24Rest($webhookUrl);
 
     $aptTypeIds = ProjectMapping::getApartmentEntityTypeIds($projectName);
     if (in_array((int)$typeId, $aptTypeIds, true)) {
@@ -109,4 +111,3 @@ if ($isWebhookRequest) {
         exit;
     }
 }
-

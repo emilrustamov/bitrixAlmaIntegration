@@ -223,7 +223,7 @@ HongKong: `landlord_contract_entity_type_id` не задан — сценари�
 1. `lists.element.get` по ID элемента.
 2. Фильтры: тип события «Блокировка», объект = Apartment, есть дата начала.
 3. Причина блокировки → фиксированный `client_id` в Alma (служебный «клиент» причины: ремонт, собственник живёт и т.д.).
-4. `upsertBlockingContract` — tenant contract типа Blocking на период start–end (по умолчанию end до 2030-12-31, если не указан).
+4. `upsertSyntheticContract` — tenant contract типа Blocking на период start–end (по умолчанию end до 2030-12-31, если не указан).
 5. Статус «отменено» в списке → архивация контракта в Alma.
 
 Параметр `debug=1` — вернуть собранный payload без записи.
@@ -476,7 +476,7 @@ alma/
 ├── Core/
 │   ├── Bitrix24Rest.php   # REST Bitrix24
 │   ├── Logger.php         # логи + ActionLogger-классы
-│   ├── SyncRetry.php      # утилиты retry (резерв)
+│   ├── Logger.php
 │   └── Config/
 │       ├── Config.php
 │       └── ProjectMapping.php
@@ -497,13 +497,11 @@ alma/
 |------------|------------|
 | `ALMA_API_KEY` | ключ Alma External API |
 | `ALMA_API_URL` | базовый URL API, например `https://…/external_api/` |
-| `ALMA_REALTY_API_URL` | URL realty-раздела (если задан отдельно) |
 | `PROJECT_DEFAULT_NAME` | проект по умолчанию (`Dubai`) |
 | `PROJECT_DUBAI_WEBHOOK_URL` | входящий webhook Bitrix24 для Dubai |
 | `PROJECT_HONGKONG_WEBHOOK_URL` | входящий webhook для HongKong |
 | `PROJECT_HONGKONG_DOMAIN` | подстрока в домене запроса для выбора HongKong |
 | `BITRIX_EVENT_*` | имена событий исходящего webhook |
-| `DB_*` | **не используется** в текущем коде |
 
 ### `ProjectMapping`
 
@@ -912,6 +910,9 @@ flowchart TD
 - `Content-Type: application/json`, `Accept: application/json`
 - тело — JSON
 
+Postman-коллекция (на сервере, не в git): `Documentation/Colife Alma.postman_collection.json`.  
+Полный текстовый справочник: [Documentation/integration.txt](Documentation/integration.txt).
+
 Пример payload комнаты (`RoomApi.php` → `UnitApi::upsertRoom`):
 
 ```json
@@ -932,19 +933,43 @@ flowchart TD
 - `parent_unit` — внутренний ID апартамента в Alma;
 - даты — `YYYY-MM-DDT00:00:00Z`.
 
-Полный справочник методов и полей: [Documentation/integration.txt](Documentation/integration.txt).
-
-### Основные endpoint Alma (realty)
+### Endpoint Alma (как в Postman + что использует bridge)
 
 | Операция | Метод | Путь |
 |----------|-------|------|
-| Апартамент/юнит | POST/PATCH | `realty/units/` |
-| Комната | POST/PATCH | `realty/rooms/` |
+| Клиенты — список | GET | `users/clients/` |
+| Клиент — по id | GET | `users/clients/{id}/` |
+| Клиент — создать | POST | `users/clients/` |
+| Клиент — обновить | PATCH | `users/clients/{id}/` |
+| Клиент — по external_id | GET | `users/clients/external_id/{id}/` |
+| Юниты — список | GET | `realty/units/` |
+| Юнит — по id | GET | `realty/units/{id}/` |
+| Юнит — создать/обновить | POST/PATCH | `realty/units/`, `realty/units/{id}/` |
+| Юнит — по external_id | GET | `realty/units/external_id/{id}/` |
+| Комнаты — список | GET | `realty/rooms/` |
+| Комната — по id | GET | `realty/rooms/{id}/` |
+| Комната — создать/обновить | POST/PATCH | `realty/rooms/`, `realty/rooms/{id}/` |
+| Комната — по external_id | GET | `realty/rooms/external_id/{id}/` |
+| Tenant contracts — список | GET | `realty/contracts/tenant_contracts/` |
+| Tenant contract — по id | GET | `realty/contracts/tenant_contracts/{id}/` |
+| Tenant contract — создать/обновить | POST/PATCH | `realty/contracts/tenant_contracts/` |
+| Owner contract | POST/PATCH/GET | `realty/contracts/owner_contracts/`, `…/external_id/{id}/` |
 | Поиск объекта для контракта | GET | `realty/rental_object/{bitrix_id}/` |
-| Контракт арендатора | POST/PATCH | `realty/contracts/tenant_contracts/` |
-| Контракт собственника | POST/PATCH | `realty/contracts/owner_contracts/` |
-| Клиент | POST/PATCH/GET | `users/clients/`, `users/clients/external_id/{id}/` |
-| Здание | POST | `realty/buildings/` (через `getOrCreateBuilding`) |
+| Здание | GET/POST | `realty/buildings/` |
+| Загрузка файла | POST | `external-image/` (multipart `image`) |
+
+В Postman сейчас есть GET/PATCH для clients, units, rooms и GET tenant_contracts; create юнитов/комнат, owner_contracts, `rental_object` и `external-image` в коллекции нет — ими пользуется bridge.
+
+### Endpoint bridge (ручной sync, `colifeUrl` в Postman)
+
+| Операция | Метод | Путь |
+|----------|-------|------|
+| Tenant contract Dubai/HK | GET | `/TenantContractApi.php?id={id}&project=Dubai\|HongKong` |
+| Landlord contract | GET | `/LandlordContractApi.php?id={id}&project=Dubai` |
+| Апартамент | GET | `/AppartApi.php?id={id}&project=Dubai\|HongKong` |
+| Комната | GET | `/RoomApi.php?id={id}&project=HongKong` |
+| Blocking | GET | `/BlockingAppartApi.php?id={id}&project=Dubai` |
+| Termination | GET | `/TerminationAppartApi.php?id={id}&project=Dubai` |
 
 ---
 
@@ -1064,7 +1089,7 @@ logs/{project}/{YYYY-MM-DD}/{HH}_error.log
 ### Безопасность
 
 - HTTP‑эндпоинты **без встроенной аутентификации** — ограничьте доступ (VPN, firewall, IP whitelist, basic auth на nginx).
-- Не коммитьте `config.env` (в `.gitignore`).
+- Не коммитьте `config.env` и Postman-коллекцию (в `.gitignore`).
 - Не публикуйте `ALMA_API_KEY` и URL webhook в открытых репозиториях.
 
 ### Быстрая диагностика
@@ -1152,6 +1177,7 @@ Contract end date must not be after apartment termination date (YYYY-MM-DD)
 | [Documentation/logic.md](Documentation/logic.md) | разработчики | шеринг apartments, `rental_object`, типы контрактов, связи B24 ↔ Alma, curl-примеры |
 | [Documentation/integration.txt](Documentation/integration.txt) | разработчики | полный Alma External API: apartments, rooms, contracts, clients, форматы полей |
 | [Documentation/fields.md](Documentation/fields.md) | аналитики, настройщики B24 | матрица полей Bitrix24 ↔ Alma, экраны в приложении, триггеры |
+| `Documentation/Colife Alma.postman_collection.json` | разработчики | Postman: Alma + ручные sync bridge (файл на сервере, в git не коммитить) |
 
 **Когда что читать:**
 
@@ -1159,7 +1185,8 @@ Contract end date must not be after apartment termination date (YYYY-MM-DD)
 - Проверяете, что B24 отдаёт нужные поля / webhook срабатывает → [Проверка данных в Bitrix24 через webhook](#проверка-данных-в-bitrix24-через-webhook).
 - Контракт не цепляется к объекту → [Шеринг и идентификаторы](#шеринг-и-идентификаторы) + `logic.md`.
 - Меняете поле в смарт‑процессе → `fields.md` + `ProjectMapping.php`.
-- Новый метод Alma → `integration.txt`.
+- Новый метод Alma → `integration.txt` или Postman-коллекция.
+- Ручной прогон sync / проверка Alma → Postman-коллекция.
 
 ---
 
@@ -1172,4 +1199,4 @@ Contract end date must not be after apartment termination date (YYYY-MM-DD)
 - entry‑функции: `syncApartment`, `syncTenantContract`, `syncLandlordContract`, `syncBlocking`, `syncTermination`;
 - сокращения в переменных: `apt`, `map`, `typeId`, `aptRes`, `contractRes`.
 
-Актуальные имена после рефакторинга: `UnitApi::upsertRoom`, `AppartApi::upsertApartment`, `BaseApi::getUnitIdByAptExternalId`, `AppartApi::archiveBuildingIfEmpty`, `TenantContractApi::upsertBlockingContract`.
+Актуальные имена после рефакторинга: `UnitApi::upsertRoom`, `AppartApi::upsertApartment`, `BaseApi::getUnitIdByAptExternalId`, `AppartApi::archiveBuildingIfEmpty`, `TenantContractApi::upsertSyntheticContract`, `syncUnitById`.

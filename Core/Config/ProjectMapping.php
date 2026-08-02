@@ -41,7 +41,7 @@ class ProjectMapping {
                 'landlord_fields' => [
                     'email' => 'UF_CRM_1727788747',
                     'passport_number' => 'UF_CRM_10_1740556751168',
-                    'id_scan' => 'UF_CRM_10_1694000435068',
+                    'id_scan' => 'UF_CRM_10_1741788524',
                 ],
                 'fields' => [
                     'building_name' => 'ufCrm6_1682232363193',
@@ -63,48 +63,14 @@ class ProjectMapping {
                     'stage' => 'ufCrm6_1742486676',
                     'rent_type' => 'ufCrm6_1736951470242',
                     'date_of_refused' => 'ufCrm6_1742377926',
-                    'email' => 'UF_CRM_1727788747'
                 ],
                 'unit_fields' => [
                     'internal_area' => 'ufCrm8_1686662606534',
                     'goal_rent_cost' => 'opportunity',
                     'number' => 'ufCrm8_1698838056004',
                 ],
-                'blocking_fields' => [
-                    'apartment' => [
-                        'blocking_start' => 'ufCrm6_1740652780',
-                        'blocking_end' => 'ufCrm6_1740652788',
-                        'blocking_reasons' => 'ufCrm6_1740667738',
-                        'blocking_canceling' => 'ufCrm6_1761994186',
-                    ],
-                    'unit' => [
-                        'blocking_start' => 'ufCrm8_1740652780',
-                        'blocking_end' => 'ufCrm8_1740652788',
-                        'blocking_reasons' => 'ufCrm8_1740667738',
-                        'blocking_canceling' => 'ufCrm8_1761994186',
-                    ],
-                ],
-                'blocking_reasons_enum' => [
-                    '5886' => 'Landlor lives in (проживает собственник)',
-                    '5888' => 'Repair (ремонт)',
-                    '5890' => "Landlord's friends live in (проживают друзья собственника)",
-                    '5892' => 'Another reason (другое)',
-                    '6868' => 'Invest',
-                    '6870' => 'Tenants of the landlord',
-                ],
-                'blocking_reason_alma_client_ids' => [
-                    '5886' => 15106,
-                    '5888' => 15107,
-                    '5890' => 15108,
-                    '5892' => 15109,
-                    '6868' => 15110,
-                    '6870' => 15111,
-                ],
-                'blocking_canceling_enum_id' => 9210,
                 'blocking_list_iblock_id' => 300,
                 'termination_list_event_type' => 'Расторжение',
-                'blocking_list_status_active' => '2244',
-                'blocking_list_status_finished' => '2246',
                 'blocking_list_status_canceled' => '2248',
                 'blocking_list_reason_alma_client_ids' => [
                     'Landlor lives in (проживает собственник)' => 15106,
@@ -267,15 +233,6 @@ class ProjectMapping {
                     'DT183_28:FAIL',
                     'DT183_28:SUCCESS',
                 ],
-                'stage_mapping' => [
-                    'DT144_10:NEW' => 'Repair/AC/GAS/Card',
-                    'DT144_10:PREPARATION' => 'For rent',
-                    'DT144_10:CLIENT' => 'Rented',
-                    'DT144_10:UC_W4YLY0' => 'ON HOLD',
-                    'DT144_10:UC_XH6370' => 'Termination process',
-                    'DT144_10:FAIL' => 'Ex-apartment',
-                    'DT144_10:SUCCESS' => 'Успех'
-                ],
                 'archive_stage_ids' => [
                     'DT144_10:FAIL',
                     'DT144_10:UC_XH6370',
@@ -295,7 +252,6 @@ class ProjectMapping {
                 'contract_entity_type_id' => 1072,
                 'contract_fields' => [
                     'unit_id' => 'ufCrm19Units',
-                    'apartment_id' => 'ufCrm19Apartments',
                     'start_date' => 'ufCrm19CheckinDate',
                     'end_date' => 'ufCrm19CheckoutDate',
                     'contract_type' => 'ufCrm19ContractType',
@@ -305,12 +261,12 @@ class ProjectMapping {
                 'tenant_fields' => [
                     'email' => 'UF_CRM_1727788747',
                     'passport_number' => 'UF_CRM_20_1696523391',
-                    'passport_scan' => 'UF_CRM_20_1696615939',
+                    'id_scan' => 'UF_CRM_20_1696615939',
                 ],
                 'landlord_fields' => [
                     'email' => 'UF_CRM_1727788747',
                     'passport_number' => 'UF_CRM_10_1740556751168',
-                    'id_scan' => 'UF_CRM_10_1694000435068',
+                    'id_scan' => 'UF_CRM_10_1741788524',
                 ],
                 'fields' => [
                     'building_name' => 'ufCrm11Building',
@@ -331,7 +287,6 @@ class ProjectMapping {
                     'stage' => 'ufCrm11StageForAlma',
                     'rent_type' => 'ufCrm11RentType',
                     'subway_station' => null,
-                    'email' => 'UF_CRM_1727788747'
                 ],
                 'unit_fields' => [
                     'internal_area' => 'ufCrm13TotalAreaOfTheRoom',
@@ -402,14 +357,6 @@ class ProjectMapping {
                 'no_invitation_contract_type_ids' => ['985'],
                 'work_model_mapping' => [],
                 'metro_mapping' => [],
-                'stage_mapping' => [
-                    '1019' => 'Blocked',
-                    '1021' => 'Available',
-                    '1023' => 'Rented',
-                    '1025' => 'Ex',
-                    '1027' => 'Termination process',
-                    '1029' => 'Ex-apartments'
-                ],
                 'archive_stage_ids' => ['1025', '1027', '1029'],
                 'allowed_stage_ids' => ['1021', '1023']
             ]
@@ -452,9 +399,25 @@ class ProjectMapping {
     public static function getContractEntityTypeId($projectName = 'Dubai') {
         return self::getFieldMapping($projectName)['contract_entity_type_id'] ?? 183;
     }
-    
-    public static function getFailureStageId($projectName = 'Dubai') {
-        return self::getFieldMapping($projectName)['failure_stage_id'] ?? null;
+
+    /**
+     * @param array $aptItem
+     * @param string $projectName
+     * @return string
+     */
+    public static function resolveRentType(array $aptItem, $projectName = 'Dubai') {
+        $rentTypeField = self::getApartmentRentTypeField($projectName);
+        if ($rentTypeField === null) {
+            return 'unit';
+        }
+        $mapping = self::getFieldMapping($projectName);
+        $rentTypeMapping = $mapping['rent_type_mapping'] ?? [];
+        $defaultRentTypeValue = self::getDefaultRentTypeValue($projectName);
+        $rentTypeValue = $aptItem[$rentTypeField] ?? $defaultRentTypeValue;
+        if (is_array($rentTypeValue)) {
+            $rentTypeValue = $rentTypeValue[0] ?? $defaultRentTypeValue;
+        }
+        return $rentTypeMapping[(string) $rentTypeValue] ?? 'unit';
     }
 
     public static function getTenantContractArchiveStageIds($projectName = 'Dubai') {

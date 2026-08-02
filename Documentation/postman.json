@@ -1,0 +1,665 @@
+{
+  "info": {
+    "_postman_id": "745dcbbb-f612-4568-95e4-5926f5797c95",
+    "name": "Colife Alma",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "38915085",
+    "_collection_link": "https://go.postman.co/collection/38915085-745dcbbb-f612-4568-95e4-5926f5797c95?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Clients",
+      "item": [
+        {
+          "name": "all",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Api-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{almaUrl}}/external_api/users/clients",
+              "host": [
+                "{{almaUrl}}"
+              ],
+              "path": [
+                "external_api",
+                "users",
+                "clients"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "One",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Api-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{almaUrl}}/external_api/users/clients/11753/",
+              "host": [
+                "{{almaUrl}}"
+              ],
+              "path": [
+                "external_api",
+                "users",
+                "clients",
+                "11753",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Api-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"external_id\": \"123\",\r\n  \"first_name\": \"test\",\r\n  \"last_name\": \"test\",\r\n  \"phone\": \"+1234567890\",\r\n  \"country\": 4,\r\n  \"birthday\": \"1999-06-03T00:00:00Z\",\r\n  \"email\": \"erustamow@gmail.com\",\r\n  \"is_send_password_when_creating\":true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{almaUrl}}/external_api/users/clients/",
+              "host": [
+                "{{almaUrl}}"
+              ],
+              "path": [
+                "external_api",
+                "users",
+                "clients",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Api-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"first_name\": \"Emil Updated\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{almaUrl}}/external_api/users/clients/12733/",
+              "host": [
+                "{{almaUrl}}"
+              ],
+              "path": [
+                "external_api",
+                "users",
+                "clients",
+                "12733",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "New Request",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Units",
+      "item": [
+        {
+          "name": "All",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Api-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{almaUrl}}/external_api/realty/units/",
+              "host": [
+                "{{almaUrl}}"
+              ],
+              "path": [
+                "external_api",
+                "realty",
+                "units",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "One",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Api-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{almaUrl}}/external_api/realty/units/1710",
+              "host": [
+                "{{almaUrl}}"
+              ],
+              "path": [
+                "external_api",
+                "realty",
+                "units",
+                "1710"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Api-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "// {\"is_used_additional_external_id\": true}\r\n{\"external_id\":37}\r\n// {\"additional_external_id\":134}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{almaUrl}}/external_api/realty/units/15564/",
+              "host": [
+                "{{almaUrl}}"
+              ],
+              "path": [
+                "external_api",
+                "realty",
+                "units",
+                "15564",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Rooms",
+      "item": [
+        {
+          "name": "All",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Api-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{almaUrl}}/external_api/realty/rooms/",
+              "host": [
+                "{{almaUrl}}"
+              ],
+              "path": [
+                "external_api",
+                "realty",
+                "rooms",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "One",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Api-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{almaUrl}}/external_api/realty/rooms/2361/",
+              "host": [
+                "{{almaUrl}}"
+              ],
+              "path": [
+                "external_api",
+                "realty",
+                "rooms",
+                "2361",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Api-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"external_id\":\"1570_archive\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{almaUrl}}/external_api/realty/rooms/15794/",
+              "host": [
+                "{{almaUrl}}"
+              ],
+              "path": [
+                "external_api",
+                "realty",
+                "rooms",
+                "15794",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Contracts",
+      "item": [
+        {
+          "name": "All",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Api-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{almaUrl}}/external_api/realty/contracts/tenant_contracts/",
+              "host": [
+                "{{almaUrl}}"
+              ],
+              "path": [
+                "external_api",
+                "realty",
+                "contracts",
+                "tenant_contracts",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "One",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Api-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{almaUrl}}/external_api/realty/contracts/tenant_contracts/5515",
+              "host": [
+                "{{almaUrl}}"
+              ],
+              "path": [
+                "external_api",
+                "realty",
+                "contracts",
+                "tenant_contracts",
+                "5515"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "tenantContract Dubai",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{colifeUrl}}/TenantContractApi.php?id=8504&project=Dubai",
+              "host": [
+                "{{colifeUrl}}"
+              ],
+              "path": [
+                "TenantContractApi.php"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "8504"
+                },
+                {
+                  "key": "project",
+                  "value": "Dubai"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "tenantContract HK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{colifeUrl}}/TenantContractApi.php?id=7592&project=HongKong",
+              "host": [
+                "{{colifeUrl}}"
+              ],
+              "path": [
+                "TenantContractApi.php"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "7592"
+                },
+                {
+                  "key": "project",
+                  "value": "HongKong"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "landlordContract",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{colifeUrl}}/LandlordContractApi.php?id=1040&project=Dubai",
+              "host": [
+                "{{colifeUrl}}"
+              ],
+              "path": [
+                "LandlordContractApi.php"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1040"
+                },
+                {
+                  "key": "project",
+                  "value": "Dubai"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Apparts",
+      "item": [
+        {
+          "name": "appart HK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{colifeUrl}}/AppartApi.php?id=39&project=HongKong",
+              "host": [
+                "{{colifeUrl}}"
+              ],
+              "path": [
+                "AppartApi.php"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "39"
+                },
+                {
+                  "key": "project",
+                  "value": "HongKong"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "rooms HK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{colifeUrl}}/RoomApi.php?id=69&project=HongKong",
+              "host": [
+                "{{colifeUrl}}"
+              ],
+              "path": [
+                "RoomApi.php"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "69"
+                },
+                {
+                  "key": "project",
+                  "value": "HongKong"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "appart Dubai",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{colifeUrl}}/AppartApi.php?id=2086&project=Dubai",
+              "host": [
+                "{{colifeUrl}}"
+              ],
+              "path": [
+                "AppartApi.php"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "2086"
+                },
+                {
+                  "key": "project",
+                  "value": "Dubai"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Blocking",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{colifeUrl}}/BlockingAppartApi.php?id=748682&project=Dubai",
+              "host": [
+                "{{colifeUrl}}"
+              ],
+              "path": [
+                "BlockingAppartApi.php"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "748682"
+                },
+                {
+                  "key": "project",
+                  "value": "Dubai"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Termination",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{colifeUrl}}/TerminationAppartApi.php?id=33&project=Dubai",
+              "host": [
+                "{{colifeUrl}}"
+              ],
+              "path": [
+                "TerminationAppartApi.php"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "33"
+                },
+                {
+                  "key": "project",
+                  "value": "Dubai"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "almaUrl",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "apiKey",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "unit_ids",
+      "value": ""
+    },
+    {
+      "key": "unit_index",
+      "value": ""
+    },
+    {
+      "key": "units_full",
+      "value": ""
+    }
+  ]
+}

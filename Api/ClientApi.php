@@ -6,11 +6,20 @@ class ClientApi {
     private $apiKey;
     private $apiUrl;
 
+    /**
+     * @param string $apiKey
+     * @param string $apiUrl
+     */
     public function __construct($apiKey, $apiUrl) {
         $this->apiKey = $apiKey;
         $this->apiUrl = rtrim($apiUrl, '/') . '/';
     }
 
+    /**
+     * @param array $clientData
+     * @param bool $sendInvitation
+     * @return string
+     */
     public function updateClient(array $clientData, $sendInvitation = true) {
         $id = $this->ensureClientExists($clientData, $sendInvitation);
         $payload = array_intersect_key($clientData, array_flip([
@@ -27,6 +36,10 @@ class ClientApi {
         return $id;
     }
 
+    /**
+     * @param string|int $externalId
+     * @return array|null
+     */
     public function getClientByExternalId($externalId): ?array
     {
         $externalId = (string) $externalId;
@@ -43,6 +56,11 @@ class ClientApi {
         return null;
     }
 
+    /**
+     * @param array $clientData
+     * @param bool $sendInvitation
+     * @return string
+     */
     public function ensureClientExists(array $clientData, $sendInvitation = true) {
         if (empty($clientData['id'])) {
             throw new InvalidArgumentException('Client external id is required');
@@ -57,6 +75,11 @@ class ClientApi {
         return (string) $newClient['id'];
     }
 
+    /**
+     * @param array $clientData
+     * @param bool $sendInvitation
+     * @return array
+     */
     private function buildCreateClientPayload(array $clientData, $sendInvitation) {
         $payload = [
             'external_id' => $clientData['id'],

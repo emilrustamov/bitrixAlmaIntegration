@@ -4,23 +4,27 @@ class Logger
 {
     private static $logBaseDir = __DIR__ . '/../logs';
     private static $currentProject = 'general';
-    const LEVEL_DEBUG = 'DEBUG';
     const LEVEL_INFO = 'INFO';
     const LEVEL_WARNING = 'WARNING';
     const LEVEL_ERROR = 'ERROR';
-    
-    public static function setLogBaseDir($path)
-    {
-        if (!empty($path)) {
-            self::$logBaseDir = rtrim($path, DIRECTORY_SEPARATOR);
-        }
-    }
-    
+
+    /**
+     * @param string $projectName
+     * @return void
+     */
     public static function setProject($projectName)
     {
         self::$currentProject = self::sanitizeProjectName($projectName);
     }
-    
+
+    /**
+     * @param string $level
+     * @param string $message
+     * @param array $context
+     * @param string|null $entityType
+     * @param string|null $entityId
+     * @return void
+     */
     public static function log($level, $message, $context = [], $entityType = null, $entityId = null)
     {
         $timestamp = gmdate('Y-m-d H:i:s');
@@ -30,15 +34,15 @@ class Logger
             'message' => $message,
             'context' => $context
         ];
-        
+
         if ($entityType) {
             $logEntry['entity_type'] = $entityType;
         }
-        
+
         if ($entityId) {
             $logEntry['entity_id'] = $entityId;
         }
-        
+
         $logLine = json_encode($logEntry, JSON_UNESCAPED_UNICODE) . "\n";
         $logFile = self::resolveLogFilePath();
         file_put_contents($logFile, $logLine, FILE_APPEND | LOCK_EX);
@@ -51,35 +55,61 @@ class Logger
             flush();
         }
     }
-    
+
+    /**
+     * @param string $message
+     * @param array $context
+     * @param string|null $entityType
+     * @param string|null $entityId
+     * @return void
+     */
     public static function info($message, $context = [], $entityType = null, $entityId = null)
     {
         self::log(self::LEVEL_INFO, $message, $context, $entityType, $entityId);
     }
-    
+
+    /**
+     * @param string $message
+     * @param array $context
+     * @param string|null $entityType
+     * @param string|null $entityId
+     * @return void
+     */
     public static function warning($message, $context = [], $entityType = null, $entityId = null)
     {
         self::log(self::LEVEL_WARNING, $message, $context, $entityType, $entityId);
     }
-    
+
+    /**
+     * @param string $message
+     * @param array $context
+     * @param string|null $entityType
+     * @param string|null $entityId
+     * @return void
+     */
     public static function error($message, $context = [], $entityType = null, $entityId = null)
     {
         self::log(self::LEVEL_ERROR, $message, $context, $entityType, $entityId);
     }
-    
-    public static function logApiRequest($method, $url, $data = null, $response = null, $httpCode = null)
-    {
-        if ($httpCode !== null && $httpCode >= 400) {
-            self::error("API Error: $method " . basename($url) . " ($httpCode)", ['response' => $response, 'http_code' => $httpCode]);
-        }
-    }
-    
+
+    /**
+     * @param string $action
+     * @param string $entityType
+     * @param string|int $entityId
+     * @param string $entityName
+     * @param array $details
+     * @param array|null $changes
+     * @return void
+     */
     public static function logEntityAction($action, $entityType, $entityId, $entityName, $details = [], $changes = null)
     {
         $context = array_merge(['action' => $action, 'entity_name' => $entityName, 'details' => $details], $changes ? ['changes' => $changes] : []);
         self::info("Entity $action: $entityName", $context, $entityType, $entityId);
     }
-    
+
+    /**
+     * @return string
+     */
     private static function resolveLogFilePath()
     {
         $project = self::$currentProject ?: 'general';
@@ -90,6 +120,9 @@ class Logger
         return $dir . DIRECTORY_SEPARATOR . gmdate('H') . '.log';
     }
 
+    /**
+     * @return string
+     */
     private static function resolveErrorLogFilePath()
     {
         $project = self::$currentProject ?: 'general';
@@ -99,7 +132,11 @@ class Logger
         }
         return $dir . DIRECTORY_SEPARATOR . gmdate('H') . '_error.log';
     }
-    
+
+    /**
+     * @param string $projectName
+     * @return string
+     */
     private static function sanitizeProjectName($projectName)
     {
         $normalized = preg_replace('/[^a-z0-9_\-]/i', '_', (string)$projectName);
@@ -107,28 +144,46 @@ class Logger
     }
 }
 
-abstract class ActionLogger
+class ActionLogger
 {
     protected $entityType;
+    protected $updateFields;
 
-    public function __construct($entityType)
+    /**
+     * @param string $entityType
+     * @param array $updateFields
+     */
+    public function __construct($entityType, array $updateFields = [])
     {
         $this->entityType = $entityType;
+        $this->updateFields = $updateFields;
     }
 
-    protected function logAction($action, $entityId, $entityName, $details = [], $changes = null, $error = null)
+    /**
+     * @param string $action
+     * @param string|int $entityId
+     * @param string $entityName
+     * @param array $details
+     * @param array|null $changes
+     * @return void
+     */
+    protected function logAction($action, $entityId, $entityName, $details = [], $changes = null)
     {
-        if ($error) {
-            Logger::error("Entity action failed: $action", array_merge(['action' => $action, 'entity_name' => $entityName, 'details' => $details, 'error' => $error], $changes ? ['changes' => $changes] : []), $this->entityType, $entityId);
-        } else {
-            Logger::logEntityAction($action, $this->entityType, $entityId, $entityName, $details, $changes);
-        }
+        Logger::logEntityAction($action, $this->entityType, $entityId, $entityName, $details, $changes);
     }
 
-    protected function logUpdateInternal($entityId, $entityName, $oldData, $newData, $fieldsToCompare)
+    /**
+     * @param string|int $entityId
+     * @param string $entityName
+     * @param array|null $oldData
+     * @param array $newData
+     * @return void
+     */
+    public function logUpdate($entityId, $entityName, $oldData, $newData)
     {
         $changes = [];
-        foreach ($fieldsToCompare as $field) {
+        $oldData = is_array($oldData) ? $oldData : [];
+        foreach ($this->updateFields as $field) {
             $oldValue = $oldData[$field] ?? '';
             $newValue = $newData[$field] ?? '';
             if ($oldValue !== $newValue) {
@@ -141,62 +196,62 @@ abstract class ActionLogger
 
 class ContractActionLogger extends ActionLogger
 {
-    private static $updateFields = ['name', 'start_date', 'end_date', 'price', 'type_contract'];
-
     public function __construct()
     {
-        parent::__construct('contract');
+        parent::__construct('contract', ['name', 'start_date', 'end_date', 'price', 'type_contract']);
     }
 
+    /**
+     * @param string|int $contractId
+     * @param string $contractName
+     * @param string|int $clientId
+     * @param string|int $unitId
+     * @param array $details
+     * @return void
+     */
     public function logContractCreation($contractId, $contractName, $clientId, $unitId, $details = [])
     {
         $this->logAction('CREATED', $contractId, $contractName, array_merge(['client_id' => $clientId, 'unit_id' => $unitId], $details));
-    }
-
-    public function logUpdate($contractId, $contractName, $oldData, $newData)
-    {
-        $this->logUpdateInternal($contractId, $contractName, $oldData, $newData, self::$updateFields);
     }
 }
 
 class ApartmentActionLogger extends ActionLogger
 {
-    private static $updateFields = ['name', 'floor', 'area', 'rooms', 'status'];
-
     public function __construct()
     {
-        parent::__construct('apartment');
+        parent::__construct('apartment', ['name', 'floor', 'internal_area', 'number_of_bedrooms', 'property_type', 'goal_rent_cost']);
     }
 
+    /**
+     * @param string|int $apartmentId
+     * @param string $apartmentName
+     * @param string|int $buildingId
+     * @param array $details
+     * @return void
+     */
     public function logApartmentCreation($apartmentId, $apartmentName, $buildingId, $details = [])
     {
         $this->logAction('CREATED', $apartmentId, $apartmentName, array_merge(['building_id' => $buildingId], $details));
-    }
-
-    public function logUpdate($apartmentId, $apartmentName, $oldData, $newData)
-    {
-        $this->logUpdateInternal($apartmentId, $apartmentName, $oldData, $newData, self::$updateFields);
     }
 }
 
 class LandlordContractActionLogger extends ActionLogger
 {
-    private static $updateFields = ['name', 'start_date', 'end_date', 'work_model', 'unit_id', 'client_id'];
-
     public function __construct()
     {
-        parent::__construct('landlord_contract');
+        parent::__construct('landlord_contract', ['name', 'start_date', 'end_date', 'work_model', 'unit_id', 'client_id']);
     }
 
+    /**
+     * @param string|int $contractId
+     * @param string $contractName
+     * @param string|int $landlordId
+     * @param string|int $apartmentId
+     * @param array $details
+     * @return void
+     */
     public function logContractCreation($contractId, $contractName, $landlordId, $apartmentId, $details = [])
     {
         $this->logAction('CREATED', $contractId, $contractName, array_merge(['landlord_id' => $landlordId, 'apartment_id' => $apartmentId], $details));
     }
-
-    public function logUpdate($contractId, $contractName, $oldData, $newData)
-    {
-        $this->logUpdateInternal($contractId, $contractName, $oldData, $newData, self::$updateFields);
-    }
 }
-
-

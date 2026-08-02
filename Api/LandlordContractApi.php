@@ -9,6 +9,7 @@ require_once __DIR__ . '/../Core/Config/Config.php';
 require_once __DIR__ . '/../Core/Config/ProjectMapping.php';
 require_once __DIR__ . '/ClientApi.php';
 require_once __DIR__ . '/BaseApi.php';
+require_once __DIR__ . '/SyncHelpers.php';
 
 Config::load();
 
@@ -93,7 +94,6 @@ class LandlordContractApi {
 
 
     public function ensureLandlordExists(array $landlordData) {
-        $this->clientApi->ensureClientExists($landlordData, false);
         return $this->clientApi->updateClient($landlordData, false);
     }
 
@@ -136,8 +136,12 @@ class LandlordContractApi {
             if (!$field) {
                 continue;
             }
-            $url = is_array($bitrixData[$field] ?? null) ? ($bitrixData[$field]['urlMachine'] ?? null) : ($bitrixData[$field] ?? null);
-            $scanId = BaseApi::uploadImage($this->apiKey, $this->apiUrl, $url, 'Landlord contract document');
+            $scanId = BaseApi::uploadImage(
+                $this->apiKey,
+                $this->apiUrl,
+                $bitrixData[$field] ?? null,
+                'Landlord contract document'
+            );
             if ($scanId) {
                 $contractData[$almaKey] = $scanId;
             }
@@ -200,13 +204,7 @@ function syncLandlordContract($id, $projectName) {
         throw new RuntimeException('Failed to get contact from Bitrix24');
     }
     $emailField = ProjectMapping::getLandlordField('email', $projectName);
-    $landlordData = [
-        'id' => $contact['ID'],
-        'first_name' => $contact['NAME'],
-        'last_name' => $contact['LAST_NAME'],
-        'email' => $contact[$emailField] ?? (is_array($contact['EMAIL'] ?? null) ? ($contact['EMAIL'][0]['VALUE'] ?? '') : ''),
-        'phone' => $contact['PHONE'][0]['VALUE'] ?? '',
-    ];
+    $landlordData = mapBitrixContactToClientData($contact, $emailField);
 
     if ($projectName === 'Dubai') {
         $passport = ProjectMapping::getBitrixItemValue(
@@ -243,7 +241,7 @@ function syncLandlordContract($id, $projectName) {
     ];
 }
 
-if (isset($_GET['id'])) {
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === __FILE__ && isset($_GET['id'])) {
     header('Content-Type: application/json');
     $projectName = $_GET['project'] ?? 'Dubai';
     try {

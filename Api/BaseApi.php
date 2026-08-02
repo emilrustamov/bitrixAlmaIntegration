@@ -3,6 +3,32 @@
 require_once __DIR__ . '/../Core/Logger.php';
 
 class BaseApi {
+    /**
+     * @param string $apiKey
+     * @param string $apiUrl
+     * @param string $method
+     * @param string $endpoint
+     * @param array|null $data
+     * @param bool $isPost
+     * @return array
+     */
+    public static function callRealty($apiKey, $apiUrl, $method, $endpoint, $data = [], $isPost = true)
+    {
+        $url = rtrim($apiUrl, '/') . '/realty/' . ltrim($endpoint, '/');
+        if (!$isPost && !empty($data)) {
+            $url .= '?' . http_build_query($data);
+        }
+        return self::sendRequest($apiKey, $method, $url, $isPost ? $data : null, false);
+    }
+
+    /**
+     * @param string $apiKey
+     * @param string $method
+     * @param string $url
+     * @param mixed $data
+     * @param bool $throwOnError
+     * @return mixed
+     */
     public static function sendRequest($apiKey, $method, $url, $data = null, $throwOnError = true)
     {
         $headers = [

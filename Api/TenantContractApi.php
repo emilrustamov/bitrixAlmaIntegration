@@ -9,6 +9,7 @@ require_once __DIR__ . '/../Core/Config/Config.php';
 require_once __DIR__ . '/../Core/Config/ProjectMapping.php';
 require_once __DIR__ . '/ClientApi.php';
 require_once __DIR__ . '/BaseApi.php';
+require_once __DIR__ . '/SyncHelpers.php';
 
 Config::load();
 
@@ -76,7 +77,11 @@ class TenantContractApi {
         return $this->createContract($contractData);
     }
 
-    public function upsertBlockingContract(array $syncData) {
+    /**
+     * @param array $syncData
+     * @return array
+     */
+    public function upsertSyntheticContract(array $syncData) {
         $externalId = $syncData['id'] ?? null;
         if ($externalId === null || $externalId === '') {
             return $this->createContractOnly($syncData);
@@ -88,6 +93,15 @@ class TenantContractApi {
             return $this->updateContract($existing['id'], $contractData);
         }
         return $this->createContractOnly($syncData);
+    }
+
+    /**
+     * @param array $syncData
+     * @return array
+     * @deprecated Use upsertSyntheticContract()
+     */
+    public function upsertBlockingContract(array $syncData) {
+        return $this->upsertSyntheticContract($syncData);
     }
 
     public function createContract(array $contractData) {
@@ -169,7 +183,6 @@ class TenantContractApi {
 
         $noInvitationIds = ProjectMapping::getNoInvitationContractTypeIds($this->projectName);
         $sendInvitation = !in_array((string) $contractType, $noInvitationIds, true);
-        $this->clientApi->ensureClientExists($clientData, $sendInvitation);
         return $this->clientApi->updateClient($clientData, $sendInvitation);
     }
 
@@ -450,21 +463,12 @@ function syncTenantContract($id, $projectName) {
     $scanField = ProjectMapping::getContractField('contract_scan', $projectName);
     $payerField = ProjectMapping::getContractField('paying_party', $projectName);
 
-    $emailRaw = $contact['EMAIL'] ?? null;
-    $email = is_array($emailRaw) ? ($emailRaw[0]['VALUE'] ?? '') : '';
-
     $syncData = [
         'id' => $contractData['id'] ?? $id,
         'title' => $contractData['title'],
         'unit_external_id' => $contractData[ProjectMapping::getContractField('unit_id', $projectName)] ?? '',
         'stageId' => $contractData['stageId'] ?? $contractData['stage_id'] ?? $contractData['STAGE_ID'] ?? null,
-        'client_data' => [
-            'id' => $contact['ID'],
-            'first_name' => $contact['NAME'],
-            'last_name' => $contact['LAST_NAME'],
-            'email' => $email,
-            'phone' => (is_array($contact['PHONE'] ?? null) ? ($contact['PHONE'][0]['VALUE'] ?? '') : ''),
-        ],
+        'client_data' => mapBitrixContactToClientData($contact),
         'opportunity' => $contractData['opportunity'] ?? 0,
     ];
     
@@ -500,7 +504,7 @@ function syncTenantContract($id, $projectName) {
     ];
 }
 
-if (!defined('SKIP_TENANT_CONTRACT_ENTRY') && isset($_GET['id'])) {
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === __FILE__ && isset($_GET['id'])) {
     header('Content-Type: application/json');
     $projectName = $_GET['project'] ?? 'Dubai';
     try {
