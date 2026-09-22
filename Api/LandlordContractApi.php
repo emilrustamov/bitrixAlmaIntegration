@@ -37,12 +37,10 @@ class LandlordContractApi {
         $contractData = $this->buildContractData($bitrixData, $landlordId, $apartmentId);
         
         $existingContract = $this->getContractByExternalId($contractData['external_id']);
-        
-        if ($existingContract && !($existingContract['unit_usage']['is_archived'] ?? false)) {
+        if ($existingContract) {
             return $this->updateContract($existingContract['id'], $contractData);
-        } else {
-            return $this->createContract($contractData);
         }
+        return $this->createContract($contractData);
     }
 
     public function createContract(array $contractData) {
@@ -204,7 +202,7 @@ function syncLandlordContract($id, $projectName) {
         throw new RuntimeException('Failed to get contact from Bitrix24');
     }
     $emailField = ProjectMapping::getLandlordField('email', $projectName);
-    $landlordData = mapBitrixContactToClientData($contact, $emailField);
+    $landlordData = mapBitrixContactToClientData($contact, $emailField, $projectName);
 
     if ($projectName === 'Dubai') {
         $passport = ProjectMapping::getBitrixItemValue(

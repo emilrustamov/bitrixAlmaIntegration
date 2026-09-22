@@ -50,10 +50,6 @@ class Logger
             $errorLogFile = self::resolveErrorLogFilePath();
             file_put_contents($errorLogFile, $logLine, FILE_APPEND | LOCK_EX);
         }
-        if ($level === self::LEVEL_ERROR) {
-            echo htmlspecialchars("[$timestamp] [$level] $message") . "<br>\n";
-            flush();
-        }
     }
 
     /**

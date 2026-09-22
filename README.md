@@ -334,7 +334,7 @@ stateDiagram-v2
 
 **Пересечение дат:** Alma не позволит два активных usage на одном юните с пересекающимися датами — см. [типичные ошибки](#типичные-ошибки-alma).
 
-**Архивация:** при переводе контракта B24 в архивную стадию (`tenant_contract_archive_stage_ids` / `failure_stage_id`) bridge вызывает archive в Alma вместо PATCH.
+**Архивация:** при переводе контракта B24 в архивную стадию (`tenant_contract_archive_stage_ids`) bridge вызывает archive в Alma вместо PATCH.
 
 ---
 
@@ -774,7 +774,7 @@ curl -s -X POST "https://your-domain.com/index.php" \
 2. **B24 входящий:** `crm.item.get` юнита → есть связь с апартаментом.
 3. **B24 входящий:** `crm.item.get` апартамента → `rent_type` корректен.
 4. **Alma:** `GET .../realty/rental_object/{unit_id}/` — объект найден.
-5. **Bridge:** `curl .../Api/TenantContractApi.php?id=CONTRACT_ID&project=Dubai` — `success: true`.
+5. **Bridge:** `curl .../Api/TenantContractApi.php?id=CONTRACT_ID&project=Dubai` — HTTP 200 и тело контракта.
 6. **Alma:** `GET .../tenant_contracts/external_id/CONTRACT_ID/` — контракт создан.
 7. **Исходящий:** изменить поле контракта в B24 → в логе bridge новая запись без ошибки.
 
@@ -843,25 +843,21 @@ curl -s -X POST "https://your-domain.com/index.php" \
 
 ### Примеры ответов
 
-Успех:
+Успех (HTTP 200/201) — тело сущности Alma:
 
 ```json
 {
-  "success": true,
-  "code": 200,
-  "response": { "id": 456, "external_id": "123", "name": "Room 123" },
-  "method": "POST"
+  "id": 456,
+  "external_id": "123",
+  "name": "Room 123"
 }
 ```
 
-Ошибка:
+Ошибка (HTTP 4xx/5xx):
 
 ```json
 {
-  "success": false,
-  "code": 400,
-  "response": { "message": "Validation error: Apartment ID not found in room" },
-  "method": "ERROR"
+  "message": "Validation error: Apartment ID not found in room"
 }
 ```
 

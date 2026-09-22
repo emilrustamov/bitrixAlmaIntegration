@@ -25,7 +25,6 @@ function syncBlockingByListElement($projectName, array $element, $debugOnly = fa
     $typeOfSmart = firstListPropValue($element, LIST_PROP_TYPE);
     $startDate = normalizeListDate(firstListPropValue($element, LIST_PROP_START));
     $status = firstListPropValue($element, LIST_PROP_STATUS);
-    $statusCanceled = $mapping['blocking_list_status_canceled'] ?? null;
 
     $projectConfig = ProjectMapping::getProjectConfig($projectName);
     $apiKey = Config::get('ALMA_API_KEY');
@@ -33,9 +32,8 @@ function syncBlockingByListElement($projectName, array $element, $debugOnly = fa
     $tenantContractApi = new TenantContractApi($apiKey, $apiUrl, $projectName, $projectConfig['webhook_url']);
 
     $externalId = $elementId;
-    $isCanceled = $statusCanceled !== null && $status === $statusCanceled;
 
-    if ($isCanceled) {
+    if (isListElementInactive($element, $projectName)) {
         if ($tenantContractApi->getContractByExternalId($externalId) !== null) {
             $result = $tenantContractApi->archiveContractByExternalId($externalId);
             Logger::info('Blocking contract archived', ['external_id' => $externalId], 'blocking', $elementId);

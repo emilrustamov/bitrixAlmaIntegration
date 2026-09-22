@@ -412,6 +412,7 @@ function syncApartment($id, $projectName, $entityTypeId = null) {
     $internetPassField   = $map['fields']['internet_password'];
     $subwayField         = $map['fields']['subway_station'] ?? null;
     $parkingNumberField  = $map['fields']['parking_number'];
+    $parkingTypeField    = $map['fields']['parking_type'] ?? null;
     $keyboxField         = $map['fields']['keybox_code'];
     $elLockField         = $map['fields']['electronic_lock_password'];
     $isPoolField         = $map['fields']['is_swimming_pool'];
@@ -420,6 +421,15 @@ function syncApartment($id, $projectName, $entityTypeId = null) {
     if ($subwayField !== null) {
         $subwayKey = $apt[$subwayField] ?? '';
         $subwayValue = $metroMap[$subwayKey] ?? '';
+    }
+
+    $parkingTypeMap = $map['parking_type_mapping'] ?? [];
+    $parkingValue = 'not_applicable';
+    if ($parkingTypeField !== null) {
+        $parkingKey = (string) ($apt[$parkingTypeField] ?? '');
+        if ($parkingKey !== '' && isset($parkingTypeMap[$parkingKey])) {
+            $parkingValue = $parkingTypeMap[$parkingKey];
+        }
     }
 
     $data = [
@@ -437,7 +447,7 @@ function syncApartment($id, $projectName, $entityTypeId = null) {
         'number_of_bedrooms'             => (int)$numberOfBedrooms,
         'number_of_baths'                => (int)($apt[$bathsField] ?? 0),
         'is_roof_garden'                 => false,
-        'parking'                        => 'not_applicable',
+        'parking'                        => $parkingValue,
         'is_swimming_pool'               => (($apt[$isPoolField] ?? 'N') === 'Y'),
         'total_buildable_area'           => (float)($apt[$internalAreaField] ?? 0),
         'floor'                          => $apt[$floorField] ?? null,
@@ -448,6 +458,14 @@ function syncApartment($id, $projectName, $entityTypeId = null) {
         'keybox_code'                    => !empty($apt[$keyboxField]) ? mb_substr((string)$apt[$keyboxField], 0, 50, 'UTF-8') : null,
         'electronic_lock_password'       => !empty($apt[$elLockField]) ? mb_substr((string)$apt[$elLockField], 0, 8, 'UTF-8') : null,
     ];
+
+    $salesContractDateField = $map['fields']['sales_contract_date'] ?? null;
+    if ($salesContractDateField !== null) {
+        $salesContractDateRaw = $apt[$salesContractDateField] ?? null;
+        if ($salesContractDateRaw !== null && trim((string) $salesContractDateRaw) !== '') {
+            $data['sales_contract_date'] = BaseApi::formatDateForAlma($salesContractDateRaw);
+        }
+    }
 
     if ($rentType === 'rooms') {
         $data['additional_external_id'] = '';

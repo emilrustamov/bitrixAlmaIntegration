@@ -85,16 +85,40 @@ function syncTerminationElement($projectName, array $element) {
     $elementId = (string) ($element['ID'] ?? '');
     $eventType = trim((string) firstListPropValue($element, LIST_PROP_STATUS));
     $expectedEventType = ProjectMapping::getTerminationListEventType($projectName);
+    $apartmentBitrixId = firstListPropValue($element, LIST_PROP_ENTITY_ID);
+    $apartmentIdForApi = $apartmentBitrixId !== null && $apartmentBitrixId !== ''
+        ? normalizeBitrixEntityId($apartmentBitrixId)
+        : null;
+
+    if (isListElementInactive($element, $projectName)) {
+        if ($apartmentIdForApi === null) {
+            Logger::warning('Termination archive skipped: no apartment in list element', ['list_id' => $elementId], 'termination', $elementId);
+            return ['code' => 400, 'response' => ['skipped' => true], 'method' => 'NONE'];
+        }
+        $projectConfig = ProjectMapping::getProjectConfig($projectName);
+        $api = new TenantContractApi(
+            Config::get('ALMA_API_KEY'),
+            Config::get('ALMA_API_URL'),
+            $projectName,
+            $projectConfig['webhook_url']
+        );
+        $externalId = 'termination_' . $apartmentIdForApi;
+        if ($api->getContractByExternalId($externalId) !== null) {
+            $result = $api->archiveContractByExternalId($externalId);
+            Logger::info('Termination contract archived (inactive status)', ['external_id' => $externalId], 'termination', $elementId);
+            return $result;
+        }
+        return ['code' => 200, 'response' => [], 'method' => 'NONE'];
+    }
+
     if ($eventType !== $expectedEventType) {
         Logger::info('Termination sync skipped: event type is not ' . $expectedEventType, ['event_type' => $eventType, 'list_id' => $elementId], 'termination', $elementId);
         return ['code' => 200, 'response' => ['skipped' => true], 'method' => 'NONE'];
     }
-    $apartmentBitrixId = firstListPropValue($element, LIST_PROP_ENTITY_ID);
     if ($apartmentBitrixId === null || $apartmentBitrixId === '') {
         Logger::warning('Termination sync skipped: no apartment in list element', ['list_id' => $elementId], 'termination', $elementId);
         return ['code' => 400, 'response' => ['skipped' => true], 'method' => 'NONE'];
     }
-    $apartmentIdForApi = normalizeBitrixEntityId($apartmentBitrixId);
     if ($apartmentIdForApi === null) {
         Logger::warning('Termination sync skipped: invalid apartment id in list', ['list_id' => $elementId, 'value' => $apartmentBitrixId], 'termination', $elementId);
         return ['code' => 400, 'response' => ['skipped' => true], 'method' => 'NONE'];

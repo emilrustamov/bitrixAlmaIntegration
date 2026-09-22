@@ -5,7 +5,6 @@ class ProjectMapping {
     public static function getFieldMapping($projectName = 'Dubai') {
         $mappings = [
             'Dubai' => [
-                'entity_type_id' => 144,
                 'apartment_entity_type_ids' => [144],
                 'unit_entity_type_id' => 167,
                 'contract_entity_type_id' => 183,
@@ -25,7 +24,6 @@ class ProjectMapping {
                 ],
                 'contract_fields' => [
                     'unit_id' => 'ufCrm20_1693919019',
-                    'apartment_id' => null,
                     'start_date' => 'ufCrm20ContractStartDate',
                     'end_date' => 'ufCrm20ContractEndDate',
                     'contract_type' => 'ufCrm20_1693561495',
@@ -37,11 +35,66 @@ class ProjectMapping {
                     'email' => 'UF_CRM_1727788747',
                     'passport_number' => 'UF_CRM_20_1696523391',
                     'id_scan' => 'UF_CRM_20_1696615939',
+                    'nationality' => 'UF_CRM_1755104713',
                 ],
                 'landlord_fields' => [
                     'email' => 'UF_CRM_1727788747',
                     'passport_number' => 'UF_CRM_10_1740556751168',
                     'id_scan' => 'UF_CRM_10_1741788524',
+                    'nationality' => 'UF_CRM_1755104713',
+                ],
+                'nationality_mapping' => [
+                    '8690' => 2,
+                    '8692' => 70,
+                    '8730' => 7,
+                    '8702' => 63,
+                    '8704' => 25,
+                    '8706' => 14,
+                    '8708' => 21,
+                    '8712' => 69,
+                    '8714' => 58,
+                    '8716' => 77,
+                    '8718' => 61,
+                    '8722' => 1,
+                    '8726' => 62,
+                    '8734' => 57,
+                    '8736' => 9,
+                    '8738' => 11,
+                    '8740' => 64,
+                    '8744' => 15,
+                    '8746' => 4,
+                    '8748' => 3,
+                    '8750' => 22,
+                    '8752' => 23,
+                    '8754' => 24,
+                    '8756' => 26,
+                    '8762' => 32,
+                    '8764' => 34,
+                    '8768' => 25,
+                    '8776' => 40,
+                    '8778' => 76,
+                    '8782' => 41,
+                    '8784' => 43,
+                    '8786' => 48,
+                    '8788' => 12,
+                    '8792' => 49,
+                    '8798' => 68,
+                    '8804' => 66,
+                    '9002' => 46,
+                    '9090' => 20,
+                    '9092' => 6,
+                    '9094' => 8,
+                    '9096' => 13,
+                    '9098' => 17,
+                    '9100' => 18,
+                    '9102' => 31,
+                    '9108' => 38,
+                    '9118' => 42,
+                    '9120' => 45,
+                    '9122' => 50,
+                    '9124' => 51,
+                    '9130' => 56,
+                    '9194' => 37,
                 ],
                 'fields' => [
                     'building_name' => 'ufCrm6_1682232363193',
@@ -56,6 +109,7 @@ class ProjectMapping {
                     'internet_login' => 'ufCrm6_1682235809295',
                     'internet_password' => 'ufCrm6_1686728251990',
                     'parking_number' => 'ufCrm6_1683299159437',
+                    'parking_type' => 'ufCrm6_1741230023480',
                     'electronic_lock_password' => 'ufCrm6_1715777670',
                     'keybox_code' => 'ufCrm6_1720794204',
                     'is_swimming_pool' => 'ufCrm6_1697622591377',
@@ -63,6 +117,7 @@ class ProjectMapping {
                     'stage' => 'ufCrm6_1742486676',
                     'rent_type' => 'ufCrm6_1736951470242',
                     'date_of_refused' => 'ufCrm6_1742377926',
+                    'sales_contract_date' => 'ufCrm6_1702380802919',
                 ],
                 'unit_fields' => [
                     'internal_area' => 'ufCrm8_1686662606534',
@@ -71,7 +126,7 @@ class ProjectMapping {
                 ],
                 'blocking_list_iblock_id' => 300,
                 'termination_list_event_type' => 'Расторжение',
-                'blocking_list_status_canceled' => '2248',
+                'list_inactive_status_ids' => ['2504'],
                 'blocking_list_reason_alma_client_ids' => [
                     'Landlor lives in (проживает собственник)' => 15106,
                     'Repair (ремонт)' => 15107,
@@ -146,6 +201,12 @@ class ProjectMapping {
                 'rent_type_mapping' => [
                     '4600' => 'rooms',
                     '4598' => 'unit'
+                ],
+                'parking_type_mapping' => [
+                    '5944' => 'Access card',
+                    '5946' => 'Parking card',
+                    '5948' => 'Parking sticker',
+                    '5950' => 'On the barrier',
                 ],
                 'default_rent_type_value' => '4598',
                 'contract_type_mapping' => [
@@ -228,7 +289,6 @@ class ProjectMapping {
                     10690 => 'Insurance market',
                     2762 => null
                 ],
-                'failure_stage_id' => 'DT183_28:FAIL',
                 'tenant_contract_archive_stage_ids' => [
                     'DT183_28:FAIL',
                     'DT183_28:SUCCESS',
@@ -244,7 +304,6 @@ class ProjectMapping {
                 'allowed_stage_ids' => ['DT144_10:PREPARATION', 'DT144_10:CLIENT', '5980', '5974', 'Available', 'Rented']
             ],
             'HongKong' => [
-                'entity_type_id' => 1054,
                 'apartment_entity_type_ids' => [1054],
                 'unit_entity_type_id' => 1058,
                 'landlord_contract_entity_type_id' => null,
@@ -357,6 +416,10 @@ class ProjectMapping {
                 'no_invitation_contract_type_ids' => ['985'],
                 'work_model_mapping' => [],
                 'metro_mapping' => [],
+                'tenant_contract_archive_stage_ids' => [
+                    'DT1072_27:FAIL',
+                    'DT1072_27:SUCCESS',
+                ],
                 'archive_stage_ids' => ['1025', '1027', '1029'],
                 'allowed_stage_ids' => ['1021', '1023']
             ]
@@ -385,6 +448,21 @@ class ProjectMapping {
     public static function mapContractType($bitrixType, $projectName = 'Dubai') {
         $mapping = self::getFieldMapping($projectName);
         return $mapping['contract_type_mapping'][(string)$bitrixType] ?? null;
+    }
+
+    /**
+     * @param mixed $bitrixValue
+     * @param string $projectName
+     * @return int|null
+     */
+    public static function mapNationality($bitrixValue, $projectName = 'Dubai')
+    {
+        if ($bitrixValue === null || $bitrixValue === '') {
+            return null;
+        }
+        $mapping = self::getFieldMapping($projectName);
+        $countryId = $mapping['nationality_mapping'][(string) $bitrixValue] ?? null;
+        return $countryId !== null ? (int) $countryId : null;
     }
     
     public static function mapWorkModel($bitrixType, $projectName = 'Dubai') {
@@ -422,12 +500,8 @@ class ProjectMapping {
 
     public static function getTenantContractArchiveStageIds($projectName = 'Dubai') {
         $mapping = self::getFieldMapping($projectName);
-        $ids = $mapping['tenant_contract_archive_stage_ids'] ?? null;
-        if (is_array($ids) && $ids !== []) {
-            return array_map('strval', $ids);
-        }
-        $single = $mapping['failure_stage_id'] ?? null;
-        return ($single !== null && $single !== '') ? [(string) $single] : [];
+        $ids = $mapping['tenant_contract_archive_stage_ids'] ?? [];
+        return is_array($ids) ? array_map('strval', $ids) : [];
     }
     
     public static function getContractField($fieldName, $projectName = 'Dubai') {
@@ -504,7 +578,8 @@ class ProjectMapping {
 
     public static function getApartmentEntityTypeIds($projectName = 'Dubai') {
         $mapping = self::getFieldMapping($projectName);
-        return $mapping['apartment_entity_type_ids'] ?? [self::getFieldMapping($projectName)['entity_type_id']];
+        $ids = $mapping['apartment_entity_type_ids'] ?? [];
+        return is_array($ids) ? $ids : [];
     }
 
     public static function getArchiveStageIds($projectName = 'Dubai') {
@@ -561,6 +636,16 @@ class ProjectMapping {
     public static function getTerminationListEventType($projectName = 'Dubai') {
         $mapping = self::getFieldMapping($projectName);
         return $mapping['termination_list_event_type'] ?? 'Расторжение';
+    }
+
+    /**
+     * @param string $projectName
+     * @return string[]
+     */
+    public static function getListInactiveStatusIds($projectName = 'Dubai') {
+        $mapping = self::getFieldMapping($projectName);
+        $ids = $mapping['list_inactive_status_ids'] ?? [];
+        return array_map('strval', $ids);
     }
 }
 

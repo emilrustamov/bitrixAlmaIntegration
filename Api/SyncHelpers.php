@@ -10,6 +10,32 @@ const LIST_PROP_TYPE = 'PROPERTY_1624';
 const LIST_PROP_START = 'PROPERTY_1630';
 const LIST_PROP_END = 'PROPERTY_1632';
 const LIST_PROP_REASON = 'PROPERTY_1636';
+const LIST_PROP_ACTIVE_STATUS = 'PROPERTY_1800';
+
+/**
+ * @param array $element
+ * @param string $projectName
+ * @return bool
+ */
+function isListElementInactive(array $element, $projectName = 'Dubai')
+{
+    $value = firstListPropValue($element, LIST_PROP_ACTIVE_STATUS);
+    $inactiveIds = ProjectMapping::getListInactiveStatusIds($projectName);
+    return $value !== null && in_array((string) $value, $inactiveIds, true);
+}
+
+/**
+ * @param array|null $contract
+ * @return bool
+ */
+function isAlmaContractArchived($contract)
+{
+    if (!is_array($contract)) {
+        return false;
+    }
+    $status = (string) ($contract['unit_usage']['status'] ?? '');
+    return $status === 'archived' || $status === 'canceled';
+}
 
 /**
  * @param mixed $value
@@ -154,9 +180,10 @@ function buildSyntheticContractPayload(
 /**
  * @param array $contact
  * @param string|null $emailField
+ * @param string $projectName
  * @return array
  */
-function mapBitrixContactToClientData(array $contact, $emailField = null)
+function mapBitrixContactToClientData(array $contact, $emailField = null, $projectName = 'Dubai')
 {
     $email = '';
     if ($emailField && isset($contact[$emailField])) {
@@ -172,11 +199,217 @@ function mapBitrixContactToClientData(array $contact, $emailField = null)
         $phone = $contact['PHONE'][0]['VALUE'] ?? '';
     }
 
-    return [
+    $clientData = [
         'id' => $contact['ID'],
         'first_name' => $contact['NAME'] ?? '',
         'last_name' => $contact['LAST_NAME'] ?? '',
         'email' => $email,
         'phone' => $phone,
     ];
+
+    $nationalityField = ProjectMapping::getTenantField('nationality', $projectName)
+        ?: ProjectMapping::getLandlordField('nationality', $projectName);
+    if ($nationalityField) {
+        $bitrixValue = ProjectMapping::getBitrixItemValue($contact, $nationalityField);
+        if (is_array($bitrixValue)) {
+            $bitrixValue = $bitrixValue[0] ?? null;
+        }
+        $countryId = ProjectMapping::mapNationality($bitrixValue, $projectName);
+        if ($countryId !== null) {
+            $clientData['country'] = $countryId;
+        }
+    }
+
+    return $clientData;
+}
+
+/**
+ * @param string $rawMessage
+ * @param int|string|null $almaUnitId
+ * @return string
+ */
+function formatAlmaSyncErrorForBitrixComment($rawMessage, $almaUnitId = null): string
+{
+    $detail = trim((string) $rawMessage);
+    $detail = preg_replace('/^API request failed \(\d+\):\s*/', '', $detail) ?? $detail;
+    $detail = preg_replace('/^Bitrix24 API error \(HTTP \d+\):\s*/', '', $detail) ?? $detail;
+    $detail = preg_replace('/^API error:\s*/', '', $detail) ?? $detail;
+    $detail = preg_replace('/^Validation error:\s*/', '', $detail) ?? $detail;
+
+    $decoded = json_decode($detail, true);
+    if (json_last_error() === JSON_ERROR_NONE) {
+        if (is_array($decoded) && isset($decoded['error_description']) && (string) $decoded['error_description'] !== '') {
+            $detail = (string) $decoded['error_description'];
+        } else {
+            $detail = flattenAlmaErrorPayload($decoded);
+        }
+    }
+
+    $detail = trim((string) $detail);
+    if ($detail === '') {
+        $detail = trim((string) $rawMessage);
+    }
+
+    if (stripos($detail, 'intersection') !== false) {
+        $comment = "[color=#ff0000]Alma sync error:[/color]\n[b]Пересечение дат[/b]";
+        if ($almaUnitId !== null && $almaUnitId !== '') {
+            $base = rtrim((string) Config::get('ALMA_WEB_URL', 'https://colife.alma-app.com'), '/');
+            $url = $base . '/units/' . rawurlencode((string) $almaUnitId);
+            $comment .= "\n[url=" . $url . "]Открыть юнит в Alma[/url]";
+        }
+        return $comment;
+    }
+
+    $detail = clarifyAlmaSyncErrorDetail($detail);
+
+    return "[color=#ff0000]Alma sync error:[/color]\n[b]" . $detail . '[/b]';
+}
+
+/**
+ * @param string $detail
+ * @return string
+ */
+function clarifyAlmaSyncErrorDetail($detail): string
+{
+    if (stripos($detail, 'Client with received email already exists') !== false) {
+        return 'Дубль клиента: email уже существует в Alma';
+    }
+    return $detail;
+}
+
+/**
+ * @param int|string $almaClientId
+ * @return string
+ */
+function formatAlmaContractCreatedForBitrixComment($almaClientId): string
+{
+    $base = rtrim((string) Config::get('ALMA_WEB_URL', 'https://colife.alma-app.com'), '/');
+    $url = $base . '/clients/' . rawurlencode((string) $almaClientId);
+    return "[color=#008000]Alma sync:[/color]\n[b]Контракт успешно создан[/b]\n[url=" . $url . "]Открыть клиента в Alma[/url]";
+}
+
+/**
+ * @param mixed $payload
+ * @param string|null $fieldName
+ * @return string
+ */
+function flattenAlmaErrorPayload($payload, $fieldName = null): string
+{
+    if (is_string($payload)) {
+        return $fieldName !== null && $fieldName !== ''
+            ? $fieldName . ': ' . $payload
+            : $payload;
+    }
+    if (!is_array($payload)) {
+        $text = trim((string) $payload);
+        if ($text === '') {
+            return '';
+        }
+        return $fieldName !== null && $fieldName !== ''
+            ? $fieldName . ': ' . $text
+            : $text;
+    }
+    if ($payload === []) {
+        return '';
+    }
+    if (array_is_list($payload)) {
+        $parts = [];
+        foreach ($payload as $item) {
+            $flat = flattenAlmaErrorPayload($item, $fieldName);
+            if ($flat !== '') {
+                $parts[] = $flat;
+            }
+        }
+        return implode('; ', $parts);
+    }
+    $parts = [];
+    foreach ($payload as $key => $value) {
+        $flat = flattenAlmaErrorPayload($value, (string) $key);
+        if ($flat !== '') {
+            $parts[] = $flat;
+        }
+    }
+    return implode('; ', $parts);
+}
+
+/**
+ * @param Bitrix24Rest $bitrix
+ * @param int|string $entityTypeId
+ * @param int|string $entityId
+ * @param string $comment
+ * @return void
+ */
+function addCrmTimelineComment(Bitrix24Rest $bitrix, $entityTypeId, $entityId, $comment): void
+{
+    $bitrix->call('crm.timeline.comment.add', [
+        'fields' => [
+            'ENTITY_ID' => (int) $entityId,
+            'ENTITY_TYPE' => 'dynamic_' . (int) $entityTypeId,
+            'COMMENT' => $comment,
+        ],
+    ]);
+}
+
+/**
+ * @param string $webhookUrl
+ * @return int|null
+ */
+function getBitrixRestUserIdFromWebhookUrl($webhookUrl): ?int
+{
+    if (preg_match('#/rest/(\d+)/#', $webhookUrl, $matches)) {
+        return (int) $matches[1];
+    }
+    return null;
+}
+
+/**
+ * Webhook after our error comment: card fields were not changed (updatedTime <= comment time).
+ *
+ * @param Bitrix24Rest $bitrix
+ * @param int|string $entityTypeId
+ * @param int|string $entityId
+ * @param array $contractData
+ * @param int|null $integrationUserId
+ * @return bool
+ */
+function isTenantContractWebhookEchoFromErrorComment(
+    Bitrix24Rest $bitrix,
+    $entityTypeId,
+    $entityId,
+    array $contractData,
+    $integrationUserId
+): bool {
+    if ($integrationUserId === null) {
+        return false;
+    }
+
+    $list = $bitrix->call('crm.timeline.comment.list', [
+        'filter' => [
+            'ENTITY_ID' => (int) $entityId,
+            'ENTITY_TYPE' => 'dynamic_' . (int) $entityTypeId,
+        ],
+        'order' => ['ID' => 'DESC'],
+    ]);
+    $items = $list['result'] ?? [];
+    if (!is_array($items) || $items === []) {
+        return false;
+    }
+
+    $latest = $items[0];
+    $text = (string) ($latest['COMMENT'] ?? '');
+    $authorId = (int) ($latest['AUTHOR_ID'] ?? 0);
+    if ($authorId !== (int) $integrationUserId || !str_contains($text, 'Alma sync')) {
+        return false;
+    }
+
+    $commentTs = strtotime((string) ($latest['CREATED'] ?? ''));
+    $updatedTs = strtotime((string) ($contractData['updatedTime'] ?? $contractData['UPDATED_TIME'] ?? ''));
+    if ($commentTs === false) {
+        return false;
+    }
+    if ($updatedTs === false) {
+        return true;
+    }
+
+    return $updatedTs <= $commentTs;
 }

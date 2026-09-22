@@ -20,6 +20,7 @@ if ($isWebhookRequest) {
         $eventDealAdd => [$_REQUEST['data']['FIELDS']['ID'] ?? $_REQUEST['data']['ID'] ?? null, 2],
         $eventDealUpdate => [$_REQUEST['data']['FIELDS']['ID'] ?? $_REQUEST['data']['ID'] ?? null, 2],
         $eventDynamicUpdate => [$_REQUEST['data']['FIELDS']['ID'] ?? null, $_REQUEST['data']['FIELDS']['ENTITY_TYPE_ID'] ?? null],
+        $eventContactUpdate => [$_REQUEST['data']['FIELDS']['ID'] ?? $_REQUEST['data']['ID'] ?? null, 3],
         default => [$_REQUEST['data']['FIELDS']['ID'] ?? null, $_REQUEST['data']['FIELDS']['ENTITY_TYPE_ID'] ?? null]
     };
 
@@ -78,6 +79,16 @@ if ($isWebhookRequest) {
     }
 
     if ((int)$typeId === 3 || $eventName === $eventContactUpdate) {
+        require_once __DIR__ . '/Api/ContactSync.php';
+        try {
+            syncContactIfExists($id, $projectName);
+        } catch (Throwable $e) {
+            Logger::error('Webhook: contact sync failed', [
+                'entity_id' => $id,
+                'project' => $projectName,
+                'error' => $e->getMessage()
+            ], 'contact', $id);
+        }
         exit;
     }
 
@@ -85,7 +96,7 @@ if ($isWebhookRequest) {
     if ((int)$typeId === (int)$contractTypeId) {
         require_once __DIR__ . '/Api/TenantContractApi.php';
         try {
-            syncTenantContract($id, $projectName);
+            syncTenantContract($id, $projectName, ['skip_if_integration_update' => true]);
         } catch (Throwable $e) {
             Logger::error('Webhook: tenant contract sync failed', [
                 'entity_id' => $id,

@@ -110,7 +110,8 @@ class BaseApi {
             $code = 400;
             $message = 'Validation error: ' . $e->getMessage();
         } elseif ($e instanceof RuntimeException) {
-            $code = 500;
+            $exceptionCode = (int) $e->getCode();
+            $code = ($exceptionCode >= 400 && $exceptionCode < 600) ? $exceptionCode : 500;
             $message = 'API error: ' . $e->getMessage();
         } else {
             Logger::error($msg . ': ' . $e->getMessage(), [
@@ -124,14 +125,28 @@ class BaseApi {
         }
         http_response_code($code);
         header('Content-Type: application/json');
-        $response = array_merge(['message' => $message], $extra);
-        echo json_encode(['success' => false, 'code' => $code, 'response' => $response, 'method' => 'ERROR']);
+        echo json_encode(array_merge(['message' => $message], $extra), JSON_UNESCAPED_UNICODE);
     }
 
     public static function sendSuccessResponse($payload)
     {
         header('Content-Type: application/json');
-        echo json_encode(array_merge(['success' => true], $payload));
+        $status = 200;
+        $body = $payload;
+        if (
+            is_array($payload)
+            && array_key_exists('code', $payload)
+            && array_key_exists('response', $payload)
+            && array_diff_key($payload, array_flip(['code', 'response', 'method'])) === []
+        ) {
+            $status = (int) $payload['code'];
+            if ($status < 100 || $status > 599) {
+                $status = 200;
+            }
+            $body = $payload['response'];
+        }
+        http_response_code($status);
+        echo json_encode($body, JSON_UNESCAPED_UNICODE);
     }
 
     public static function formatDateForAlma($dateStr)

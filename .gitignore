@@ -16,6 +16,12 @@ alma_api_debug.log
 *.tmp
 *.temp
 
+# Data dumps / exports
+*.json
+*.xlsx
+*.xls
+*.csv
+
 # IDE files
 .vscode/
 .idea/
@@ -26,7 +32,3 @@ alma_api_debug.log
 # OS files
 .DS_Store
 Thumbs.db
-
-# Local API collections (keep on server, do not commit)
-Documentation/Colife Alma.postman_collection.json
-Documentation/*.postman_collection.json
