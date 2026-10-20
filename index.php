@@ -111,7 +111,7 @@ if ($isWebhookRequest) {
     if ($llTypeId && (int)$typeId === (int)$llTypeId) {
         require_once __DIR__ . '/Api/LandlordContractApi.php';
         try {
-            syncLandlordContract($id, $projectName);
+            syncLandlordContract($id, $projectName, ['skip_if_integration_update' => true]);
         } catch (Throwable $e) {
             Logger::error('Webhook: landlord contract sync failed', [
                 'entity_id' => $id,

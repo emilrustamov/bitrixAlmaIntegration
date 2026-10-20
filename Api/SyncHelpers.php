@@ -199,11 +199,15 @@ function mapBitrixContactToClientData(array $contact, $emailField = null, $proje
         $phone = $contact['PHONE'][0]['VALUE'] ?? '';
     }
 
+    if (!function_exists('normalizeAlmaClientEmail')) {
+        require_once __DIR__ . '/ClientApi.php';
+    }
+
     $clientData = [
         'id' => $contact['ID'],
         'first_name' => $contact['NAME'] ?? '',
         'last_name' => $contact['LAST_NAME'] ?? '',
-        'email' => $email,
+        'email' => normalizeAlmaClientEmail($email),
         'phone' => $phone,
     ];
 

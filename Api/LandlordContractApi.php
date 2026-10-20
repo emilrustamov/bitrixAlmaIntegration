@@ -121,6 +121,7 @@ class LandlordContractApi {
             'name' => $bitrixData['title'],
             'start_date' => $startDate,
             'end_date' => $endDate,
+            'sales_contract_date' => $startDate,
             'work_model' => $this->mapWork($workModelField ? ($bitrixData[$workModelField] ?? '') : ''),
         ];
 
@@ -168,7 +169,7 @@ class LandlordContractApi {
     
 }
 
-function syncLandlordContract($id, $projectName) {
+function syncLandlordContract($id, $projectName, array $options = []) {
     Config::load();
     Logger::setProject($projectName);
     $projectConfig = ProjectMapping::getProjectConfig($projectName);
@@ -183,60 +184,136 @@ function syncLandlordContract($id, $projectName) {
         Config::get('ALMA_API_URL'),
         $projectName
     );
-    $contractResponse = $bitrix->call('crm.item.get', [
-        'entityTypeId' => $entityTypeId,
-        'id' => $id,
-    ]);
-    $contractData = $contractResponse['result']['item'] ?? null;
-    if (!$contractData) {
-        throw new RuntimeException('Failed to get landlord contract from Bitrix24');
-    }
-    $contactIdField = ProjectMapping::getLandlordContractField('contact_id', $projectName);
-    $contactId = $contractData[$contactIdField] ?? $contractData['contactId'] ?? null;
-    if (!$contactId) {
-        throw new InvalidArgumentException('Contact ID not found in landlord contract');
-    }
-    $contactResponse = $bitrix->call('crm.contact.get', ['id' => $contactId]);
-    $contact = $contactResponse['result'] ?? null;
-    if (!$contact) {
-        throw new RuntimeException('Failed to get contact from Bitrix24');
-    }
-    $emailField = ProjectMapping::getLandlordField('email', $projectName);
-    $landlordData = mapBitrixContactToClientData($contact, $emailField, $projectName);
 
-    if ($projectName === 'Dubai') {
-        $passport = ProjectMapping::getBitrixItemValue(
-            $contractData,
-            ProjectMapping::getLandlordField('passport_number', $projectName)
-        );
-        if ($passport !== null && trim((string) $passport) !== '') {
-            $landlordData['passport'] = trim((string) $passport);
+    try {
+        $contractResponse = $bitrix->call('crm.item.get', [
+            'entityTypeId' => $entityTypeId,
+            'id' => $id,
+        ]);
+        $contractData = $contractResponse['result']['item'] ?? null;
+        if (!$contractData) {
+            throw new RuntimeException('Failed to get landlord contract from Bitrix24');
         }
-        $scanId = BaseApi::uploadImage(
-            Config::get('ALMA_API_KEY'),
-            Config::get('ALMA_API_URL'),
-            ProjectMapping::getBitrixItemValue($contractData, ProjectMapping::getLandlordField('id_scan', $projectName)),
-            'ID scan'
-        );
-        if ($scanId) {
-            $landlordData['id_scan'] = $scanId;
-        }
-    }
 
-    $syncData = array_merge($contractData, [
-        'landlord_data' => $landlordData,
-    ]);
-    $result = $almaApi->syncContract($syncData);
-    Logger::info('Landlord contract sync succeeded', [
-        'contract_id' => $id,
-        'alma_id' => $result['response']['id'] ?? null,
-        'method' => $result['method'] ?? 'unknown'
-    ], 'landlord_contract', $id);
-    return [
-        'code' => $result['code'],
-        'response' => $result['response'] ?? $result,
-        'method' => $result['method'] ?? 'unknown'
-    ];
+        if (!empty($options['skip_if_integration_update'])) {
+            $integrationUserId = getBitrixRestUserIdFromWebhookUrl($webhookUrl);
+            if (isTenantContractWebhookEchoFromErrorComment(
+                $bitrix,
+                $entityTypeId,
+                $id,
+                $contractData,
+                $integrationUserId
+            )) {
+                Logger::info('Landlord contract sync skipped: webhook echo from Alma error comment', [
+                    'contract_id' => $id,
+                ], 'landlord_contract', $id);
+                return [
+                    'code' => 200,
+                    'response' => ['skipped' => true, 'reason' => 'error_comment_echo'],
+                    'method' => 'SKIP_ERROR_COMMENT_ECHO',
+                ];
+            }
+        }
+
+        $contactIdField = ProjectMapping::getLandlordContractField('contact_id', $projectName);
+        $contactId = $contractData[$contactIdField] ?? $contractData['contactId'] ?? null;
+        if (!$contactId) {
+            throw new InvalidArgumentException('Contact ID not found in landlord contract');
+        }
+        $contactResponse = $bitrix->call('crm.contact.get', ['id' => $contactId]);
+        $contact = $contactResponse['result'] ?? null;
+        if (!$contact) {
+            throw new RuntimeException('Failed to get contact from Bitrix24');
+        }
+        $emailField = ProjectMapping::getLandlordField('email', $projectName);
+        $landlordData = mapBitrixContactToClientData($contact, $emailField, $projectName);
+
+        if ($projectName === 'Dubai') {
+            $passport = ProjectMapping::getBitrixItemValue(
+                $contractData,
+                ProjectMapping::getLandlordField('passport_number', $projectName)
+            );
+            if ($passport !== null && trim((string) $passport) !== '') {
+                $landlordData['passport'] = trim((string) $passport);
+            }
+            $scanId = BaseApi::uploadImage(
+                Config::get('ALMA_API_KEY'),
+                Config::get('ALMA_API_URL'),
+                ProjectMapping::getBitrixItemValue($contractData, ProjectMapping::getLandlordField('id_scan', $projectName)),
+                'ID scan'
+            );
+            if ($scanId) {
+                $landlordData['id_scan'] = $scanId;
+            }
+        }
+
+        $syncData = array_merge($contractData, [
+            'landlord_data' => $landlordData,
+        ]);
+        $result = $almaApi->syncContract($syncData);
+        Logger::info('Landlord contract sync succeeded', [
+            'contract_id' => $id,
+            'alma_id' => $result['response']['id'] ?? null,
+            'method' => $result['method'] ?? 'unknown'
+        ], 'landlord_contract', $id);
+
+        if (($result['method'] ?? '') === 'POST') {
+            $almaClientId = $result['response']['client_id']
+                ?? $result['response']['client']['id']
+                ?? null;
+            if ($almaClientId !== null && $almaClientId !== '') {
+                try {
+                    addCrmTimelineComment(
+                        $bitrix,
+                        $entityTypeId,
+                        $id,
+                        formatAlmaContractCreatedForBitrixComment($almaClientId)
+                    );
+                } catch (Throwable $commentError) {
+                    Logger::warning('Failed to add Bitrix success comment on landlord contract', [
+                        'contract_id' => $id,
+                        'error' => $commentError->getMessage(),
+                    ], 'landlord_contract', $id);
+                }
+            }
+        }
+
+        return [
+            'code' => $result['code'],
+            'response' => $result['response'] ?? $result,
+            'method' => $result['method'] ?? 'unknown'
+        ];
+    } catch (Throwable $e) {
+        try {
+            $almaUnitId = null;
+            if (isset($contractData) && is_array($contractData)) {
+                $apartmentIdField = ProjectMapping::getLandlordContractField('apartment_id', $projectName);
+                $apartmentBitrixId = $apartmentIdField ? ($contractData[$apartmentIdField] ?? '') : '';
+                if ($apartmentBitrixId !== null && $apartmentBitrixId !== '') {
+                    try {
+                        $almaUnitId = BaseApi::getUnitIdByAptExternalId(
+                            Config::get('ALMA_API_KEY'),
+                            Config::get('ALMA_API_URL'),
+                            $apartmentBitrixId
+                        );
+                    } catch (Throwable $ignore) {
+                    }
+                }
+            }
+            addCrmTimelineComment(
+                $bitrix,
+                $entityTypeId,
+                $id,
+                formatAlmaSyncErrorForBitrixComment($e->getMessage(), $almaUnitId)
+            );
+        } catch (Throwable $commentError) {
+            Logger::warning('Failed to add Bitrix error comment on landlord contract', [
+                'contract_id' => $id,
+                'error' => $commentError->getMessage(),
+            ], 'landlord_contract', $id);
+        }
+        throw $e;
+    }
 }
 
 if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === __FILE__ && isset($_GET['id'])) {

@@ -54,6 +54,12 @@ class ClientApi {
         $payload = array_intersect_key($clientData, array_flip([
             'first_name', 'last_name', 'phone', 'email', 'passport', 'passport_scan', 'id_scan', 'country',
         ]));
+        if (array_key_exists('email', $payload)) {
+            $payload['email'] = normalizeAlmaClientEmail($payload['email']);
+            if ($payload['email'] === '') {
+                unset($payload['email']);
+            }
+        }
         if ($payload === []) {
             return;
         }
@@ -119,14 +125,24 @@ class ClientApi {
             'birthday'    => '1999-06-03T00:00:00Z',
             'is_send_password_when_creating' => $sendInvitation,
         ];
-        if (!empty($clientData['email'])) {
-            $payload['email'] = $clientData['email'];
+        $email = normalizeAlmaClientEmail($clientData['email'] ?? '');
+        if ($email !== '') {
+            $payload['email'] = $email;
         }
         if (!empty($clientData['passport'])) {
             $payload['passport'] = $clientData['passport'];
         }
         return $payload;
     }
+}
+
+/**
+ * @param mixed $email
+ * @return string
+ */
+function normalizeAlmaClientEmail($email)
+{
+    return mb_strtolower(trim((string) $email));
 }
 
 

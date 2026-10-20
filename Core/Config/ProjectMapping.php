@@ -117,7 +117,6 @@ class ProjectMapping {
                     'stage' => 'ufCrm6_1742486676',
                     'rent_type' => 'ufCrm6_1736951470242',
                     'date_of_refused' => 'ufCrm6_1742377926',
-                    'sales_contract_date' => 'ufCrm6_1702380802919',
                 ],
                 'unit_fields' => [
                     'internal_area' => 'ufCrm8_1686662606534',
@@ -202,11 +201,11 @@ class ProjectMapping {
                     '4600' => 'rooms',
                     '4598' => 'unit'
                 ],
-                'parking_type_mapping' => [
-                    '5944' => 'Access card',
-                    '5946' => 'Parking card',
-                    '5948' => 'Parking sticker',
-                    '5950' => 'On the barrier',
+                'parking_payment_type_mapping' => [
+                    '5944' => 'access_card',
+                    '5946' => 'parking_card',
+                    '5948' => 'parking_sticker',
+                    '5950' => 'on_the_barrier',
                 ],
                 'default_rent_type_value' => '4598',
                 'contract_type_mapping' => [
