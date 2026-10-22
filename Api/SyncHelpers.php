@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../Core/Logger.php';
+require_once __DIR__ . '/../Core/Config/Config.php';
 require_once __DIR__ . '/../Core/Config/ProjectMapping.php';
 require_once __DIR__ . '/../Core/Bitrix24Rest.php';
 require_once __DIR__ . '/ListSyncHelpers.php';
@@ -278,7 +280,36 @@ function clarifyAlmaSyncErrorDetail($detail): string
     if (stripos($detail, 'Client with received email already exists') !== false) {
         return 'Дубль клиента: email уже существует в Alma';
     }
+    if (stripos($detail, 'Invalid rental period') !== false) {
+        return 'Некорректный период дат (дата окончания раньше начала или период недопустим)';
+    }
     return $detail;
+}
+
+/**
+ * @param string $projectName
+ * @param int|string|null $apartmentBitrixId
+ * @param string $errorMessage
+ * @param int|string|null $almaUnitId
+ * @return void
+ */
+function addApartmentAlmaSyncErrorComment($projectName, $apartmentBitrixId, $errorMessage, $almaUnitId = null): void
+{
+    if ($apartmentBitrixId === null || $apartmentBitrixId === '') {
+        return;
+    }
+    try {
+        addApartmentAlmaTimelineComment(
+            $projectName,
+            $apartmentBitrixId,
+            formatAlmaSyncErrorForBitrixComment($errorMessage, $almaUnitId)
+        );
+    } catch (Throwable $commentError) {
+        Logger::warning('Failed to add Bitrix Alma error comment on apartment', [
+            'apartment_id' => $apartmentBitrixId,
+            'error' => $commentError->getMessage(),
+        ], 'apartment', $apartmentBitrixId);
+    }
 }
 
 /**
@@ -290,6 +321,161 @@ function formatAlmaContractCreatedForBitrixComment($almaClientId): string
     $base = rtrim((string) Config::get('ALMA_WEB_URL', 'https://colife.alma-app.com'), '/');
     $url = $base . '/clients/' . rawurlencode((string) $almaClientId);
     return "[color=#008000]Alma sync:[/color]\n[b]Контракт успешно создан[/b]\n[url=" . $url . "]Открыть клиента в Alma[/url]";
+}
+
+/**
+ * @param mixed $date
+ * @return string
+ */
+function formatDateForBitrixComment($date): string
+{
+    $raw = trim((string) $date);
+    if ($raw === '') {
+        return '';
+    }
+    $dt = date_create(substr($raw, 0, 10)) ?: date_create($raw);
+    return $dt ? $dt->format('d.m.Y') : $raw;
+}
+
+/**
+ * @param int|string|null $almaUnitId
+ * @return string
+ */
+function formatAlmaUnitLinkForBitrixComment($almaUnitId): string
+{
+    if ($almaUnitId === null || $almaUnitId === '') {
+        return '';
+    }
+    $base = rtrim((string) Config::get('ALMA_WEB_URL', 'https://colife.alma-app.com'), '/');
+    $url = $base . '/units/' . rawurlencode((string) $almaUnitId);
+    return "[url=" . $url . "]Открыть апартамент в Alma[/url]";
+}
+
+/**
+ * @param int|string|null $almaUnitId
+ * @param string|null $startDate
+ * @param string|null $endDate
+ * @param string|null $reason
+ * @return string
+ */
+function formatAlmaBlockingAddedForBitrixComment($almaUnitId = null, $startDate = null, $endDate = null, $reason = null): string
+{
+    return implode("\n", appendAlmaTimelineDetails(
+        [
+            "[color=#008000]Alma sync:[/color]",
+            "[b]Добавлена блокировка в Alma[/b]",
+        ],
+        $almaUnitId,
+        $startDate,
+        $endDate,
+        $reason
+    ));
+}
+
+/**
+ * @param int|string|null $almaUnitId
+ * @param string|null $startDate
+ * @param string|null $endDate
+ * @param string|null $reason
+ * @return string
+ */
+function formatAlmaBlockingEndedForBitrixComment($almaUnitId = null, $startDate = null, $endDate = null, $reason = null): string
+{
+    return implode("\n", appendAlmaTimelineDetails(
+        [
+            "[color=#008000]Alma sync:[/color]",
+            "[b]Блокировка закончена[/b]",
+        ],
+        $almaUnitId,
+        $startDate,
+        $endDate,
+        $reason
+    ));
+}
+
+/**
+ * @param array $lines
+ * @param int|string|null $almaUnitId
+ * @param string|null $startDate
+ * @param string|null $endDate
+ * @param string|null $reason
+ * @return array
+ */
+function appendAlmaTimelineDetails(array $lines, $almaUnitId = null, $startDate = null, $endDate = null, $reason = null): array
+{
+    $start = formatDateForBitrixComment($startDate);
+    $end = formatDateForBitrixComment($endDate);
+    if ($start !== '' || $end !== '') {
+        $lines[] = 'Даты: ' . ($start !== '' ? $start : '—') . ' — ' . ($end !== '' ? $end : '—');
+    }
+    $reasonText = trim((string) $reason);
+    if ($reasonText !== '') {
+        $lines[] = 'Причина: ' . $reasonText;
+    }
+    $link = formatAlmaUnitLinkForBitrixComment($almaUnitId);
+    if ($link !== '') {
+        $lines[] = $link;
+    }
+    return $lines;
+}
+
+/**
+ * @param int|string|null $almaUnitId
+ * @param string|null $startDate
+ * @param string|null $endDate
+ * @return string
+ */
+function formatAlmaTerminationAddedForBitrixComment($almaUnitId = null, $startDate = null, $endDate = null): string
+{
+    return implode("\n", appendAlmaTimelineDetails(
+        [
+            "[color=#008000]Alma sync:[/color]",
+            "[b]Добавлено расторжение в Alma[/b]",
+        ],
+        $almaUnitId,
+        $startDate,
+        $endDate
+    ));
+}
+
+/**
+ * @param int|string|null $almaUnitId
+ * @param string|null $startDate
+ * @param string|null $endDate
+ * @return string
+ */
+function formatAlmaTerminationCancelledForBitrixComment($almaUnitId = null, $startDate = null, $endDate = null): string
+{
+    return implode("\n", appendAlmaTimelineDetails(
+        [
+            "[color=#008000]Alma sync:[/color]",
+            "[b]Расторжение отменено[/b]",
+        ],
+        $almaUnitId,
+        $startDate,
+        $endDate
+    ));
+}
+
+/**
+ * @param string $projectName
+ * @param int|string $apartmentBitrixId
+ * @param string $comment
+ * @return void
+ */
+function addApartmentAlmaTimelineComment($projectName, $apartmentBitrixId, $comment): void
+{
+    $apartmentId = normalizeBitrixEntityId($apartmentBitrixId);
+    if ($apartmentId === null) {
+        return;
+    }
+    $entityTypeId = ProjectMapping::getApartmentEntityTypeIds($projectName)[0] ?? null;
+    if ($entityTypeId === null) {
+        return;
+    }
+    $projectConfig = ProjectMapping::getProjectConfig($projectName);
+    $bitrix = new Bitrix24Rest($projectConfig['webhook_url']);
+    addCrmTimelineComment($bitrix, $entityTypeId, $apartmentId, $comment);
 }
 
 /**

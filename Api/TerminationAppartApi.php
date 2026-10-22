@@ -35,8 +35,32 @@ function syncTerminationForApt($projectName, $apartmentBitrixId, array $apartmen
         $externalId = 'termination_' . $apartmentBitrixId;
         $existing = $api->getContractByExternalId($externalId);
         if ($existing !== null) {
-            $api->archiveContractByExternalId($externalId);
+            $wasArchived = isAlmaContractArchived($existing);
+            try {
+                $api->archiveContractByExternalId($externalId);
+            } catch (Throwable $e) {
+                addApartmentAlmaSyncErrorComment($projectName, $apartmentBitrixId, $e->getMessage());
+                throw $e;
+            }
             Logger::info('Termination contract archived (no date)', ['apartment_id' => $apartmentBitrixId], 'termination', $apartmentBitrixId);
+            if (!$wasArchived) {
+                try {
+                    addApartmentAlmaTimelineComment(
+                        $projectName,
+                        $apartmentBitrixId,
+                        formatAlmaTerminationCancelledForBitrixComment(
+                            $existing['unit_usage']['unit_id'] ?? null,
+                            $existing['start_date'] ?? null,
+                            $existing['end_date'] ?? null
+                        )
+                    );
+                } catch (Throwable $commentError) {
+                    Logger::warning('Failed to add Bitrix termination-cancelled comment on apartment', [
+                        'apartment_id' => $apartmentBitrixId,
+                        'error' => $commentError->getMessage(),
+                    ], 'termination', $apartmentBitrixId);
+                }
+            }
         }
         return;
     }
@@ -51,10 +75,12 @@ function syncTerminationForApt($projectName, $apartmentBitrixId, array $apartmen
         Logger::warning('Termination sync skipped: termination_alma_client_id not set', ['apartment_id' => $apartmentBitrixId], 'termination', $apartmentBitrixId);
         return;
     }
+    $almaUnitId = null;
     try {
         $almaUnitId = BaseApi::getUnitIdByAptExternalId(Config::get('ALMA_API_KEY'), Config::get('ALMA_API_URL'), $apartmentBitrixId);
     } catch (Throwable $e) {
         Logger::warning('Termination sync skipped: apartment not in Alma', ['apartment_id' => $apartmentBitrixId, 'error' => $e->getMessage()], 'termination', $apartmentBitrixId);
+        addApartmentAlmaSyncErrorComment($projectName, $apartmentBitrixId, $e->getMessage());
         return;
     }
     $contractTypeId = ProjectMapping::getTerminationContractTypeId($projectName);
@@ -72,8 +98,31 @@ function syncTerminationForApt($projectName, $apartmentBitrixId, array $apartmen
         $endDate,
         $contractTypeId
     );
-    $api->upsertSyntheticContract($syncData);
+    try {
+        $result = $api->upsertSyntheticContract($syncData);
+    } catch (Throwable $e) {
+        Logger::error('Termination sync failed', [
+            'apartment_id' => $apartmentBitrixId,
+            'error' => $e->getMessage(),
+        ], 'termination', $apartmentBitrixId);
+        addApartmentAlmaSyncErrorComment($projectName, $apartmentBitrixId, $e->getMessage(), $almaUnitId);
+        throw $e;
+    }
     Logger::info('Termination contract synced', ['apartment_id' => $apartmentBitrixId, 'start_date' => $startDate, 'end_date' => $endDate], 'termination', $apartmentBitrixId);
+    if (($result['method'] ?? '') === 'POST') {
+        try {
+            addApartmentAlmaTimelineComment(
+                $projectName,
+                $apartmentBitrixId,
+                formatAlmaTerminationAddedForBitrixComment($almaUnitId, $startDate, $endDate)
+            );
+        } catch (Throwable $commentError) {
+            Logger::warning('Failed to add Bitrix termination-added comment on apartment', [
+                'apartment_id' => $apartmentBitrixId,
+                'error' => $commentError->getMessage(),
+            ], 'termination', $apartmentBitrixId);
+        }
+    }
 }
 
 /**
@@ -103,9 +152,35 @@ function syncTerminationElement($projectName, array $element) {
             $projectConfig['webhook_url']
         );
         $externalId = 'termination_' . $apartmentIdForApi;
-        if ($api->getContractByExternalId($externalId) !== null) {
-            $result = $api->archiveContractByExternalId($externalId);
+        $existing = $api->getContractByExternalId($externalId);
+        if ($existing !== null) {
+            $wasArchived = isAlmaContractArchived($existing);
+            try {
+                $result = $api->archiveContractByExternalId($externalId);
+            } catch (Throwable $e) {
+                addApartmentAlmaSyncErrorComment($projectName, $apartmentIdForApi, $e->getMessage());
+                throw $e;
+            }
             Logger::info('Termination contract archived (inactive status)', ['external_id' => $externalId], 'termination', $elementId);
+            if (!$wasArchived) {
+                try {
+                    addApartmentAlmaTimelineComment(
+                        $projectName,
+                        $apartmentIdForApi,
+                        formatAlmaTerminationCancelledForBitrixComment(
+                            $existing['unit_usage']['unit_id'] ?? null,
+                            $existing['start_date'] ?? null,
+                            $existing['end_date'] ?? null
+                        )
+                    );
+                } catch (Throwable $commentError) {
+                    Logger::warning('Failed to add Bitrix termination-cancelled comment on apartment', [
+                        'apartment_id' => $apartmentIdForApi,
+                        'list_id' => $elementId,
+                        'error' => $commentError->getMessage(),
+                    ], 'termination', $elementId);
+                }
+            }
             return $result;
         }
         return ['code' => 200, 'response' => [], 'method' => 'NONE'];

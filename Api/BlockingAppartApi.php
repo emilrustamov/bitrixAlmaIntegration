@@ -32,11 +32,43 @@ function syncBlockingByListElement($projectName, array $element, $debugOnly = fa
     $tenantContractApi = new TenantContractApi($apiKey, $apiUrl, $projectName, $projectConfig['webhook_url']);
 
     $externalId = $elementId;
+    $apartmentBitrixId = firstListPropValue($element, LIST_PROP_ENTITY_ID);
+    $apartmentId = $apartmentBitrixId !== null && $apartmentBitrixId !== ''
+        ? (string) (normalizeBitrixEntityId($apartmentBitrixId) ?? $apartmentBitrixId)
+        : '';
 
     if (isListElementInactive($element, $projectName)) {
-        if ($tenantContractApi->getContractByExternalId($externalId) !== null) {
-            $result = $tenantContractApi->archiveContractByExternalId($externalId);
+        $existing = $tenantContractApi->getContractByExternalId($externalId);
+        if ($existing !== null) {
+            $wasArchived = isAlmaContractArchived($existing);
+            try {
+                $result = $tenantContractApi->archiveContractByExternalId($externalId);
+            } catch (Throwable $e) {
+                addApartmentAlmaSyncErrorComment($projectName, $apartmentId, $e->getMessage());
+                throw $e;
+            }
             Logger::info('Blocking contract archived', ['external_id' => $externalId], 'blocking', $elementId);
+            if (!$wasArchived && $apartmentId !== '') {
+                try {
+                    $almaUnitId = $existing['unit_usage']['unit_id'] ?? null;
+                    addApartmentAlmaTimelineComment(
+                        $projectName,
+                        $apartmentId,
+                        formatAlmaBlockingEndedForBitrixComment(
+                            $almaUnitId,
+                            $existing['start_date'] ?? firstListPropValue($element, LIST_PROP_START),
+                            $existing['end_date'] ?? firstListPropValue($element, LIST_PROP_END),
+                            firstListPropValue($element, LIST_PROP_REASON)
+                        )
+                    );
+                } catch (Throwable $commentError) {
+                    Logger::warning('Failed to add Bitrix blocking-ended comment on apartment', [
+                        'apartment_id' => $apartmentId,
+                        'list_id' => $elementId,
+                        'error' => $commentError->getMessage(),
+                    ], 'blocking', $elementId);
+                }
+            }
             return $result;
         }
         return ['code' => 200, 'response' => [], 'method' => 'NONE'];
@@ -67,32 +99,33 @@ function syncBlockingByListElement($projectName, array $element, $debugOnly = fa
 
     $endDate = normalizeListDate(firstListPropValue($element, LIST_PROP_END)) ?? BLOCKING_LIST_DEFAULT_END;
 
-    $entityIdRaw = firstListPropValue($element, LIST_PROP_ENTITY_ID);
-    $entityId = $entityIdRaw !== null && $entityIdRaw !== '' ? (string) (normalizeBitrixEntityId($entityIdRaw) ?? $entityIdRaw) : '';
-    if ($entityId === '') {
+    if ($apartmentId === '') {
         Logger::warning('Blocking sync skipped: no apartment in list element', ['list_id' => $elementId], 'blocking', $elementId);
         return ['code' => 400, 'response' => ['skipped' => true], 'method' => 'NONE'];
     }
-    $unitId = $tenantContractApi->findUnitIdByAptExternalId($entityId);
-    $syncData = buildSyntheticContractPayload(
-        $projectName,
-        $externalId,
-        'Blocking',
-        $unitId,
-        $almaClientId,
-        $startDate,
-        $endDate,
-        '0000'
-    );
 
-    Logger::info('Blocking sync payload', ['external_id' => $externalId, 'entity_id' => $entityId], 'blocking', $elementId);
-    if ($debugOnly) {
-        return ['code' => 200, 'response' => $syncData, 'method' => 'DEBUG'];
-    }
+    $unitId = null;
+    $syncData = null;
     try {
+        $unitId = $tenantContractApi->findUnitIdByAptExternalId($apartmentId);
+        $syncData = buildSyntheticContractPayload(
+            $projectName,
+            $externalId,
+            'Blocking',
+            $unitId,
+            $almaClientId,
+            $startDate,
+            $endDate,
+            '0000'
+        );
+
+        Logger::info('Blocking sync payload', ['external_id' => $externalId, 'entity_id' => $apartmentId], 'blocking', $elementId);
+        if ($debugOnly) {
+            return ['code' => 200, 'response' => $syncData, 'method' => 'DEBUG'];
+        }
         $GLOBALS['_blocking_last_sync_payload'] = [
             'sync_data' => $syncData,
-            'unit_external_id_from_bitrix' => $entityId ?? '',
+            'unit_external_id_from_bitrix' => $apartmentId,
             'fields_used' => [
                 'id' => 'element ID (list 300)',
                 'unit_external_id' => 'PROPERTY_1626 (Объект Апарт/Юнит), only when type=Apartment',
@@ -104,9 +137,34 @@ function syncBlockingByListElement($projectName, array $element, $debugOnly = fa
         ];
         $result = $tenantContractApi->upsertSyntheticContract($syncData);
         Logger::info('Blocking contract synced', ['external_id' => $externalId], 'blocking', $elementId);
+        if (($result['method'] ?? '') === 'POST') {
+            try {
+                addApartmentAlmaTimelineComment(
+                    $projectName,
+                    $apartmentId,
+                    formatAlmaBlockingAddedForBitrixComment(
+                        $unitId,
+                        $startDate,
+                        $endDate,
+                        $reasonText
+                    )
+                );
+            } catch (Throwable $commentError) {
+                Logger::warning('Failed to add Bitrix blocking-added comment on apartment', [
+                    'apartment_id' => $apartmentId,
+                    'list_id' => $elementId,
+                    'error' => $commentError->getMessage(),
+                ], 'blocking', $elementId);
+            }
+        }
         return $result;
     } catch (Throwable $e) {
-        Logger::error('Blocking sync failed', ['list_id' => $elementId, 'error' => $e->getMessage(), 'payload' => $syncData], 'blocking', $elementId);
+        Logger::error('Blocking sync failed', [
+            'list_id' => $elementId,
+            'error' => $e->getMessage(),
+            'payload' => $syncData,
+        ], 'blocking', $elementId);
+        addApartmentAlmaSyncErrorComment($projectName, $apartmentId, $e->getMessage(), $unitId);
         throw $e;
     }
 }
