@@ -40,26 +40,98 @@ class UnitApi {
         $rentalObject = $this->getRoomByExternalId($bitrixId);
 
         if (($rentalObject['code'] ?? 0) === 200 && !empty($rentalObject['response']['id'])) {
-            $patchData = $data;
-            if (isset($patchData['parent_unit']) && is_array($patchData['parent_unit'])) {
-                $patchData['parent_unit'] = $patchData['parent_unit']['id'] ?? null;
-            }
-            unset($patchData['external_id']);
-            unset($patchData['property_type']);
-
-            if (empty($patchData['name'])) {
-                $patchData['name'] = $data['name'] ?? ('Room ' . $bitrixId);
-            }
-
-            $response = BaseApi::callRealty($this->apiKey, $this->apiUrl, 'PATCH', 'rooms/' . $rentalObject['response']['id'] . '/', $patchData, true);
-            $response['method'] = 'PATCH';
-            return $response;
+            return $this->patchRoom($rentalObject['response']['id'], $data);
         }
 
         $response = BaseApi::callRealty($this->apiKey, $this->apiUrl, 'POST', 'rooms/', $data, true);
-        $response['method'] = 'POST';
+        if (($response['code'] ?? 0) >= 200 && ($response['code'] ?? 0) < 300) {
+            $response['method'] = 'POST';
+            return $response;
+        }
 
+        $nameError = $response['response']['name'] ?? null;
+        if (is_string($nameError) && stripos($nameError, 'already exists') !== false) {
+            $existingId = $this->findRoomIdByNameConflict($data);
+            if ($existingId !== null) {
+                return $this->patchRoom($existingId, $data, true);
+            }
+        }
+
+        $response['method'] = 'POST';
         return $response;
+    }
+
+    /**
+     * @param int|string $roomId
+     * @param array $data
+     * @param bool $bindExternalId
+     * @return array
+     */
+    private function patchRoom($roomId, array $data, $bindExternalId = false) {
+        $patchData = $data;
+        if (isset($patchData['parent_unit']) && is_array($patchData['parent_unit'])) {
+            $patchData['parent_unit'] = $patchData['parent_unit']['id'] ?? null;
+        }
+        if (!$bindExternalId) {
+            unset($patchData['external_id']);
+        }
+        unset($patchData['property_type']);
+
+        if (empty($patchData['name'])) {
+            $patchData['name'] = $data['name'] ?? ('Room ' . ($data['external_id'] ?? ''));
+        }
+
+        $response = BaseApi::callRealty($this->apiKey, $this->apiUrl, 'PATCH', 'rooms/' . $roomId . '/', $patchData, true);
+        $response['method'] = 'PATCH';
+        return $response;
+    }
+
+    /**
+     * @param array $data
+     * @return int|string|null
+     */
+    private function findRoomIdByNameConflict(array $data) {
+        $targetName = trim((string) ($data['name'] ?? ''));
+        if ($targetName === '') {
+            return null;
+        }
+
+        $parentId = $data['parent_unit'] ?? null;
+        if (is_array($parentId)) {
+            $parentId = $parentId['id'] ?? null;
+        }
+
+        $list = BaseApi::callRealty($this->apiKey, $this->apiUrl, 'GET', 'rooms/', [], false);
+        $rooms = $list['response'] ?? null;
+        if (!is_array($rooms)) {
+            return null;
+        }
+
+        $fallbackId = null;
+        foreach ($rooms as $room) {
+            if (!is_array($room) || trim((string) ($room['name'] ?? '')) !== $targetName) {
+                continue;
+            }
+            $roomId = $room['id'] ?? null;
+            if ($roomId === null) {
+                continue;
+            }
+            $externalId = (string) ($room['external_id'] ?? '');
+            if ($externalId === '' || $externalId === (string) ($data['external_id'] ?? '')) {
+                if ($parentId === null) {
+                    return $roomId;
+                }
+                $detail = BaseApi::callRealty($this->apiKey, $this->apiUrl, 'GET', 'rooms/' . $roomId . '/', [], false);
+                $parent = $detail['response']['parent_unit'] ?? null;
+                $roomParentId = is_array($parent) ? ($parent['id'] ?? null) : $parent;
+                if ((string) $roomParentId === (string) $parentId) {
+                    return $roomId;
+                }
+                $fallbackId = $fallbackId ?? $roomId;
+            }
+        }
+
+        return $fallbackId;
     }
 }
 

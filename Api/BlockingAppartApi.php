@@ -164,7 +164,7 @@ function syncBlockingByListElement($projectName, array $element, $debugOnly = fa
             'error' => $e->getMessage(),
             'payload' => $syncData,
         ], 'blocking', $elementId);
-        addApartmentAlmaSyncErrorComment($projectName, $apartmentId, $e->getMessage(), $unitId);
+        addApartmentAlmaSyncErrorComment($projectName, $apartmentId, $e->getMessage(), $unitId, $startDate, $endDate);
         throw $e;
     }
 }

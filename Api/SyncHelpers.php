@@ -91,7 +91,7 @@ function fetchListElement($projectName, $listElementId)
 function mapBitrixRoomToAlmaPayload(array $unitData, $projectName, $parentUnitId = null)
 {
     $unitExternalId = $unitData['id'] ?? null;
-    $name = $unitData['title'] ?? ('Room ' . $unitExternalId);
+    $name = trim((string) ($unitData['title'] ?? ('Room ' . $unitExternalId)));
 
     $unitInternalAreaField = ProjectMapping::getUnitField('internal_area', $projectName);
     $unitGoalRentCostField = ProjectMapping::getUnitField('goal_rent_cost', $projectName);
@@ -110,15 +110,13 @@ function mapBitrixRoomToAlmaPayload(array $unitData, $projectName, $parentUnitId
     }
 
     $number = '0';
-    if ($unitNumberField && isset($unitData[$unitNumberField])) {
-        $numberValue = $unitData[$unitNumberField];
-        if (is_array($numberValue)) {
-            $numberValue = $numberValue[0] ?? null;
-        }
-        if ($numberValue !== null) {
-            $numberMapping = ProjectMapping::getUnitNumberMapping($projectName);
-            $number = $numberMapping[(string) $numberValue] ?? (string) $numberValue;
-        }
+    $numberValue = ProjectMapping::getBitrixItemValue($unitData, $unitNumberField);
+    if (is_array($numberValue)) {
+        $numberValue = $numberValue[0] ?? null;
+    }
+    if ($numberValue !== null && $numberValue !== '') {
+        $numberMapping = ProjectMapping::getUnitNumberMapping($projectName);
+        $number = $numberMapping[(string) $numberValue] ?? (string) $numberValue;
     }
     if ($number === '') {
         $number = '0';
@@ -127,7 +125,7 @@ function mapBitrixRoomToAlmaPayload(array $unitData, $projectName, $parentUnitId
     $payload = [
         'external_id' => (string) $unitExternalId,
         'name' => $name,
-        'header' => $unitData['title'] ?? $name,
+        'header' => $name,
         'goal_rent_cost' => $goalRentCost,
         'internal_area' => $internalArea,
         'photos' => [],
@@ -232,9 +230,11 @@ function mapBitrixContactToClientData(array $contact, $emailField = null, $proje
 /**
  * @param string $rawMessage
  * @param int|string|null $almaUnitId
+ * @param mixed $startDate
+ * @param mixed $endDate
  * @return string
  */
-function formatAlmaSyncErrorForBitrixComment($rawMessage, $almaUnitId = null): string
+function formatAlmaSyncErrorForBitrixComment($rawMessage, $almaUnitId = null, $startDate = null, $endDate = null): string
 {
     $detail = trim((string) $rawMessage);
     $detail = preg_replace('/^API request failed \(\d+\):\s*/', '', $detail) ?? $detail;
@@ -266,24 +266,49 @@ function formatAlmaSyncErrorForBitrixComment($rawMessage, $almaUnitId = null): s
         return $comment;
     }
 
-    $detail = clarifyAlmaSyncErrorDetail($detail);
+    $detail = clarifyAlmaSyncErrorDetail($detail, $startDate, $endDate);
 
     return "[color=#ff0000]Alma sync error:[/color]\n[b]" . $detail . '[/b]';
 }
 
 /**
  * @param string $detail
+ * @param mixed $startDate
+ * @param mixed $endDate
  * @return string
  */
-function clarifyAlmaSyncErrorDetail($detail): string
+function clarifyAlmaSyncErrorDetail($detail, $startDate = null, $endDate = null): string
 {
     if (stripos($detail, 'Client with received email already exists') !== false) {
         return 'Дубль клиента: email уже существует в Alma';
     }
     if (stripos($detail, 'Invalid rental period') !== false) {
-        return 'Некорректный период дат (дата окончания раньше начала или период недопустим)';
+        return formatInvalidRentalPeriodDetail($startDate, $endDate);
     }
     return $detail;
+}
+
+/**
+ * @param mixed $startDate
+ * @param mixed $endDate
+ * @return string
+ */
+function formatInvalidRentalPeriodDetail($startDate = null, $endDate = null): string
+{
+    $startLabel = formatDateForBitrixComment($startDate);
+    $endLabel = formatDateForBitrixComment($endDate);
+    if ($startLabel === '' && $endLabel === '') {
+        return 'Некорректный период дат (дата окончания раньше начала или период недопустим)';
+    }
+
+    $startDt = parseBitrixCommentDate($startDate);
+    $endDt = parseBitrixCommentDate($endDate);
+    if ($startDt instanceof DateTime && $endDt instanceof DateTime && $endDt < $startDt) {
+        return 'Дата выселения ' . $endLabel . ' раньше, чем дата заселения ' . $startLabel;
+    }
+
+    return 'Некорректный период дат: заселение ' . ($startLabel !== '' ? $startLabel : '—')
+        . ', выселение ' . ($endLabel !== '' ? $endLabel : '—');
 }
 
 /**
@@ -291,9 +316,11 @@ function clarifyAlmaSyncErrorDetail($detail): string
  * @param int|string|null $apartmentBitrixId
  * @param string $errorMessage
  * @param int|string|null $almaUnitId
+ * @param mixed $startDate
+ * @param mixed $endDate
  * @return void
  */
-function addApartmentAlmaSyncErrorComment($projectName, $apartmentBitrixId, $errorMessage, $almaUnitId = null): void
+function addApartmentAlmaSyncErrorComment($projectName, $apartmentBitrixId, $errorMessage, $almaUnitId = null, $startDate = null, $endDate = null): void
 {
     if ($apartmentBitrixId === null || $apartmentBitrixId === '') {
         return;
@@ -302,7 +329,7 @@ function addApartmentAlmaSyncErrorComment($projectName, $apartmentBitrixId, $err
         addApartmentAlmaTimelineComment(
             $projectName,
             $apartmentBitrixId,
-            formatAlmaSyncErrorForBitrixComment($errorMessage, $almaUnitId)
+            formatAlmaSyncErrorForBitrixComment($errorMessage, $almaUnitId, $startDate, $endDate)
         );
     } catch (Throwable $commentError) {
         Logger::warning('Failed to add Bitrix Alma error comment on apartment', [
@@ -324,17 +351,53 @@ function formatAlmaContractCreatedForBitrixComment($almaClientId): string
 }
 
 /**
+ * @param int|string $almaUnitId
+ * @return string
+ */
+function formatAlmaApartmentCreatedForBitrixComment($almaUnitId): string
+{
+    $link = formatAlmaUnitLinkForBitrixComment($almaUnitId);
+    $lines = [
+        '[color=#008000]Alma sync:[/color]',
+        '[b]Апартамент успешно создан[/b]',
+    ];
+    if ($link !== '') {
+        $lines[] = $link;
+    }
+
+    return implode("\n", $lines);
+}
+
+/**
  * @param mixed $date
  * @return string
  */
 function formatDateForBitrixComment($date): string
 {
+    $dt = parseBitrixCommentDate($date);
+    if ($dt instanceof DateTime) {
+        return $dt->format('d.m.Y');
+    }
+    return trim((string) $date);
+}
+
+/**
+ * @param mixed $date
+ * @return DateTime|null
+ */
+function parseBitrixCommentDate($date): ?DateTime
+{
     $raw = trim((string) $date);
     if ($raw === '') {
-        return '';
+        return null;
     }
     $dt = date_create(substr($raw, 0, 10)) ?: date_create($raw);
-    return $dt ? $dt->format('d.m.Y') : $raw;
+    if (!$dt instanceof DateTime) {
+        return null;
+    }
+    $dt->setTime(0, 0, 0);
+
+    return $dt;
 }
 
 /**

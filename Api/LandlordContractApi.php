@@ -300,11 +300,23 @@ function syncLandlordContract($id, $projectName, array $options = []) {
                     }
                 }
             }
+            $periodStart = null;
+            $periodEnd = null;
+            if (isset($contractData) && is_array($contractData)) {
+                $periodStart = ProjectMapping::getBitrixItemValue(
+                    $contractData,
+                    ProjectMapping::getLandlordContractField('start_date', $projectName)
+                );
+                $periodEnd = ProjectMapping::getBitrixItemValue(
+                    $contractData,
+                    ProjectMapping::getLandlordContractField('end_date', $projectName)
+                );
+            }
             addCrmTimelineComment(
                 $bitrix,
                 $entityTypeId,
                 $id,
-                formatAlmaSyncErrorForBitrixComment($e->getMessage(), $almaUnitId)
+                formatAlmaSyncErrorForBitrixComment($e->getMessage(), $almaUnitId, $periodStart, $periodEnd)
             );
         } catch (Throwable $commentError) {
             Logger::warning('Failed to add Bitrix error comment on landlord contract', [

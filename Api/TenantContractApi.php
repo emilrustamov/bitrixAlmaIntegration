@@ -427,12 +427,11 @@ class TenantContractApi {
 
     public function enrichClientData(array $clientData, array $contractData): array
     {
-        if ($this->projectName !== 'Dubai') {
-            return $clientData;
-        }
-
         $passportNumberField = ProjectMapping::getTenantField('passport_number', $this->projectName);
         $idScanField = ProjectMapping::getTenantField('id_scan', $this->projectName);
+        if ($passportNumberField === null && $idScanField === null) {
+            return $clientData;
+        }
 
         $passportNumber = ProjectMapping::getBitrixItemValue($contractData, $passportNumberField);
         if ($passportNumber !== null && trim((string) $passportNumber) !== '') {
@@ -596,11 +595,23 @@ function syncTenantContract($id, $projectName, array $options = []) {
                 } catch (Throwable $ignore) {
                 }
             }
+            $periodStart = null;
+            $periodEnd = null;
+            if (isset($syncData) && is_array($syncData)) {
+                $periodStart = ProjectMapping::getBitrixItemValue(
+                    $syncData,
+                    $startDateField ?? ProjectMapping::getContractField('start_date', $projectName)
+                );
+                $periodEnd = ProjectMapping::getBitrixItemValue(
+                    $syncData,
+                    $endDateField ?? ProjectMapping::getContractField('end_date', $projectName)
+                );
+            }
             addCrmTimelineComment(
                 $bitrix,
                 $contractTypeId,
                 $id,
-                formatAlmaSyncErrorForBitrixComment($e->getMessage(), $almaUnitId)
+                formatAlmaSyncErrorForBitrixComment($e->getMessage(), $almaUnitId, $periodStart, $periodEnd)
             );
         } catch (Throwable $commentError) {
             Logger::warning('Failed to add Bitrix error comment on contract', [

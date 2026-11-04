@@ -49,7 +49,7 @@ if ($isWebhookRequest) {
     if (in_array((int)$typeId, $aptTypeIds, true)) {
         require_once __DIR__ . '/Api/AppartApi.php';
         try {
-            syncApartment($id, $projectName, (int)$typeId);
+            syncApartment($id, $projectName, (int)$typeId, ['skip_if_integration_update' => true]);
         } catch (Throwable $e) {
             Logger::error('Webhook: apartment sync failed', [
                 'entity_id' => $id,

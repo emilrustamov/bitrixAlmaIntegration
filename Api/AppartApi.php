@@ -298,9 +298,10 @@ class AppartApi {
  * @param string|int $id
  * @param string $projectName
  * @param int|null $entityTypeId
+ * @param array $options
  * @return array
  */
-function syncApartment($id, $projectName, $entityTypeId = null) {
+function syncApartment($id, $projectName, $entityTypeId = null, array $options = []) {
     Config::load();
     Logger::setProject($projectName);
     $projectConfig = ProjectMapping::getProjectConfig($projectName);
@@ -322,6 +323,27 @@ function syncApartment($id, $projectName, $entityTypeId = null) {
         throw new RuntimeException('Failed to get apartment data from Bitrix24');
     }
     $apt = $aptRes['result']['item'];
+
+    if (!empty($options['skip_if_integration_update'])) {
+        $integrationUserId = getBitrixRestUserIdFromWebhookUrl($webhookUrl);
+        if (isTenantContractWebhookEchoFromErrorComment(
+            $bitrix,
+            $entityTypeId,
+            $id,
+            $apt,
+            $integrationUserId
+        )) {
+            Logger::info('Apartment sync skipped: webhook echo from Alma comment', [
+                'apartment_id' => $id,
+            ], 'apartment', $id);
+            return [
+                'code' => 200,
+                'response' => ['skipped' => true, 'reason' => 'alma_comment_echo'],
+                'method' => 'SKIP_ALMA_COMMENT_ECHO',
+            ];
+        }
+    }
+
     $stageField = $map['fields']['stage'];
     $stageId = (string)($apt[$stageField] ?? '');
     $archiveStageIds = ProjectMapping::getArchiveStageIds($projectName);
@@ -477,10 +499,28 @@ function syncApartment($id, $projectName, $entityTypeId = null) {
             require_once __DIR__ . '/TerminationAppartApi.php';
             syncTerminationForApt($projectName, (string) $id, $apt);
         }
+        $method = $response['method'] ?? 'unknown';
+        if ($method === 'POST') {
+            $almaUnitId = $response['response']['id'] ?? null;
+            if ($almaUnitId !== null && $almaUnitId !== '') {
+                try {
+                    addApartmentAlmaTimelineComment(
+                        $projectName,
+                        $id,
+                        formatAlmaApartmentCreatedForBitrixComment($almaUnitId)
+                    );
+                } catch (Throwable $commentError) {
+                    Logger::warning('Failed to add Bitrix success comment on apartment', [
+                        'apartment_id' => $id,
+                        'error' => $commentError->getMessage(),
+                    ], 'apartment', $id);
+                }
+            }
+        }
         return [
             'code' => $response['code'],
             'response' => $response['response'] ?? $response,
-            'method' => $response['method'] ?? 'unknown'
+            'method' => $method
         ];
     }
     Logger::error('Failed to process apartment', [

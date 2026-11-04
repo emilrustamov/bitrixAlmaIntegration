@@ -105,7 +105,7 @@ function syncTerminationForApt($projectName, $apartmentBitrixId, array $apartmen
             'apartment_id' => $apartmentBitrixId,
             'error' => $e->getMessage(),
         ], 'termination', $apartmentBitrixId);
-        addApartmentAlmaSyncErrorComment($projectName, $apartmentBitrixId, $e->getMessage(), $almaUnitId);
+        addApartmentAlmaSyncErrorComment($projectName, $apartmentBitrixId, $e->getMessage(), $almaUnitId, $startDate, $endDate);
         throw $e;
     }
     Logger::info('Termination contract synced', ['apartment_id' => $apartmentBitrixId, 'start_date' => $startDate, 'end_date' => $endDate], 'termination', $apartmentBitrixId);

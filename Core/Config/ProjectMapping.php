@@ -317,18 +317,18 @@ class ProjectMapping {
                     'contract_scan' => 'ufCrm19Contract',
                 ],
                 'tenant_fields' => [
-                    'email' => 'UF_CRM_1727788747',
-                    'passport_number' => 'UF_CRM_20_1696523391',
-                    'id_scan' => 'UF_CRM_20_1696615939',
+                    'email' => null,
+                    'passport_number' => 'ufCrm19PassportIdCard',
+                    'id_scan' => 'ufCrm19PassportIdCardFiles',
                 ],
                 'landlord_fields' => [
-                    'email' => 'UF_CRM_1727788747',
-                    'passport_number' => 'UF_CRM_10_1740556751168',
-                    'id_scan' => 'UF_CRM_10_1741788524',
+                    'email' => null,
+                    'passport_number' => null,
+                    'id_scan' => null,
                 ],
                 'fields' => [
                     'building_name' => 'ufCrm11Building',
-                    'apartment_number' => 'ufCrm11ApartmentNumber',
+                    'apartment_number' => 'ufCrm11InternalNumberOfTheApartment',
                     'internal_area' => 'ufCrm11ApartmentAreaSqmtrs',
                     'goal_rent_cost' => 'opportunity',
                     'number_of_baths' => 'ufCrm11Bathrooms',
@@ -350,7 +350,7 @@ class ProjectMapping {
                     'internal_area' => 'ufCrm13TotalAreaOfTheRoom',
                     'goal_rent_cost' => 'opportunity',
                     'goal_rent_cost_alt' => 'ufCrm13RentAmount',
-                    'number' => 'UF_CRM_13_NUMBER_OF_UNIT',
+                    'number' => 'ufCrm13NumberOfUnit',
                 ],
                 'unit_number_mapping' => [
                     '725' => '1',
@@ -385,8 +385,13 @@ class ProjectMapping {
                     '783' => 'SP10-2',
                 ],
                 'property_type_mapping' => [
+                    '803' => 'studio',
+                    '805' => 'apartment',
+                    '807' => 'apartment',
                     '809' => 'apartment',
+                    '811' => 'apartment',
                     '813' => 'apartment',
+                    '815' => 'apartment',
                 ],
                 'bedrooms_mapping' => [
                     '803' => 1,
@@ -403,23 +408,17 @@ class ProjectMapping {
                 ],
                 'default_rent_type_value' => '1069',
                 'contract_type_mapping' => [
-                    '983' => 'Short contract up to 1 month',
-                    '985' => 'Airbnb',
-                    '987' => 'Booking',
-                    '989' => 'Less than a month',
-                    '991' => 'Short term from 1 to 3 months',
-                    '993' => 'Long-term 3+ months',
                     '1277' => 'Less than 1 month contract',
                     '1279' => '1+ months',
                 ],
-                'no_invitation_contract_type_ids' => ['985'],
+                'no_invitation_contract_type_ids' => [],
                 'work_model_mapping' => [],
                 'metro_mapping' => [],
                 'tenant_contract_archive_stage_ids' => [
                     'DT1072_27:FAIL',
                     'DT1072_27:SUCCESS',
                 ],
-                'archive_stage_ids' => ['1025', '1027', '1029'],
+                'archive_stage_ids' => ['1025'],
                 'allowed_stage_ids' => ['1021', '1023']
             ]
         ];
