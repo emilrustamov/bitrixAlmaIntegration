@@ -66,6 +66,10 @@ class AppartApi {
             }
         }
         if ($targetId !== null) {
+            if (!empty($oldData['is_archived'])) {
+                $this->setUnitArchived((string) $bitrixId, false);
+                $oldData['is_archived'] = false;
+            }
             $patchData = $data;
             if (!isset($patchData['name']) || (string)$patchData['name'] === '') {
                 $patchData['name'] = $data['name'] ?? ('Apartment ' . $bitrixId);
